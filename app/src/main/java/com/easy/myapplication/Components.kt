@@ -1,5 +1,7 @@
 package com.easy.myapplication
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -11,10 +13,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
@@ -33,7 +44,9 @@ fun ButtonCustomize(
 ) {
     Button(
         onClick = onClick, content = content,
-        shape = RoundedCornerShape(20), modifier = Modifier.fillMaxWidth(fraction = 1f)
+        shape = RoundedCornerShape(20), modifier = Modifier.fillMaxWidth(fraction = 1f),
+
+        colors = ButtonDefaults.buttonColors(Color(0xFFFCA622))
     )
 }
 
@@ -66,7 +79,7 @@ enum class Type {
 
 
 fun Input(value: String, onValueChange: (String) -> Unit, type: Type? = null, label: String = "",isValidate: Boolean=false , error: String = "") {
-    val color = if (error.isBlank() && !isValidate) Color.White else Color.Red;
+    val color = if (error.isBlank() && !isValidate) Color(android.graphics.Color.parseColor("#FCA622")) else Color.Red;
     Column {
         if (label.isNotBlank()) {
             Text(
@@ -111,6 +124,65 @@ fun Input(value: String, onValueChange: (String) -> Unit, type: Type? = null, la
 
 
             })
+    }
+
+
+}
+@Composable
+fun SelectBox(value: String, onValueChange: (String) -> Unit, label: String = "",isValidate: Boolean=false , error: String = "", expandido: MutableState<Boolean>, generos: MutableList<String>, genero: MutableState<String>) {
+    val color = if (error.isBlank() && !isValidate) Color(android.graphics.Color.parseColor("#FCA622")) else Color.Red;
+    val focusRequester = remember { FocusRequester() }
+    Column {
+        if (label.isNotBlank()) {
+            Text(
+                text = label,
+                color = color,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Normal
+            )
+        }
+        Spacer(modifier = Modifier.height(5.dp))
+        Box(modifier = Modifier.clickable { expandido.value = true }){
+
+            BasicTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester)
+                    .onFocusChanged { if (it.isFocused) expandido.value = true }, enabled = false,
+                value = value,
+                cursorBrush = SolidColor(Color.White),
+                onValueChange = {
+                    onValueChange(it)
+                },
+                textStyle = TextStyle(color = Color.White, fontSize = 14.sp),
+                decorationBox = { innerTextField ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(1.dp, color, RoundedCornerShape(20))
+                            .padding(10.dp), verticalAlignment = Alignment.CenterVertically
+                    ) {
+
+                        innerTextField()
+                    }
+                }
+            )
+        }
+
+        DropdownMenu(expanded = expandido.value, onDismissRequest = { expandido.value = false }) {
+            DropdownMenuItem(
+                text = {
+                    Text("Qual o genêro?", style = TextStyle(color = Color.Gray))
+                },
+                onClick = { expandido.value = false })
+            Divider()
+            generos.forEach {
+                DropdownMenuItem(text ={ Text(it)}, onClick = {
+                    genero.value =it
+                    expandido.value = false
+                })
+            }
+        }
     }
 
 
