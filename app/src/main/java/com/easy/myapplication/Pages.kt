@@ -219,7 +219,7 @@ fun Login() {
                     Row(modifier = Modifier
                         .fillMaxWidth(1f)) {
                         Column(modifier = Modifier.weight(1f)) {
-                            Input(value = cpf.value, onValueChange = {cpf.value = it},label="CPF")
+                            Input(value = cpf.value, onValueChange = {cpf.value = it}, type = Type.CPF,label="CPF")
                         }
                         Spacer(modifier = Modifier.width(16.dp))
                         Column(modifier = Modifier.weight(1f)) {
@@ -248,7 +248,7 @@ fun Login() {
                         Input(value = emailCadastro.value, onValueChange = {emailCadastro.value = it},label="E-mail")
                     }
                     Column {
-                        Input(value = senhaCadastro.value, onValueChange = {senhaCadastro.value = it},label="Senha")
+                        Input(value = senhaCadastro.value, onValueChange = {senhaCadastro.value = it}, type = Type.PASSWORD, label="Senha")
                     }
                     Spacer(modifier = Modifier.height(40.dp))
                     ButtonCustomize(onClick = {}){

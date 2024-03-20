@@ -14,12 +14,15 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,14 +31,20 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.util.Calendar
 
 
 @Composable
@@ -70,9 +79,35 @@ fun Subtitle(
     Text(text = content, color = color, fontSize = fontSize, fontWeight = FontWeight.Normal)
 
 }
+fun CpfMaskTransformation() = VisualTransformation { text ->
+    val trimmed = if (text.text.length >= 11) text.text.substring(0, 11) else text.text
+    val transformed = StringBuilder()
+    val offsetTranslator = object : OffsetMapping {
+        override fun originalToTransformed(offset: Int) = offset + when (offset) {
+            in 0..2 -> 0
+            in 3..5 -> 1
+            in 6..8 -> 2
+            else -> 3
+        }
+        override fun transformedToOriginal(offset: Int) = offset - when (offset) {
+            in 0..3 -> 0
+            in 4..7 -> 1
+            in 8..11 -> 2
+            else -> 3
+        }
+    }
+    trimmed.forEachIndexed { index, char ->
+        transformed.append(char)
+        if (index == 2 || index == 5) transformed.append('.')
+        if (index == 8) transformed.append('-')
+    }
+    TransformedText(AnnotatedString(transformed.toString()), offsetTranslator)
+}
+
+
 
 enum class Type {
-    EMAIL, PASSWORD
+    EMAIL, PASSWORD, CPF
 }
 
 @Composable
@@ -97,17 +132,24 @@ fun Input(value: String, onValueChange: (String) -> Unit, type: Type? = null, la
                 keyboardType = when (type) {
                     Type.EMAIL -> KeyboardType.Email
                     Type.PASSWORD -> KeyboardType.Password
+                    Type.CPF -> KeyboardType.Number
                     else -> KeyboardType.Text
                 }
             ),
             cursorBrush = SolidColor(Color.White),
             visualTransformation = if (type == Type.PASSWORD) {
                 PasswordVisualTransformation()
+            } else if (type == Type.CPF) {
+                CpfMaskTransformation()
             } else {
                 VisualTransformation.None
             },
             onValueChange = {
-                onValueChange(it)
+                if (type == Type.CPF && it.length > 11) {
+                    // Não faça nada se o usuário tentar inserir mais de 11 dígitos para o CPF
+                } else {
+                    onValueChange(it)
+                }
             },
             textStyle = TextStyle(color = Color.White, fontSize = 14.sp),
             decorationBox = { innerTextField ->
@@ -120,7 +162,7 @@ fun Input(value: String, onValueChange: (String) -> Unit, type: Type? = null, la
 
                     innerTextField()
                 }
-                
+
 
 
             })
