@@ -14,15 +14,12 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,20 +28,20 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import java.util.Calendar
 
 
 @Composable
@@ -103,16 +100,47 @@ fun CpfMaskTransformation() = VisualTransformation { text ->
     }
     TransformedText(AnnotatedString(transformed.toString()), offsetTranslator)
 }
+class DateMaskTransformation : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+        var out = ""
+        when (text.text.length) {
+            in 1..2 -> out = text.text
+            in 3..4 -> out = text.text.substring(0, 2) + "/" + text.text.substring(2)
+            in 5..8 -> out = text.text.substring(0, 2) + "/" + text.text.substring(2, 4) + "/" + text.text.substring(4)
+            else -> out = text.text
+        }
+        val outputText = buildAnnotatedString {
+            withStyle(style = SpanStyle(color = Color.White)) {
+                append(out)
+            }
+        }
+        val offsetTranslator = object : OffsetMapping {
+            override fun originalToTransformed(offset: Int): Int {
+                return when (offset) {
+                    in 0..2 -> offset
+                    in 3..4 -> offset + 1
+                    in 5..8 -> offset + 2
+                    else -> offset
+                }
+            }
 
-
-
+            override fun transformedToOriginal(offset: Int): Int {
+                return when (offset) {
+                    in 0..2 -> offset
+                    in 4..5 -> offset - 1
+                    in 7..10 -> offset - 2
+                    else -> offset
+                }
+            }
+        }
+        return TransformedText(outputText, offsetMapping = offsetTranslator)
+    }
+}
 enum class Type {
-    EMAIL, PASSWORD, CPF
+    EMAIL, PASSWORD, CPF, DATE
 }
 
 @Composable
-
-
 fun Input(value: String, onValueChange: (String) -> Unit, type: Type? = null, label: String = "",isValidate: Boolean=false , error: String = "") {
     val color = if (error.isBlank() && !isValidate) Color(android.graphics.Color.parseColor("#FCA622")) else Color.Red;
     Column {
@@ -133,6 +161,7 @@ fun Input(value: String, onValueChange: (String) -> Unit, type: Type? = null, la
                     Type.EMAIL -> KeyboardType.Email
                     Type.PASSWORD -> KeyboardType.Password
                     Type.CPF -> KeyboardType.Number
+                    Type.DATE -> KeyboardType.Number
                     else -> KeyboardType.Text
                 }
             ),
@@ -141,12 +170,14 @@ fun Input(value: String, onValueChange: (String) -> Unit, type: Type? = null, la
                 PasswordVisualTransformation()
             } else if (type == Type.CPF) {
                 CpfMaskTransformation()
+            } else if (type == Type.DATE) {
+                DateMaskTransformation()
             } else {
                 VisualTransformation.None
             },
             onValueChange = {
-                if (type == Type.CPF && it.length > 11) {
-                    // Não faça nada se o usuário tentar inserir mais de 11 dígitos para o CPF
+                if (type == Type.CPF && it.length > 11 || type == Type.DATE && it.length > 8) {
+
                 } else {
                     onValueChange(it)
                 }
@@ -162,13 +193,9 @@ fun Input(value: String, onValueChange: (String) -> Unit, type: Type? = null, la
 
                     innerTextField()
                 }
-
-
-
-            })
+            }
+        )
     }
-
-
 }
 @Composable
 fun SelectBox(value: String, onValueChange: (String) -> Unit, label: String = "",isValidate: Boolean=false , error: String = "", expandido: MutableState<Boolean>, generos: MutableList<String>, genero: MutableState<String>) {

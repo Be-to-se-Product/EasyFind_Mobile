@@ -231,7 +231,7 @@ fun Login() {
                     }
                     Row(modifier = Modifier.fillMaxWidth(1f)) {
                         Column(modifier = Modifier.weight(1f)) {
-                            Input(value = dtNascimento.value, onValueChange = {dtNascimento.value = it},label="Data de Nascimento")
+                            Input(value = dtNascimento.value, onValueChange = {dtNascimento.value = it}, type = Type.DATE,label="Data de Nascimento")
                         }
                         Spacer(modifier = Modifier.width(16.dp))
                         Column(modifier = Modifier.weight(1f)) {
