@@ -170,12 +170,6 @@ fun SelectBox(value: String, onValueChange: (String) -> Unit, label: String = ""
         }
 
         DropdownMenu(expanded = expandido.value, onDismissRequest = { expandido.value = false }) {
-            DropdownMenuItem(
-                text = {
-                    Text("Qual o genêro?", style = TextStyle(color = Color.Gray))
-                },
-                onClick = { expandido.value = false })
-            Divider()
             generos.forEach {
                 DropdownMenuItem(text ={ Text(it)}, onClick = {
                     genero.value =it
