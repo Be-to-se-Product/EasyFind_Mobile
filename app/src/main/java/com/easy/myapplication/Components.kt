@@ -42,6 +42,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlin.math.max
+import kotlin.math.min
 
 
 @Composable
@@ -136,8 +138,37 @@ class DateMaskTransformation : VisualTransformation {
         return TransformedText(outputText, offsetMapping = offsetTranslator)
     }
 }
+@Composable
+fun PhoneMaskTransformation() = VisualTransformation { text ->
+    val trimmed = if (text.text.length >= 11) text.text.substring(0..10) else text.text
+    val transformed = when (trimmed.length) {
+        in 0..1 -> trimmed
+        in 2..6 -> "(${trimmed.substring(0, 2)}) ${trimmed.substring(2)}"
+        in 7..10 -> "(${trimmed.substring(0, 2)}) ${trimmed.substring(2, 3)} ${trimmed.substring(3, 7)}-${trimmed.substring(7)}"
+        else -> "(${trimmed.substring(0, 2)}) ${trimmed.substring(2, 6)}-${trimmed.substring(6)}"
+    }
+    TransformedText(AnnotatedString(transformed), object : OffsetMapping {
+        override fun originalToTransformed(offset: Int): Int {
+            return when (offset) {
+                in 0..1 -> offset
+                in 2..5 -> offset + 3
+                in 6..9 -> offset + 4
+                else -> min(offset + 5, transformed.length)
+            }
+        }
+
+        override fun transformedToOriginal(offset: Int): Int {
+            return when (offset) {
+                in 0..1 -> offset
+                in 4..7 -> offset - 3
+                in 9..12 -> offset - 4
+                else -> max(offset - 5, 0)
+            }
+        }
+    })
+}
 enum class Type {
-    EMAIL, PASSWORD, CPF, DATE
+    EMAIL, PASSWORD, CPF, DATE, PHONE
 }
 
 @Composable
@@ -162,6 +193,7 @@ fun Input(value: String, onValueChange: (String) -> Unit, type: Type? = null, la
                     Type.PASSWORD -> KeyboardType.Password
                     Type.CPF -> KeyboardType.Number
                     Type.DATE -> KeyboardType.Number
+                    Type.PHONE -> KeyboardType.Number
                     else -> KeyboardType.Text
                 }
             ),
@@ -172,6 +204,8 @@ fun Input(value: String, onValueChange: (String) -> Unit, type: Type? = null, la
                 CpfMaskTransformation()
             } else if (type == Type.DATE) {
                 DateMaskTransformation()
+            } else if (type == Type.PHONE) {
+                PhoneMaskTransformation()
             } else {
                 VisualTransformation.None
             },
@@ -253,6 +287,4 @@ fun SelectBox(value: String, onValueChange: (String) -> Unit, label: String = ""
             }
         }
     }
-
-
 }

@@ -223,7 +223,7 @@ fun Login() {
                         }
                         Spacer(modifier = Modifier.width(16.dp))
                         Column(modifier = Modifier.weight(1f)) {
-                            Input(value = telefone.value, onValueChange = {telefone.value = it},label="Telefone")
+                            Input(value = telefone.value, onValueChange = {telefone.value = it}, type = Type.PHONE,label="Telefone")
                         }
                     }
                     Column {
