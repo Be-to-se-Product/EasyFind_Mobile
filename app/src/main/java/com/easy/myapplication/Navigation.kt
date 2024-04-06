@@ -22,7 +22,7 @@ fun AppNavHost(
     ){
         composable("Login")
         {
-            Header()
+            Login()
         }
     }
 }

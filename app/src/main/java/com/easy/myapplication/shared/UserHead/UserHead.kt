@@ -1,6 +1,7 @@
 package com.easy.myapplication.shared.UserHead
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -26,7 +27,7 @@ fun UserHead(
     size: Dp = 40.dp,
     textStyle: TextStyle = MaterialTheme.typography.bodyMedium,
 ) {
-        Box(modifier.size(size), contentAlignment = Alignment.Center,) {
+        Box(modifier = modifier.size(size), contentAlignment = Alignment.Center) {
             val color = remember(id, firstName, lastName) {
                 val name = listOf(firstName, lastName)
                     .joinToString(separator = "")
