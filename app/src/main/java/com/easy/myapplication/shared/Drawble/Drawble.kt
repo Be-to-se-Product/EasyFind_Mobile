@@ -20,52 +20,36 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.easy.myapplication.shared.UserHead.UserHead
 import kotlinx.coroutines.CoroutineScope
+import androidx.compose.ui.unit.LayoutDirection
 
 @Composable
-fun Drawble(content: @Composable (drawer:DrawerState,scope:CoroutineScope) -> Unit){
-    val drawerState = rememberDrawerState(DrawerValue.Closed)
+fun Drawble(content: @Composable (DrawerState,CoroutineScope) -> Unit) {
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-
-
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         ModalNavigationDrawer(
-            drawerState = drawerState,
+            drawerState =drawerState,
             drawerContent = {
-                ModalDrawerSheet(
-                    modifier = Modifier
-                        .fillMaxWidth(0.5f)
-                        .fillMaxHeight()
+                ModalDrawerSheet(modifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .fillMaxHeight()
                 ) {
-                    Column(horizontalAlignment = Alignment.End) {
-                        Row(modifier = Modifier.padding(20.dp,20.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Text("Olá, Matheus",Modifier.padding(5.dp,0.dp), fontSize = 13.sp)
-                            UserHead(id = "1", firstName = "Matheus", lastName = "Lessa", size = 40.dp)
+                    Column (horizontalAlignment = Alignment.End) {
+                        Row(modifier = Modifier.padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Text("Olá, Matheus", modifier = Modifier.padding(16.dp))
+                            UserHead(id = "1", firstName = "Matheus", lastName = "Lessa")
                         }
                         Divider()
                         NavigationDrawerItem(
-                            label = {
-                                Text(
-                                    text = "Meus pedidos",
-                                    textAlign = TextAlign.Left,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            },
+                            label = { Text(text = "Meus pedidos", textAlign = TextAlign.Left, modifier = Modifier.fillMaxWidth())},
                             selected = false,
                             onClick = {}
                         )
                         NavigationDrawerItem(
-                            label = {
-                                Text(
-                                    text = "Buscar pedidos",
-                                    textAlign = TextAlign.Left,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            },
+                            label = { Text(text = "Buscar pedidos", textAlign = TextAlign.Left, modifier = Modifier.fillMaxWidth())},
                             selected = false,
                             onClick = {}
                         )
@@ -73,6 +57,8 @@ fun Drawble(content: @Composable (drawer:DrawerState,scope:CoroutineScope) -> Un
                 }
             },
             content = { content(drawerState,scope) }
+
         )
     }
+
 }
