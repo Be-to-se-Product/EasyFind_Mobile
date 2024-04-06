@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
 @Composable
-fun ButtonCustomize(
+fun Button(
     onClick: () -> Unit, content: @Composable RowScope.() -> Unit
 ) {
     Button(

@@ -6,7 +6,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,35 +20,30 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
-
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.easy.myapplication.ButtonCustomize
-import com.easy.myapplication.Input
 import com.easy.myapplication.R
-import com.easy.myapplication.SelectBox
-import com.easy.myapplication.Subtitle
-import com.easy.myapplication.Title
-import com.easy.myapplication.Type
+import com.easy.myapplication.shared.Button.Button
+import com.easy.myapplication.shared.Input.Input
+import com.easy.myapplication.shared.Input.Type
+import com.easy.myapplication.shared.SelectBox.SelectBox
+import com.easy.myapplication.shared.Subtitle.Subtitle
+import com.easy.myapplication.shared.Title.Title
 import com.easy.myapplication.ui.theme.Primary
 import com.easy.myapplication.ui.theme.Seconday
 
@@ -210,7 +204,7 @@ fun Login() {
                         Spacer(modifier = Modifier.height(30.dp))
                         Input(value = senha.value, onValueChange = {senha.value = it }, type = Type.PASSWORD, label = "Senha")
                         Spacer(modifier = Modifier.height(40.dp))
-                        ButtonCustomize(onClick = {}){
+                        Button(onClick = {}){
                             Title(content = "Entrar", fontSize = 14.sp)
                         }
                     }
@@ -222,11 +216,11 @@ fun Login() {
                         Row(modifier = Modifier
                             .fillMaxWidth(1f)) {
                             Column(modifier = Modifier.weight(1f)) {
-                                Input(value = cpf.value, onValueChange = {cpf.value = it},label="CPF")
+                                Input(value = cpf.value, onValueChange = {cpf.value = it}, type = Type.CPF,label="CPF")
                             }
                             Spacer(modifier = Modifier.width(16.dp))
                             Column(modifier = Modifier.weight(1f)) {
-                                Input(value = telefone.value, onValueChange = {telefone.value = it},label="Telefone")
+                                Input(value = telefone.value, onValueChange = {telefone.value = it}, type = Type.PHONE,label="Telefone")
                             }
                         }
                         Column {
@@ -234,12 +228,12 @@ fun Login() {
                         }
                         Row(modifier = Modifier.fillMaxWidth(1f)) {
                             Column(modifier = Modifier.weight(1f)) {
-                                Input(value = dtNascimento.value, onValueChange = {dtNascimento.value = it},label="Data de Nascimento")
+                                Input(value = dtNascimento.value, onValueChange = {dtNascimento.value = it}, type = Type.DATE,label="Data de Nascimento")
                             }
                             Spacer(modifier = Modifier.width(16.dp))
                             Column(modifier = Modifier.weight(1f)) {
                                 SelectBox(value = genero.value,
-                                    onValueChange = {genero.value=it},
+                                    onValueChange = {genero.value = it},
                                     expandido = expandido,
                                     label = "Gênero",
                                     generos = generos,
@@ -251,10 +245,10 @@ fun Login() {
                             Input(value = emailCadastro.value, onValueChange = {emailCadastro.value = it},label="E-mail")
                         }
                         Column {
-                            Input(value = senhaCadastro.value, onValueChange = {senhaCadastro.value = it},label="Senha")
+                            Input(value = senhaCadastro.value, onValueChange = {senhaCadastro.value = it}, type = Type.PASSWORD, label="Senha")
                         }
                         Spacer(modifier = Modifier.height(40.dp))
-                        ButtonCustomize(onClick = {}){
+                        Button(onClick = {}){
                             Title(content = "Cadastrar", fontSize = 14.sp)
                         }
                     }
