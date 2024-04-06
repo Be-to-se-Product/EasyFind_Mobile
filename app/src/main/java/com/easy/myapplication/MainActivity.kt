@@ -25,12 +25,8 @@ class MainActivity : ComponentActivity() {
 
                 ) {
 
-// Adicione a pagina que você esta fazendo aqui dentro do composable
-                    NavHost(navController = rememberNavController(), startDestination = "Login" ){
-                        composable("Login"){
-                            Login()
-                        }
-                    }
+                AppNavHost(navController = rememberNavController(), startDestination = "Login")
+
                 }
             }
         }
