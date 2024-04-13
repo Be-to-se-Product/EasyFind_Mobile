@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.easy.myapplication.screens.Login.Login
+import com.easy.myapplication.screens.Mapa.Mapa
 import com.easy.myapplication.shared.Header.Header
 
 
@@ -23,6 +24,9 @@ fun AppNavHost(
         composable("Login")
         {
             Login()
+        }
+                composable("Mapa"){
+            Mapa()
         }
     }
 }
