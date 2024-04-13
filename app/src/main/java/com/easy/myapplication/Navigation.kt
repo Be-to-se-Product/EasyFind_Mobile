@@ -5,8 +5,10 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.easy.myapplication.screens.Login.Login
+
 import com.easy.myapplication.screens.Produto.Produto
+import com.easy.myapplication.screens.Mapa.Mapa
+
 
 
 @Composable
@@ -23,6 +25,9 @@ fun AppNavHost(
         composable("Login")
         {
             Produto()
+        }
+                composable("Mapa"){
+            Mapa()
         }
     }
 }

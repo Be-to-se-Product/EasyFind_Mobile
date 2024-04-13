@@ -33,9 +33,9 @@ enum class Type {
 }
 
 @Composable
-fun Input(value: String, onValueChange: (String) -> Unit, type: Type? = null, label: String = "",isValidate: Boolean=false , error: String = "") {
+fun Input(value: String, onValueChange: (String) -> Unit, type: Type? = null, label: String = "",isValidate: Boolean=false , error: String = "",modifier: Modifier? = Modifier) {
     val color = if (error.isBlank() && !isValidate) Color(android.graphics.Color.parseColor("#FCA622")) else androidx.compose.ui.graphics.Color.Red;
-    Column {
+    Column(modifier=modifier!!) {
         if (label.isNotBlank()) {
             Text(
                 text = label,

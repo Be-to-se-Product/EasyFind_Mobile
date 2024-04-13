@@ -13,10 +13,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.easy.myapplication.R
 import com.easy.myapplication.shared.Drawble.Drawble
@@ -28,7 +31,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-@Preview
 fun Header(content:@Composable ()-> Unit) {
 
     Surface {
@@ -42,7 +44,6 @@ fun Header(content:@Composable ()-> Unit) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
                     Box() {
                         Row(
                             modifier = Modifier.width(100.dp),
@@ -67,7 +68,11 @@ fun Header(content:@Composable ()-> Unit) {
                     }
                     Title(content = "EasyFind", color = Primary)
                 }
+                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                    content()
+                }
             }
+
         }
     }
 }
