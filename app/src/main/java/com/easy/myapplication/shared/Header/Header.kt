@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 @Preview
-fun Header() {
+fun Header(content:@Composable ()-> Unit) {
 
     Surface {
         Drawble() { drawerState: DrawerState, scope: CoroutineScope ->
