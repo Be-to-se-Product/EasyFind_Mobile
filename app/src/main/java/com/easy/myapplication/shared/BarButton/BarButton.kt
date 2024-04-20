@@ -46,16 +46,17 @@ fun BarButton(showBar: Boolean = false,setShowBar:(Boolean)->Unit, content: @Com
                 onDismissRequest = {
                   scope.launch { setShowBar(false) }
                 },
+                content = {
+                    Row(
+                        modifier = Modifier.padding(20.dp, 0.dp),
+                    ) {
+
+                        content()
+                    }
+                },
                 sheetState = sheetState
 
-            ) {
-                Row(
-                    modifier = Modifier.padding(20.dp, 0.dp),
-                ) {
-                    content()
-
-                }
-            }
+            )
         }
     }
 }
