@@ -9,11 +9,11 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun Subtitle(
-    content: String,
+    content: String?,
     fontSize: TextUnit = 12.sp,
     color: Color = Color.White
 ) {
 
-    Text(text = content, color = color, fontSize = fontSize, fontWeight = FontWeight.Normal)
+    Text(text = content?:"", color = color, fontSize = fontSize, fontWeight = FontWeight.Normal)
 
 }
