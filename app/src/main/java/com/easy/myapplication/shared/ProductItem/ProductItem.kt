@@ -1,5 +1,6 @@
 package com.easy.myapplication.shared.ProductItem
 
+import DestinationTarget
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,6 +20,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.easy.myapplication.R
+import com.easy.myapplication.dto.Estabelecimento
+import com.easy.myapplication.screens.Mapa.GetRouteCallback
+import com.easy.myapplication.screens.Mapa.LatandLong
 import com.easy.myapplication.shared.StarRatingBar.StarRatingBar
 import com.easy.myapplication.shared.Subtitle.Subtitle
 import com.easy.myapplication.shared.Title.Title
@@ -31,16 +36,19 @@ data class Time(
 )
 
 data class DataProductItem(
-    val name:String,
-    val image:String?="",
+    val name: String,
+    val image: String? = "",
     val qtdStars: Double,
-    val shop:String,
+    val shop: String,
     val price: Double,
-    val time : Time?
+    val time: Time?,
+    val latitude: Double?,
+    val longitude: Double?,
+    val estabelecimento:Estabelecimento?
 )
 
 @Composable
-fun ProductItem(data:DataProductItem){
+fun ProductItem(data: DataProductItem, getRouteCallback: GetRouteCallback) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(15.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -69,18 +77,19 @@ fun ProductItem(data:DataProductItem){
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Title(content =data.name)
+                Title(content = data.name)
                 StarRatingBar(rating = 3F, size = 5F)
             }
             Row {
                 Subtitle(content = data.shop, color = Primary)
             }
             Row {
-                Subtitle(content ="R$"+data.price.toString(), color = Primary)
+                Subtitle(content = "R$" + data.price.toString(), color = Primary)
             }
 
 
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+
                 Column {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -94,7 +103,7 @@ fun ProductItem(data:DataProductItem){
                             )
                         }
                         Column {
-                            Subtitle(content = (data.time?.bike?:"").toString(), color = Primary)
+                            Subtitle(content = (data.time?.bike ?: "").toString(), color = Primary)
                         }
                     }
                 }
@@ -111,7 +120,10 @@ fun ProductItem(data:DataProductItem){
                             )
                         }
                         Column {
-                            Subtitle(content = (if(data.time?.car!=null) data.time.car else "").toString(), color = Primary)
+                            Subtitle(
+                                content = (if (data.time?.car != null) data.time.car else "").toString(),
+                                color = Primary
+                            )
                         }
                     }
                 }
@@ -128,8 +140,21 @@ fun ProductItem(data:DataProductItem){
                             )
                         }
                         Column {
-                            Subtitle(content = (if(data.time?.people!=null) data.time.people else "").toString(), color = Primary)
+                            Subtitle(
+                                content = (if (data.time?.people != null) data.time.people else "").toString(),
+                                color = Primary
+                            )
                         }
+                    }
+                }
+                Column {
+                    Button(onClick = {
+                        if (data.latitude != null && data.longitude != null) {
+                            getRouteCallback.getRoute(destination = DestinationTarget(coordinates = LatandLong(data.latitude,data.longitude),estabelecimento = data.estabelecimento))
+                        }
+                    }) {
+
+
                     }
                 }
             }

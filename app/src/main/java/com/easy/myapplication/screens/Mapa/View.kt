@@ -1,21 +1,24 @@
 package com.easy.myapplication.screens.Mapa
 
+import DestinationTarget
 import MapaViewModel
-import android.util.Log
+import android.annotation.SuppressLint
+
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.Image
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
@@ -25,11 +28,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.easy.myapplication.R
 import com.easy.myapplication.dto.Produto
+import com.easy.myapplication.dto.RoutesMapper
 import com.easy.myapplication.shared.BarButton.BarButton
 import com.easy.myapplication.shared.Header.Header
 import com.easy.myapplication.shared.Input.Input
@@ -45,15 +48,12 @@ import com.easy.myapplication.utils.mediaAvaliacao
 
 
 @Composable
-
-fun Mapa(viewModel: MapaViewModel = MapaViewModel()) {
+fun Mapa(viewModel: MapaViewModel) {
 
     val searchProduct = remember { mutableStateOf("") }
     val produtos = viewModel.produtos.observeAsState().value!!;
-    val erroApi = viewModel.erroApi.observeAsState().value!!;
-    val (showBar, setShowBar) = remember {
-        mutableStateOf(true)
-    }
+    val destination = viewModel.destination.observeAsState().value!!
+    val routes = viewModel.routes.observeAsState().value!!;
     val context = LocalContext.current
     val (latLong, setLatLong) = remember { mutableStateOf(LatandLong()) }
     val locationCallback = object : LocationCallback {
@@ -66,54 +66,77 @@ fun Mapa(viewModel: MapaViewModel = MapaViewModel()) {
         }
     }
 
+    val getRouteCallback = object : GetRouteCallback {
+        override fun getRoute(destination: DestinationTarget) {
+            viewModel.getRoute(destination, latLong)
+        }
+    }
 
     LaunchedEffect(key1 = Unit) {
-        getLatLong(context,locationCallback)
+        getLatLong(context, locationCallback)
     }
     LaunchedEffect(key1 = latLong.latitude) {
-
-        if(latLong.latitude!=0.0) {
+        if (latLong.latitude != 0.0) {
             viewModel.getProdutos(latLong.latitude, latLong.longitude)
+
         }
     }
 
 
-    Header {
-        Row(
-            horizontalArrangement = Arrangement.Center, modifier = Modifier
-                .fillMaxWidth(1f)
-                .padding(0.dp, 10.dp)
-        ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Input(
-                    value = searchProduct.value,
-                    onValueChange = { searchProduct.value = it },
-                    modifier = Modifier.fillMaxWidth(0.8f)
-                )
+
+    BarButton(sheetContent = {
+
+        if (routes.size <= 0) {
+            BarProducts(produtos = produtos, getRouteCallback = getRouteCallback)
+        } else {
+            BarDirections(rotas = routes, destinationTarget = destination)
+        }
+
+    }) {
+        Header {
+            Row(
+                horizontalArrangement = Arrangement.Center, modifier = Modifier
+                    .fillMaxWidth(1f)
+                    .padding(0.dp, 10.dp)
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Input(
+                        value = searchProduct.value,
+                        onValueChange = { searchProduct.value = it },
+                        modifier = Modifier.fillMaxWidth(0.8f)
+                    )
+                }
             }
-        }
 
-        BarButton(setShowBar = setShowBar, showBar = showBar) {
-            BarProducts(produtos)
-        }
+            MyContent(originCoordinates = latLong, destinationCoordinates = destination.coordinates)
 
-        //BarDirections()
+
+        }
     }
+}
 
 
-    @Composable
-    fun MyContent(){
-        // Declare a string that contains a url
-        val mUrl = "https://www.geeksforgeeks.org"
+@SuppressLint("SetJavaScriptEnabled")
+@Composable
+fun MyContent(originCoordinates: LatandLong, destinationCoordinates: LatandLong?) {
+    var destinationString = ""
+    if (destinationCoordinates != null) {
+        destinationString =
+            "&latitudeDestination=${destinationCoordinates.latitude}&longitudeDestination=${destinationCoordinates.longitude}"
+    }
+    var mUrl =
+        "http://192.168.18.179/mapa/mobile?latitudeOrigin=${originCoordinates.latitude}&longitudeOrigin=${originCoordinates.longitude}"
 
-        // Adding a WebView inside AndroidView
-        // with layout as full screen
+    mUrl += destinationString;
+
+    Column(modifier = Modifier.height(9000.dp)) {
         AndroidView(factory = {
             WebView(it).apply {
                 layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
+                settings.javaScriptEnabled = true
                 webViewClient = WebViewClient()
                 loadUrl(mUrl)
             }
@@ -122,7 +145,6 @@ fun Mapa(viewModel: MapaViewModel = MapaViewModel()) {
         })
     }
 }
-
 
 
 @Composable
@@ -176,90 +198,49 @@ fun Back() {
 }
 
 @Composable
-@Preview
-fun BarDirections() {
+fun BarDirections(rotas: List<RoutesMapper>,destinationTarget: DestinationTarget) {
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row {
-                Title(content = "Carrefour Express Paulista")
+                destinationTarget.estabelecimento?.nome?.let { Title(content = it) }
             }
             Row {
                 Subtitle(content = "4min(300m)", color = Primary)
             }
         }
 
-        Row {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(0.9f),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(30.dp)
-                ) {
-                    Left()
-                    Column(verticalArrangement = Arrangement.Center) {
-                        Subtitle(
-                            content = "Inicie seu trajéto e vire a direta a 200 métros",
-                            color = Primary
-                        )
-                    }
-                }
-            }
-        }
-        Row {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(0.9f),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(30.dp)
-                ) {
-                    Column {
-                        Right()
-                    }
 
-                    Column {
-                        Subtitle(
-                            content = "Inicie seu trajéto e vire a direta a 200 métros",
-                            color = Primary
-                        )
-                    }
-                }
-            }
-        }
-        Row {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(0.9f),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(30.dp)
-                ) {
-                    Column {
-                        Image(
-                            painter = painterResource(id = R.mipmap.marked),
-                            contentDescription = "Marcador Inicio",
-                            modifier = Modifier.size(32.dp)
-                        )
-                    }
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+            items(items = rotas, itemContent = {
+                Row {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(0.9f),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(30.dp)
+                        ) {
+                             when (it.modifier) {
+                                "left" -> Left()
+                                "right" -> Right()
+                                else -> Siga()
 
-                    Column(verticalArrangement = Arrangement.Center) {
-                        Subtitle(
-                            content = "Inicie seu trajéto e vire a direta a 200 métros",
-                            color = Primary
-                        )
+                            }
+                            Column(verticalArrangement = Arrangement.Center) {
+                                Subtitle(
+                                    content = it.instruction,
+                                    color = Primary
+                                )
+                            }
+                        }
                     }
                 }
-            }
+            })
         }
 
 
@@ -268,11 +249,12 @@ fun BarDirections() {
 }
 
 @Composable
-fun BarProducts(produtos: List<Produto>) {
+fun BarProducts(produtos: List<Produto>, getRouteCallback: GetRouteCallback) {
     Column {
         LazyColumn {
             items(items = produtos, itemContent = {
                 ProductItem(
+                    getRouteCallback = getRouteCallback,
                     data = DataProductItem(
                         name = it.nome.toString(),
                         qtdStars = mediaAvaliacao(it.avaliacao),
@@ -282,7 +264,11 @@ fun BarProducts(produtos: List<Produto>) {
                             it.estabelecimento?.tempoCarro,
                             it.estabelecimento?.tempoCarro,
                             it.estabelecimento?.tempoCarro
-                        )
+                        ),
+                        latitude = it.estabelecimento?.endereco?.latitude,
+                        longitude = it.estabelecimento?.endereco?.longitude,
+                        estabelecimento = it.estabelecimento
+
                     )
                 )
             })
