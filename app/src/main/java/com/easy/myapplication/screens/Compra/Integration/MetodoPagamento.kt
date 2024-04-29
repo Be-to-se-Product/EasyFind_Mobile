@@ -1,4 +1,4 @@
-package com.easy.myapplication.screens.Compra
+package com.easy.myapplication.screens.Compra.Integration
 
 class MetodoPagamento{
     val idMetodoPagamento:Long? = null

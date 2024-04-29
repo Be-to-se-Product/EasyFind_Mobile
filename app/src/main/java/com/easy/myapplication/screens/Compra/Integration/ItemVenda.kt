@@ -1,4 +1,4 @@
-package com.easy.myapplication.screens.Compra
+package com.easy.myapplication.screens.Compra.Integration
 
 class ItemVenda {
     val idProduto:Long? = null
