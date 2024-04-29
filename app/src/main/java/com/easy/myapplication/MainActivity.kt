@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background,
 
                     ) {
-                AppNavHost(navController = rememberNavController(), startDestination = "Mapa")
+                AppNavHost(navController = rememberNavController(), startDestination = "RealizarPedido")
 
                 }
 

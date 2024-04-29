@@ -4,7 +4,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.R
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,10 +19,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.easy.myapplication.ui.theme.Primary
 
 @Composable
-fun ProgressBar(etapaAtual: Int, totalEtapa: Int) {
-    val activeColor = Color(0xFFDD8400)
+fun ProgressBar(currentStep: Int, totalStep: Int) {
+    val activeColor = Primary
     val inactiveColor = Color.Transparent
     val activeTextColor = Color.White
     val inactiveTextColor = Color(0xFF014D5C)
@@ -40,7 +40,7 @@ fun ProgressBar(etapaAtual: Int, totalEtapa: Int) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            for (i in 1..totalEtapa) {
+            for (i in 1..totalStep) {
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -48,7 +48,7 @@ fun ProgressBar(etapaAtual: Int, totalEtapa: Int) {
 
                     CircleNumber(
                         number = i,
-                        isSelected = i <= etapaAtual,
+                        isSelected = i <= currentStep,
                         activeColor = activeColor,
                         inactiveColor = inactiveColor,
                         activeTextColor = activeTextColor,
@@ -59,13 +59,13 @@ fun ProgressBar(etapaAtual: Int, totalEtapa: Int) {
 
                     Text(
                         text = when (i) {
-                            1 -> "Dados Gerais"
-                            2 -> "Endereço e Contato"
-                            3 -> "Criar Senha"
+                            1 -> "Onde pagar"
+                            2 -> "Metodo pagamento"
+                            3 -> "Confirmar pagamento"
                             else -> ""
                         },
                         fontSize = 11.sp,
-                        color = if (i <= etapaAtual) Color.White else Color.Gray
+                        color = if (i <= currentStep) Color.White else Color.Gray
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
@@ -97,7 +97,7 @@ fun CircleNumber(
                 )
             } else {
                 drawCircle(
-                    color = inactiveTextColor,
+                    color = inactiveColor,
                     radius = size.minDimension / 2,
                     style = Stroke(width = 1.dp.toPx())
                 )
@@ -112,7 +112,7 @@ fun CircleNumber(
 }
 
 @Composable
-fun OptionButton(text:String){
+fun OptionButton(text:String, isSelected:Boolean){
     Row {
         RadioButton(
             selected = false,
