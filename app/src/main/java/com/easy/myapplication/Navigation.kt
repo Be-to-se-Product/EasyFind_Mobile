@@ -8,6 +8,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.easy.myapplication.screens.Login.Login
 import com.easy.myapplication.screens.Mapa.Mapa
+import com.easy.myapplication.screens.Produto.Produto
+import com.easy.myapplication.screens.Produto.ProdutoViewModel
 
 
 @Composable
@@ -25,9 +27,13 @@ fun AppNavHost(
         {
             Login()
         }
-                composable("Mapa"){
-                    val mapa = MapaViewModel()
-                    Mapa(mapa)
+        composable("Mapa"){
+            val mapa = MapaViewModel()
+            Mapa(mapa)
+        }
+        composable("Produto"){
+            val view = ProdutoViewModel()
+            Produto(view)
         }
     }
 }

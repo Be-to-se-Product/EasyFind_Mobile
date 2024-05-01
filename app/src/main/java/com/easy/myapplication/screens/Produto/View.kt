@@ -2,27 +2,25 @@ package com.easy.myapplication.screens.Produto
 
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -36,42 +34,75 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.easy.myapplication.R
 import com.easy.myapplication.shared.Header.Header
 import androidx.compose.material3.TextField
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
+
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.lifecycle.MutableLiveData
+import com.easy.myapplication.dto.Avaliacao
+import com.easy.myapplication.dto.AvaliacaoCadastrar
+import com.easy.myapplication.screens.Mapa.LatandLong
 import com.easy.myapplication.shared.StarRatingBar.StarRatingBar
 import com.easy.myapplication.shared.Subtitle.Subtitle
 import com.easy.myapplication.shared.Title.Title
 import com.easy.myapplication.ui.theme.Primary
+import com.easy.myapplication.utils.LocationCallback
+import com.easy.myapplication.utils.getLatLong
 
 
 @Composable
-@Preview
-fun Produto(){
-    val star = remember {
-        mutableStateOf(0f)
+fun Produto(view: ProdutoViewModel) {
+
+    var quantity = remember { mutableStateOf(1) }
+    val star = remember { mutableStateOf(0f) }
+    val setlatLong = view.latLong
+    val latLong = view.latLong.observeAsState().value!!;
+    val produto = view.produto.observeAsState().value!!;
+    val context = LocalContext.current
+
+    val locationCallback = object : LocationCallback {
+        override fun onSuccess(latitude: Double, longitude: Double) {
+            setlatLong.postValue(latLong.copy(latitude, longitude))
+        }
+
+        override fun onError(message: String?) {
+            print(message)
+        }
     }
+
+    LaunchedEffect(key1 = Unit) {
+        getLatLong(context, locationCallback)
+    }
+
+    LaunchedEffect(key1 = latLong.latitude){
+        view.getProdutoById(1,latLong.latitude,latLong.longitude)
+    }
+
 
     Header{
         Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+
+
         ) {
-            Column {
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())) {
                 Column(modifier = Modifier.padding(16.dp),
                     horizontalAlignment = Alignment.Start) {
-                    Title(content = "Mercado Bom Preço",
-                        fontSize = 20.sp,
-                        color = Primary)
-                    Title(content = "Fone de Ouvido", fontSize = 24.sp)
-                    Subtitle(content = "Lorem Ipsum is simply dummy text of the " +
-                            "printing and typesetting industry.  " +
-                            "release of Letraset sheets " +
-                            "containingPageMaker including versions of Lorem Ipsum.",
+                    produto.estabelecimento?.nome?.let {
+                        Title(content = it,
+                            fontSize = 20.sp,
+                            color = Primary)
+                    }
+                    produto.nome?.let { Title(content = it, fontSize = 24.sp) }
+                    Subtitle(content = produto.descricao,
                         fontSize = 15.sp)
                 }
 
@@ -81,9 +112,19 @@ fun Produto(){
 
                 Column(modifier = Modifier.padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally) {
-                    Title(content = "R$160,00")
+                    Title(content = produto.precoAtual.toString())
 
                 }
+
+                ProdutoQuantityButton(
+                    quantity = quantity.value
+                    ,onIncrement = { quantity.value++ }
+                    , onDecrement = {
+                        if (quantity.value > 0){
+                            quantity.value--
+                        }
+                    }
+                )
 
                 Column(modifier = Modifier.padding(5.dp),
                     horizontalAlignment = Alignment.CenterHorizontally) {
@@ -126,34 +167,14 @@ fun Produto(){
                             modifier = Modifier.padding(start = 16.dp),
                             verticalArrangement = Arrangement.Center
                         ) {
-                            Title(content = "Bom Preço")
-                            Subtitle(content = "Mercado")
+                            produto.estabelecimento?.nome?.let { Title(content = it) }
+                            Subtitle(content = produto.estabelecimento?.segmento)
                         }
                     }
 
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Title(content = "Comentário")
-                        }
 
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            StarRatingBar(
-                                rating = star.value,
-                                onRatingChanged = {
-                                    star.value = it
-                                }
-                            )
-                        }
-                    }
 
-                    ComentarioSection()
+                    ComentarioSection(view)
 
                     Column(modifier = Modifier.padding(5.dp),
                         horizontalAlignment = Alignment.CenterHorizontally) {
@@ -162,31 +183,25 @@ fun Produto(){
                                 .fillMaxWidth()
                                 .padding(0.dp),
                             colors = ButtonDefaults.buttonColors(Color(0xFFFCA622)),
-                            onClick = { /*TODO*/ }) {
+                            onClick = { view.cadastroAvalicao(1) }) {
                             Text(text = "Postar")
                         }
                     }
                 }
 
-                Column(modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.Start) {
-                    Title(content = "Matheus")
-                    StarRatingBar(rating = 2.5f)
-                    Column {
-                        Subtitle(content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, " +
-                                "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
-                    }
-                }
-
-
-                Column(modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.Start) {
-                    Title(content = "Matheus")
-                    StarRatingBar(rating = 2.5f)
-                    Column {
-                        Subtitle(content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, " +
-                                "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
-                    }
+                LazyColumn(modifier = Modifier.height(900.dp)) {
+                    items(items = produto.avaliacao,
+                        itemContent = {
+                            Column(modifier = Modifier.padding(16.dp),
+                                horizontalAlignment = Alignment.Start) {
+                                it.usuario?.let { it1 -> Title(content = it1) }
+                                it.qtdEstrela?.toFloat()?.let { it1 -> StarRatingBar(rating = it1) }
+                                Column {
+                                    Subtitle(content = it.descricao)
+                                }
+                            }
+                        }
+                    )
                 }
             }
         }
@@ -240,26 +255,103 @@ fun IconWithTime(icon: Int, time: String){
 }
 
 @Composable
-fun ComentarioSection() {
-    val textFieldValue = remember {
-        mutableStateOf("")
+fun ComentarioSection(view: ProdutoViewModel) {
+    val setAvaliacao = view.avaliacao
+    val avaliacao = view.avaliacao.observeAsState().value!!;
+
+    Column(
+        modifier = Modifier.padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Title(content = "Comentário")
+        }
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            avaliacao.qtdEstrela?.let {
+                StarRatingBar(
+                    rating = it,
+                    onRatingChanged = {
+                        setAvaliacao.postValue(avaliacao.copy(qtdEstrela = it))
+                    }
+                )
+            }
+        }
     }
+
     Column(
         modifier = Modifier
             .padding(16.dp)
             .fillMaxWidth()
     ) {
-        TextField(
-            value = textFieldValue.value,
-            onValueChange = { newValue -> textFieldValue.value = newValue},
-            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-            modifier = Modifier
-                .border(1.dp, color = Color(0xFFFCA622), shape = RoundedCornerShape(5.dp))
-                .fillMaxWidth()
-                .height(100.dp)
-                .padding(4.dp)
+        avaliacao.comentario?.let {
+            TextField(
+                value = it,
+                onValueChange = { newValue -> setAvaliacao.postValue(avaliacao.copy(comentario = newValue)) },
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                modifier = Modifier
+                    .border(1.dp, color = Color(0xFFFCA622), shape = RoundedCornerShape(5.dp))
+                    .fillMaxWidth()
+                    .height(100.dp)
+                    .padding(4.dp)
 
+            )
+        }
+    }
+}
+
+@Composable
+fun ProdutoQuantityButton(
+    quantity: Int,
+    onIncrement: () -> Unit,
+    onDecrement: () -> Unit
+){
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(18.dp)
+            .border(
+                width = 1.dp,
+                color = Color(0xFFFCA622),
+                shape = RoundedCornerShape(8.dp)
+            ),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ){
+        IconButton(
+            onClick = {
+                if (quantity > 0){
+                onDecrement()
+                }
+            }
+        ) {
+            Icon(
+                painter = painterResource(id = R.mipmap.remover)
+                ,contentDescription = "Remover a quantidade"
+                ,tint = Color(0xFFFCA622)
+            )
+        }
+        Text(
+            text = quantity.toString(),
+            style = TextStyle(fontSize = 18.sp),
+            fontWeight = FontWeight.Bold
         )
+
+        IconButton(
+            onClick = {
+                onIncrement()
+            }
+        ) {
+            Icon(
+                painter = painterResource(id = R.mipmap.adicionar)
+                ,contentDescription = "Adicionar quantidade"
+                , tint = Color(0xFFFCA622)
+            )
+        }
     }
 }
 

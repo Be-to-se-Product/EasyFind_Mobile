@@ -6,7 +6,7 @@ import com.easy.myapplication.dto.Estabelecimento
 import com.easy.myapplication.dto.Produto
 import com.easy.myapplication.dto.RoutesMapper
 import com.easy.myapplication.screens.Mapa.LatandLong
-import com.easy.myapplication.services.MapBoxService
+import com.easy.myapplication.services.Service.MapBoxService
 import com.easy.myapplication.services.Service
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

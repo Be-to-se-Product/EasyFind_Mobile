@@ -1,5 +1,11 @@
 package com.easy.myapplication.screens.Mapa
 
+import DestinationTarget
+import MapaViewModel
+import android.annotation.SuppressLint
+import android.view.ViewGroup
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -8,9 +14,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
@@ -188,8 +196,8 @@ fun Back() {
             modifier = Modifier.size(40.dp)
         )
     }
-
 }
+
 
 @Composable
 fun BarDirections(rotas: List<RoutesMapper>,destinationTarget: DestinationTarget) {
@@ -236,8 +244,6 @@ fun BarDirections(rotas: List<RoutesMapper>,destinationTarget: DestinationTarget
                 }
             })
         }
-
-
     }
 
 }
@@ -262,7 +268,6 @@ fun BarProducts(produtos: List<Produto>, getRouteCallback: GetRouteCallback) {
                         latitude = it.estabelecimento?.endereco?.latitude,
                         longitude = it.estabelecimento?.endereco?.longitude,
                         estabelecimento = it.estabelecimento
-
                     )
                 )
             })
