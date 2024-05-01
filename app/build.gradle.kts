@@ -1,9 +1,13 @@
+import java.util.Properties
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 }
 
 android {
+    buildFeatures{
+        buildConfig = true
+    }
     namespace = "com.easy.myapplication"
     compileSdk = 34
 
@@ -23,10 +27,31 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+            val p = Properties()
+            p.load(project.rootProject.file("local.properties").reader())
+            val API_KEY: String = p.getProperty("HOST_API")
+            buildConfigField("String", "HOST_API", "\"$API_KEY\"")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+        }
+        debug {
+            isMinifyEnabled = false
+            val p = Properties()
+            p.load(project.rootProject.file("local.properties").reader())
+            val HOST_API: String = p.getProperty("HOST_API")
+            val HOST_WEB: String = p.getProperty("HOST_WEB")
+            val TOKEN_MAPBOX:String = p.getProperty("TOKEN_MAPBOX")
+            buildConfigField("String", "HOST_API", "\"$HOST_API\"")
+            buildConfigField("String", "HOST_WEB", "\"$HOST_WEB\"")
+            buildConfigField("String", "TOKEN_MAPBOX", "\"$TOKEN_MAPBOX\"")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+
         }
     }
     compileOptions {
@@ -48,6 +73,10 @@ android {
         }
     }
 }
+
+
+
+
 
 dependencies {
     implementation("com.google.android.gms:play-services-location:21.2.0")

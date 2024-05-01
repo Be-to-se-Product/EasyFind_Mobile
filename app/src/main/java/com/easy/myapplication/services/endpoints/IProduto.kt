@@ -6,5 +6,4 @@ import retrofit2.http.Query
 interface IProduto {
     @GET("mapa")
     suspend fun getMapaProdutos(@Query("latitude") latitude:Double?, @Query("longitude") longitude:Double?, @Query("distancia")  distancia:Double?=50.0): Response<List<Produto>>
-
 }
