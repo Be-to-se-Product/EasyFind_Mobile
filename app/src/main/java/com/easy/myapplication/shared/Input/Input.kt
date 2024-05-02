@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import com.easy.myapplication.utils.CpfMaskTransformation
 import com.easy.myapplication.utils.DateMaskTransformation
 import com.easy.myapplication.utils.PhoneMaskTransformation
+import java.text.SimpleDateFormat
 
 enum class Type {
     EMAIL, PASSWORD, CPF, DATE, PHONE
