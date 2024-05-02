@@ -38,7 +38,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.easy.myapplication.R
-import com.easy.myapplication.shared.Button.Button
 import com.easy.myapplication.shared.Input.Input
 import com.easy.myapplication.shared.Input.Type
 import com.easy.myapplication.shared.SelectBox.SelectBox
@@ -200,7 +199,7 @@ fun Login() {
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.fillMaxWidth(0.8f)
                     ) {
-                        Input(value = email.value, onValueChange = {email.value = it},label="Email")
+                        Input(value = email.value, onValueChange = {email.value = it}, label ="Email")
                         Spacer(modifier = Modifier.height(30.dp))
                         Input(value = senha.value, onValueChange = {senha.value = it }, type = Type.PASSWORD, label = "Senha")
                         Spacer(modifier = Modifier.height(40.dp))
@@ -216,19 +215,27 @@ fun Login() {
                         Row(modifier = Modifier
                             .fillMaxWidth(1f)) {
                             Column(modifier = Modifier.weight(1f)) {
-                                Input(value = cpf.value, onValueChange = {cpf.value = it}, type = Type.CPF,label="CPF")
+                                Input(
+                                    value = cpf.value, onValueChange = {cpf.value = it}, type = Type.CPF,
+                                    label ="CPF")
                             }
                             Spacer(modifier = Modifier.width(16.dp))
                             Column(modifier = Modifier.weight(1f)) {
-                                Input(value = telefone.value, onValueChange = {telefone.value = it}, type = Type.PHONE,label="Telefone")
+                                Input(
+                                    value = telefone.value, onValueChange = {telefone.value = it}, type = Type.PHONE,
+                                    label ="Telefone")
                             }
                         }
                         Column {
-                            Input(value = nomeCompleto.value, onValueChange = {nomeCompleto.value = it},label="Nome Completo")
+                            Input(
+                                value = nomeCompleto.value, onValueChange = {nomeCompleto.value = it},
+                                label ="Nome Completo")
                         }
                         Row(modifier = Modifier.fillMaxWidth(1f)) {
                             Column(modifier = Modifier.weight(1f)) {
-                                Input(value = dtNascimento.value, onValueChange = {dtNascimento.value = it}, type = Type.DATE,label="Data de Nascimento")
+                                Input(
+                                    value = dtNascimento.value, onValueChange = {dtNascimento.value = it}, type = Type.DATE,
+                                    label ="Data de Nascimento")
                             }
                             Spacer(modifier = Modifier.width(16.dp))
                             Column(modifier = Modifier.weight(1f)) {
@@ -242,10 +249,12 @@ fun Login() {
                             }
                         }
                         Column {
-                            Input(value = emailCadastro.value, onValueChange = {emailCadastro.value = it},label="E-mail")
+                            Input(
+                                value = emailCadastro.value, onValueChange = {emailCadastro.value = it},
+                                label ="E-mail")
                         }
                         Column {
-                            Input(value = senhaCadastro.value, onValueChange = {senhaCadastro.value = it}, type = Type.PASSWORD, label="Senha")
+                            Input(value = senhaCadastro.value, onValueChange = {senhaCadastro.value = it}, type = Type.PASSWORD, label ="Senha")
                         }
                         Spacer(modifier = Modifier.height(40.dp))
                         Button(onClick = {}){
