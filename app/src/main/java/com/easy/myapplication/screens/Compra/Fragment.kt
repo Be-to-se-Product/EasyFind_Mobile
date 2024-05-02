@@ -1,6 +1,7 @@
 package com.easy.myapplication.screens.Compra
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,7 +11,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,9 +28,9 @@ import com.easy.myapplication.ui.theme.Primary
 @Composable
 fun ProgressBar(currentStep: Int, totalStep: Int) {
     val activeColor = Primary
-    val inactiveColor = Color.Transparent
-    val activeTextColor = Color.White
-    val inactiveTextColor = Color(0xFF014D5C)
+    val inactiveColor = Color.White
+    val activeTextColor = Color.Black
+    val inactiveTextColor = Color.Black
 
     Box(
         modifier = Modifier
@@ -56,18 +60,6 @@ fun ProgressBar(currentStep: Int, totalStep: Int) {
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
-
-                    Text(
-                        text = when (i) {
-                            1 -> "Onde pagar"
-                            2 -> "Metodo pagamento"
-                            3 -> "Confirmar pagamento"
-                            else -> ""
-                        },
-                        fontSize = 11.sp,
-                        color = if (i <= currentStep) Color.White else Color.Gray
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
                 }
 
             }
@@ -87,7 +79,7 @@ fun CircleNumber(
 ) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.size(40.dp)
+        modifier = Modifier.size(40.dp),
     ) {
         Canvas(modifier = Modifier.size(40.dp)) {
             if (isSelected) {
@@ -112,17 +104,29 @@ fun CircleNumber(
 }
 
 @Composable
-fun OptionButton(text:String, isSelected:Boolean){
-    Row {
+fun SelectableOptionButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
+    val colors = RadioButtonDefaults.colors(
+        selectedColor = Primary,
+        unselectedColor = Color.Black
+    )
+
+    Row(
+        modifier = Modifier
+            .background(Color.White, shape = RoundedCornerShape(42.dp))
+            .width(500.dp)
+            .height(50.dp)
+    ) {
         RadioButton(
-            selected = false,
-            onClick = { /*TODO*/ }
+            selected = isSelected,
+            onClick = onClick,
+            colors = colors
         )
         Text(
             text = text,
             modifier = Modifier
-                .padding(top = 12.dp)
+                .padding(top = 12.dp),
+            fontSize = 14.sp,
+            color = Color.Black
         )
     }
-
 }
