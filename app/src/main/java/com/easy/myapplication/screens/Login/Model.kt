@@ -74,4 +74,3 @@ class Model(private val context: Context):ViewModel(){
     }
 
 }
-

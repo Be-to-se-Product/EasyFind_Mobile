@@ -13,6 +13,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,9 +35,9 @@ enum class Type {
 }
 
 @Composable
-fun Input(value: String, onValueChange: (String) -> Unit, type: Type? = null, label: String = "",isValidate: Boolean=false , error: String = "") {
+fun Input(value: String, onValueChange: (String) -> Unit, type: Type? = null, label: String = "",isValidate: Boolean=false , error: String = "",modifier: Modifier? = Modifier) {
     val color = if (error.isBlank() && !isValidate) Color(android.graphics.Color.parseColor("#FCA622")) else androidx.compose.ui.graphics.Color.Red;
-    Column {
+    Column(modifier=modifier!!) {
         if (label.isNotBlank()) {
             Text(
                 text = label,
