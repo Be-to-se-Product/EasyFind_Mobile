@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.easy.myapplication.BuildConfig
 import com.easy.myapplication.R
 import com.easy.myapplication.dto.Produto
 import com.easy.myapplication.dto.RoutesMapper
@@ -126,8 +127,9 @@ fun MyContent(originCoordinates: LatandLong, destinationCoordinates: LatandLong?
         destinationString =
             "&latitudeDestination=${destinationCoordinates.latitude}&longitudeDestination=${destinationCoordinates.longitude}"
     }
+    val baseUrl = BuildConfig.HOST_WEB
     var mUrl =
-        "http://192.168.18.179/mapa/mobile?latitudeOrigin=${originCoordinates.latitude}&longitudeOrigin=${originCoordinates.longitude}"
+        "${baseUrl}/mapa/mobile?latitudeOrigin=${originCoordinates.latitude}&longitudeOrigin=${originCoordinates.longitude}"
 
     mUrl += destinationString;
 
