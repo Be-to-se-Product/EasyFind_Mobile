@@ -75,6 +75,7 @@ fun SelectBox(value: String, onValueChange: (String) -> Unit, label: String = ""
             generos.forEach {
                 DropdownMenuItem(text ={ Text(it) }, onClick = {
                     genero.value =it
+                    onValueChange(it)
                     expandido.value = false
                 })
             }

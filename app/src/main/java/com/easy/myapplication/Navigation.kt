@@ -6,11 +6,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.easy.myapplication.screens.Login.Login
 import com.easy.myapplication.screens.Mapa.Mapa
 import com.easy.myapplication.screens.Produto.Produto
 import com.easy.myapplication.screens.Produto.ProdutoViewModel
-
 
 @Composable
 fun AppNavHost(
@@ -25,7 +25,7 @@ fun AppNavHost(
     ){
         composable("Login")
         {
-            Login()
+            Login(rememberNavController())
         }
         composable("Mapa"){
             val mapa = MapaViewModel()

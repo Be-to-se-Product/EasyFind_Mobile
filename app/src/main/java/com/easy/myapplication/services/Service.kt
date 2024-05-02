@@ -1,7 +1,10 @@
 package com.easy.myapplication.services
+
 import com.easy.myapplication.BuildConfig
 import com.easy.myapplication.services.endpoints.IAvaliacao
+import com.easy.myapplication.services.endpoints.IConsumidor
 import com.easy.myapplication.services.endpoints.IMapBox
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import com.easy.myapplication.services.endpoints.IProduto
 import retrofit2.converter.gson.GsonConverterFactory
@@ -38,7 +41,29 @@ object Service {
             .create(IAvaliacao::class.java)
         return avalicao
     }
+    
+    fun getApiEasyFind(token: String? = null): IConsumidor {
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor { chain ->
+                val originalRequest = chain.request()
+                val newRequest = if (token != null) {
+                    originalRequest.newBuilder()
+                        .header("Authorization", "Bearer $token")
+                        .build()
+                } else {
+                    originalRequest
+                }
+                chain.proceed(newRequest)
+            }
+            .build()
+
+        val cliente = Retrofit.Builder()
+            .baseUrl("$BASEURL")
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(IConsumidor::class.java)
+        return cliente
+    }
 
 }
-
-
