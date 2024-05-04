@@ -1,9 +1,13 @@
+import java.util.Properties
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 }
 
 android {
+    buildFeatures{
+        buildConfig = true
+    }
     namespace = "com.easy.myapplication"
     compileSdk = 34
 
@@ -23,10 +27,31 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+            val p = Properties()
+            p.load(project.rootProject.file("local.properties").reader())
+            val API_KEY: String = p.getProperty("HOST_API")
+            buildConfigField("String", "HOST_API", "\"$API_KEY\"")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+        }
+        debug {
+            isMinifyEnabled = false
+            val p = Properties()
+            p.load(project.rootProject.file("local.properties").reader())
+            val HOST_API: String = p.getProperty("HOST_API")
+            val HOST_WEB: String = p.getProperty("HOST_WEB")
+            val TOKEN_MAPBOX:String = p.getProperty("TOKEN_MAPBOX")
+            buildConfigField("String", "HOST_API", "\"$HOST_API\"")
+            buildConfigField("String", "HOST_WEB", "\"$HOST_WEB\"")
+            buildConfigField("String", "TOKEN_MAPBOX", "\"$TOKEN_MAPBOX\"")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+
         }
     }
     compileOptions {
@@ -49,20 +74,33 @@ android {
     }
 }
 
-dependencies {
 
+
+
+
+dependencies {
+    implementation("com.google.android.gms:play-services-location:21.2.0")
+    implementation("com.google.accompanist:accompanist-permissions:0.35.0-alpha")
     implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.6")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
-    implementation("androidx.activity:activity-compose:1.8.2")
-    implementation(platform("androidx.compose:compose-bom:2023.08.00"))
+    implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation(platform("androidx.compose:compose-bom:2024.04.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation("androidx.datastore:datastore-preferences:1.1.0")
+    implementation("androidx.datastore:datastore-core:1.1.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2023.08.00"))
+    androidTestImplementation(platform("androidx.compose:compose-bom:2024.04.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
