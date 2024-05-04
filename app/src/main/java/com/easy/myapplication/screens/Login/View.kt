@@ -67,7 +67,10 @@ fun Login(navController: NavHostController, modifier: Modifier = Modifier) {
             )
         )
 
-        Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(PaddingValues(top = 25.dp))) {
+        Column(
+            modifier = Modifier.verticalScroll(rememberScrollState())
+                .padding(PaddingValues(top = 25.dp))
+        ) {
             Box(
                 contentAlignment = Alignment.Center, modifier = Modifier
                     .fillMaxWidth(1f)
@@ -142,14 +145,15 @@ fun Login(navController: NavHostController, modifier: Modifier = Modifier) {
                                         text = "LOGIN",
                                         fontSize = 12.sp,
                                         color = if (!switch.value) Color.White else Color.Black,
-                                        textAlign = TextAlign.Center)
+                                        textAlign = TextAlign.Center
+                                    )
                                 }
                             }
 
                             Column(
                                 modifier = Modifier
                                     .background(Seconday)
-                                .fillMaxWidth(1f),
+                                    .fillMaxWidth(1f),
                             ) {
                                 Button(
                                     modifier = Modifier
@@ -178,19 +182,24 @@ fun Login(navController: NavHostController, modifier: Modifier = Modifier) {
             }
             Spacer(modifier = Modifier.height(30.dp))
             Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth(1f)) {
-                NavHost(modifier = modifier,navController = navController, startDestination = "LOGIN" ){
-                    composable("LOGIN"){
+                NavHost(
+                    modifier = modifier,
+                    navController = navController,
+                    startDestination = "LOGIN"
+                ) {
+                    composable("LOGIN") {
                         login(model)
                     }
-                    composable("CADASTRO"){
+                    composable("CADASTRO") {
                         cadastro(model)
                     }
                 }
-                if(switch.value){
+                if (switch.value) {
                     navController.navigate("LOGIN")
-                }else{
+                } else {
                     navController.navigate("CADASTRO")
                 }
             }
         }
     }
+}

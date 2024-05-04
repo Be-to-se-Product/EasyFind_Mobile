@@ -3,13 +3,10 @@ package com.easy.myapplication.screens.Produto
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -45,10 +42,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.lifecycle.MutableLiveData
-import com.easy.myapplication.dto.Avaliacao
-import com.easy.myapplication.dto.AvaliacaoCadastrar
-import com.easy.myapplication.screens.Mapa.LatandLong
+import com.easy.myapplication.dto.ProdutoVendaDTO
 import com.easy.myapplication.shared.StarRatingBar.StarRatingBar
 import com.easy.myapplication.shared.Subtitle.Subtitle
 import com.easy.myapplication.shared.Title.Title
@@ -60,13 +54,12 @@ import com.easy.myapplication.utils.getLatLong
 @Composable
 fun Produto(view: ProdutoViewModel) {
 
-    var quantity = remember { mutableStateOf(1) }
-    val star = remember { mutableStateOf(0f) }
+    var quantity = remember { mutableStateOf(0) }
+    val isBuyButtonClicked = remember { mutableStateOf(false) }
     val setlatLong = view.latLong
     val latLong = view.latLong.observeAsState().value!!;
     val produto = view.produto.observeAsState().value!!;
     val context = LocalContext.current
-
     val locationCallback = object : LocationCallback {
         override fun onSuccess(latitude: Double, longitude: Double) {
             setlatLong.postValue(latLong.copy(latitude, longitude))
@@ -76,6 +69,7 @@ fun Produto(view: ProdutoViewModel) {
             print(message)
         }
     }
+
 
     LaunchedEffect(key1 = Unit) {
         getLatLong(context, locationCallback)
@@ -88,8 +82,6 @@ fun Produto(view: ProdutoViewModel) {
 
     Header{
         Row(
-
-
         ) {
             Column(modifier = Modifier
                 .fillMaxWidth()
@@ -107,7 +99,7 @@ fun Produto(view: ProdutoViewModel) {
                 }
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    RouteProduto()
+                    RouteProduto(view)
                 }
 
                 Column(modifier = Modifier.padding(16.dp),
@@ -117,7 +109,7 @@ fun Produto(view: ProdutoViewModel) {
                 }
 
                 ProdutoQuantityButton(
-                    quantity = quantity.value
+                   quantity = quantity.value
                     ,onIncrement = { quantity.value++ }
                     , onDecrement = {
                         if (quantity.value > 0){
@@ -126,18 +118,7 @@ fun Produto(view: ProdutoViewModel) {
                     }
                 )
 
-                Column(modifier = Modifier.padding(5.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally) {
-                    Button(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(0.dp),
-                        colors = ButtonDefaults.buttonColors(Color(0xFFFCA622)),
-                        onClick = { /*TODO*/ }
-                    ) {
-                        Text(text = "Comprar")
-                    }
-                }
+
 
                 Column(modifier = Modifier.padding(5.dp),
                     horizontalAlignment = Alignment.CenterHorizontally) {
@@ -171,8 +152,6 @@ fun Produto(view: ProdutoViewModel) {
                             Subtitle(content = produto.estabelecimento?.segmento)
                         }
                     }
-
-
 
                     ComentarioSection(view)
 
@@ -210,7 +189,9 @@ fun Produto(view: ProdutoViewModel) {
 
 // Função da distancia do mercado
 @Composable
-fun RouteProduto(){
+fun RouteProduto(view: ProdutoViewModel){
+    val produtoTempo = view.produto
+
     Row(horizontalArrangement = Arrangement.Center) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -218,7 +199,7 @@ fun RouteProduto(){
 
         )
         {
-            IconWithTime(icon = R.mipmap.a_pe, time = "30m")
+            IconWithTime(icon = R.mipmap.a_pe, time = produtoTempo.value?.estabelecimento?.tempoPessoa.toString())
         }
 
         Column(
@@ -226,7 +207,7 @@ fun RouteProduto(){
             horizontalAlignment = Alignment.CenterHorizontally
         )
         {
-            IconWithTime(icon = R.mipmap.carro, time = "30m")
+            IconWithTime(icon = R.mipmap.carro, time = produtoTempo.value?.estabelecimento?.tempoCarro.toString())
         }
 
         Column(
@@ -235,7 +216,7 @@ fun RouteProduto(){
 
         )
         {
-            IconWithTime(icon = R.mipmap.bike, time = "30m")
+            IconWithTime(icon = R.mipmap.bike, time = produtoTempo.value?.estabelecimento?.tempoBike.toString())
         }
     }
 }
@@ -250,7 +231,7 @@ fun IconWithTime(icon: Int, time: String){
             modifier = Modifier.size(15.dp)
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Text(text = time, color = Color(0xFFFCA622))
+        Text(time,color = Color(0xFFFCA622))
     }
 }
 
@@ -351,6 +332,29 @@ fun ProdutoQuantityButton(
                 ,contentDescription = "Adicionar quantidade"
                 , tint = Color(0xFFFCA622)
             )
+        }
+    }
+}
+
+@Composable
+fun ComprarButton(
+    quantidade: Int,
+    onClickComprar: (ProdutoVendaDTO) -> Unit,
+    view: ProdutoViewModel
+){
+    val produtoId = view.produto.value?.id
+    Column(modifier = Modifier.padding(5.dp),
+        horizontalAlignment = Alignment.CenterHorizontally) {
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(0.dp),
+            colors = ButtonDefaults.buttonColors(Color(0xFFFCA622)),
+            onClick = {
+            }
+        ) {
+            Text(text = "Comprar")
+
         }
     }
 }
