@@ -3,13 +3,10 @@ package com.easy.myapplication.screens.Produto
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -45,10 +42,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.lifecycle.MutableLiveData
-import com.easy.myapplication.dto.Avaliacao
-import com.easy.myapplication.dto.AvaliacaoCadastrar
-import com.easy.myapplication.screens.Mapa.LatandLong
 import com.easy.myapplication.shared.StarRatingBar.StarRatingBar
 import com.easy.myapplication.shared.Subtitle.Subtitle
 import com.easy.myapplication.shared.Title.Title
@@ -87,21 +80,21 @@ fun Produto(view: ProdutoViewModel) {
 
 
     Header{
-        Row(
-
-
-        ) {
+        Row{
             Column(modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())) {
                 Column(modifier = Modifier.padding(16.dp),
                     horizontalAlignment = Alignment.Start) {
                     produto.estabelecimento?.nome?.let {
-                        Title(content = it,
+                        Title(
+                            content = it,
                             fontSize = 20.sp,
-                            color = Primary)
+                            color = Primary,
+                            maxLines = 1
+                        )
                     }
-                    produto.nome?.let { Title(content = it, fontSize = 24.sp) }
+                    produto.nome?.let { Title(content = it, fontSize = 24.sp, maxLines = 1) }
                     Subtitle(content = produto.descricao,
                         fontSize = 15.sp)
                 }
@@ -112,7 +105,7 @@ fun Produto(view: ProdutoViewModel) {
 
                 Column(modifier = Modifier.padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally) {
-                    Title(content = produto.precoAtual.toString())
+                    Title(content = produto.precoAtual.toString(), maxLines = 1)
 
                 }
 
@@ -167,7 +160,7 @@ fun Produto(view: ProdutoViewModel) {
                             modifier = Modifier.padding(start = 16.dp),
                             verticalArrangement = Arrangement.Center
                         ) {
-                            produto.estabelecimento?.nome?.let { Title(content = it) }
+                            produto.estabelecimento?.nome?.let { Title(content = it, maxLines = 1) }
                             Subtitle(content = produto.estabelecimento?.segmento)
                         }
                     }
@@ -194,7 +187,7 @@ fun Produto(view: ProdutoViewModel) {
                         itemContent = {
                             Column(modifier = Modifier.padding(16.dp),
                                 horizontalAlignment = Alignment.Start) {
-                                it.usuario?.let { it1 -> Title(content = it1) }
+                                it.usuario?.let { it1 -> Title(content = it1, maxLines = 1) }
                                 it.qtdEstrela?.toFloat()?.let { it1 -> StarRatingBar(rating = it1) }
                                 Column {
                                     Subtitle(content = it.descricao)
@@ -266,7 +259,7 @@ fun ComentarioSection(view: ProdutoViewModel) {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Title(content = "Comentário")
+            Title(content = "Comentário", maxLines = 1)
         }
 
         Row(

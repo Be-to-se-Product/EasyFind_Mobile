@@ -7,6 +7,7 @@ import com.easy.myapplication.services.endpoints.IMapBox
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import com.easy.myapplication.services.endpoints.IProduto
+import com.google.gson.GsonBuilder
 import retrofit2.converter.gson.GsonConverterFactory
 
 
@@ -14,11 +15,11 @@ import retrofit2.converter.gson.GsonConverterFactory
 object Service {
 
     private const val BASEURL = BuildConfig.HOST_API
-
+    val gson =GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create()
     fun ProdutoService(): IProduto {
         val cliente = Retrofit.Builder()
             .baseUrl("$BASEURL/produtos/")
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
             .create(IProduto::class.java)
         return cliente;
@@ -27,7 +28,7 @@ object Service {
     fun MapBoxService(): IMapBox {
         val cliente = Retrofit.Builder()
             .baseUrl("https://api.mapbox.com/directions/v5/mapbox/")
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
             .create(IMapBox::class.java)
         return cliente;
@@ -36,7 +37,7 @@ object Service {
     fun AvalicaoService(): IAvaliacao{
         val avalicao = Retrofit.Builder()
             .baseUrl("$BASEURL/")
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
             .create(IAvaliacao::class.java)
         return avalicao

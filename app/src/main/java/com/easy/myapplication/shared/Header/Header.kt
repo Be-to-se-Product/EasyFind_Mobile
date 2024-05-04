@@ -18,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.easy.myapplication.R
@@ -66,7 +65,7 @@ fun Header(content:@Composable ()-> Unit) {
                             )
                         }
                     }
-                    Title(content = "EasyFind", color = Primary)
+                    Title(content = "EasyFind", color = Primary, maxLines = 1)
                 }
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                     content()

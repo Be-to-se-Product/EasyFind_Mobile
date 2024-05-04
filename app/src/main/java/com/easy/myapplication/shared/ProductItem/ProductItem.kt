@@ -1,7 +1,12 @@
 package com.easy.myapplication.shared.ProductItem
 
 import DestinationTarget
+import LatandLong
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,21 +17,27 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.easy.myapplication.R
 import com.easy.myapplication.dto.Estabelecimento
 import com.easy.myapplication.screens.Mapa.GetRouteCallback
-import com.easy.myapplication.screens.Mapa.LatandLong
 import com.easy.myapplication.shared.StarRatingBar.StarRatingBar
 import com.easy.myapplication.shared.Subtitle.Subtitle
 import com.easy.myapplication.shared.Title.Title
 import com.easy.myapplication.ui.theme.Primary
+import com.easy.myapplication.utils.formatTime
+import java.nio.file.WatchEvent
+import kotlin.time.ExperimentalTime
 
 
 data class Time(
@@ -47,6 +58,8 @@ data class DataProductItem(
     val estabelecimento:Estabelecimento?
 )
 
+@OptIn(ExperimentalTime::class)
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ProductItem(data: DataProductItem, getRouteCallback: GetRouteCallback) {
     Row(
@@ -77,8 +90,11 @@ fun ProductItem(data: DataProductItem, getRouteCallback: GetRouteCallback) {
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Title(content = data.name)
-                StarRatingBar(rating = 3F, size = 5F)
+                Surface(modifier = Modifier.fillMaxWidth(0.7f)) {
+                    Title(content = data.name, overflow = TextOverflow.Ellipsis,maxLines=1)
+                }
+
+                StarRatingBar(rating = data.qtdStars.toFloat(), size = 5F)
             }
             Row {
                 Subtitle(content = data.shop, color = Primary)
@@ -88,74 +104,79 @@ fun ProductItem(data: DataProductItem, getRouteCallback: GetRouteCallback) {
             }
 
 
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.fillMaxWidth(0.8f)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(20.dp)){
 
-                Column {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
+
                         Column {
-                            Image(
-                                painter = painterResource(id = R.mipmap.cart),
-                                contentDescription = "Icone",
-                                modifier = Modifier.width(10.dp)
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                            ) {
+                                Column {
+                                    Image(
+                                        painter = painterResource(id = R.mipmap.bike),
+                                        contentDescription = "Icone",
+                                        modifier = Modifier.width(15.dp)
+                                    )
+                                }
+                                Column {
+                                    Subtitle(content = (data.time?.bike?.let { formatTime(it) }))
+                                }
+                            }
                         }
                         Column {
-                            Subtitle(content = (data.time?.bike ?: "").toString(), color = Primary)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                            ) {
+                                Column {
+                                    Image(
+                                        painter = painterResource(id = R.mipmap.car),
+                                        contentDescription = "Icone",
+                                        modifier = Modifier.width(10.dp)
+                                    )
+                                }
+                                Column {
+                                    Subtitle(
+                                        content = data.time?.car?.let { formatTime(it) },
+                                    )
+                                }
+                            }
+                        }
+                        Column {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                            ) {
+                                Column {
+                                    Image(
+                                        painter = painterResource(id = R.mipmap.people),
+                                        contentDescription = "Icone",
+                                        modifier = Modifier.width(10.dp)
+                                    )
+                                }
+                                Column {
+                                    Subtitle(
+                                        content = data.time?.people?.let { formatTime(it) }
+                                    )
+                                }
+                            }
                         }
                     }
                 }
-                Column {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Column {
-                            Image(
-                                painter = painterResource(id = R.mipmap.cart),
-                                contentDescription = "Icone",
-                                modifier = Modifier.width(10.dp)
-                            )
-                        }
-                        Column {
-                            Subtitle(
-                                content = (if (data.time?.car != null) data.time.car else "").toString(),
-                                color = Primary
-                            )
-                        }
-                    }
-                }
-                Column {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Column {
-                            Image(
-                                painter = painterResource(id = R.mipmap.cart),
-                                contentDescription = "Icone",
-                                modifier = Modifier.width(10.dp)
-                            )
-                        }
-                        Column {
-                            Subtitle(
-                                content = (if (data.time?.people != null) data.time.people else "").toString(),
-                                color = Primary
-                            )
-                        }
-                    }
-                }
-                Column {
-                    Button(onClick = {
+                Column( horizontalAlignment = Alignment.End) {
+
+                    IconButton(modifier = Modifier.background(Primary).border(1.dp,
+                        Color.Transparent, RoundedCornerShape(100)).width(20.dp).height(20.dp).padding(5.dp) ,onClick = {
                         if (data.latitude != null && data.longitude != null) {
                             getRouteCallback.getRoute(destination = DestinationTarget(coordinates = LatandLong(data.latitude,data.longitude),estabelecimento = data.estabelecimento))
                         }
-                    }) {
-
-
+                    }){
+                        Image( painter = painterResource(id = R.mipmap.tracker), contentDescription ="Descrição", modifier = Modifier.width(30.dp).height(30.dp) )
                     }
+
                 }
             }
         }

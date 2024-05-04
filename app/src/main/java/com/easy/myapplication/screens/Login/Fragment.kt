@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -16,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.easy.myapplication.dto.ConsumidorCriacaoDTO
 import com.easy.myapplication.dto.UsuarioCriacaoDTO
-import com.easy.myapplication.shared.Button.Button
 import com.easy.myapplication.shared.Input.Input
 import com.easy.myapplication.shared.Input.Type
 import com.easy.myapplication.shared.SelectBox.SelectBox
@@ -36,7 +36,7 @@ fun login(model: Model){
         Input(value = usuario.senha?:"", onValueChange = {usuarioSetter(usuario.copy(senha = it))}, type = Type.PASSWORD, label = "Senha")
         Spacer(modifier = Modifier.height(40.dp))
         Button(onClick = {model.loginUsuario(usuario)}){
-            Title(content = "Entrar", fontSize = 14.sp)
+            Title(content = "Entrar", fontSize = 14.sp, maxLines = 1)
         }
     }
 }
@@ -103,7 +103,7 @@ fun cadastro(model: Model){
         }
         Spacer(modifier = Modifier.height(40.dp))
         Button(onClick = {model.cadastrarUsuario(consumidor)}){
-            Title(content = "Cadastrar", fontSize = 14.sp)
+            Title(content = "Cadastrar", fontSize = 14.sp, maxLines = 1)
         }
     }
 }

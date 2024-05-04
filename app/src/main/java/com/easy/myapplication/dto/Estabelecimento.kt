@@ -1,6 +1,6 @@
 package com.easy.myapplication.dto
 
-import java.time.LocalDate
+import java.sql.Time
 
 
 
