@@ -30,7 +30,7 @@ fun ProgressBar(currentStep: Int, totalStep: Int) {
     val activeColor = Primary
     val inactiveColor = Color.White
     val activeTextColor = Color.Black
-    val inactiveTextColor = Color.Black
+    val inactiveTextColor = Color.White
 
     Box(
         modifier = Modifier
@@ -56,7 +56,7 @@ fun ProgressBar(currentStep: Int, totalStep: Int) {
                         activeColor = activeColor,
                         inactiveColor = inactiveColor,
                         activeTextColor = activeTextColor,
-                        inactiveTextColor = inactiveTextColor
+                        inactiveTextColor = inactiveTextColor,
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))

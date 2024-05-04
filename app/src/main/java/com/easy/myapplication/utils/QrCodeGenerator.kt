@@ -13,11 +13,11 @@ fun generateQRCode(content: String): Bitmap {
     val hints = mapOf(
         EncodeHintType.ERROR_CORRECTION to ErrorCorrectionLevel.L
     )
-    val bitMatrix = qrCodeWriter.encode(content, BarcodeFormat.QR_CODE, 400, 400, hints)
+    val bitMatrix = qrCodeWriter.encode(content, BarcodeFormat.QR_CODE, 300, 300, hints)
 
-    val bitmap = Bitmap.createBitmap(512, 512, Bitmap.Config.RGB_565)
-    for (x in 0 until 512) {
-        for (y in 0 until 512) {
+    val bitmap = Bitmap.createBitmap(300, 300, Bitmap.Config.RGB_565)
+    for (x in 0 until 300) {
+        for (y in 0 until 300) {
             bitmap.setPixel(x, y, if (bitMatrix[x, y]) Color.Black.toArgb() else Color.White.toArgb())
         }
     }
