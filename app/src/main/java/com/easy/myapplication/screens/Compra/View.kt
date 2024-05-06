@@ -1,6 +1,11 @@
 package com.easy.myapplication.screens.Compra
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,7 +18,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Button
@@ -23,16 +30,22 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.easy.myapplication.screens.Compra.Integration.ItemVenda
+import com.easy.myapplication.screens.Compra.Integration.MetodoPagamento
+import com.easy.myapplication.screens.Compra.Integration.PedidoCadastro
 import com.easy.myapplication.shared.Header.Header
 import com.easy.myapplication.ui.theme.Primary
 import com.easy.myapplication.utils.generateQRCode
@@ -53,7 +66,9 @@ fun Buy() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Column(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -101,18 +116,14 @@ fun Buy() {
                         },
                         colors = ButtonDefaults.buttonColors(Primary)
                     ) {
-                        var text = "Continuar"
-                        if (currentStep.value == totalSteps) {
-                            text = "Finalizar"
-                        }
-                        Text(text)
+                        Text(if (currentStep.value == totalSteps) "Finalizar" else "Continuar")
                     }
                 }
             }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(1.dp, Color(0xFFFCFCFC), RoundedCornerShape(10.dp))
+                    .border(1.dp, Color(0xFFFCFCFC), RoundedCornerShape(4.dp))
                     .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -177,41 +188,84 @@ fun StepTwo(
 @Composable
 fun StepThree() {
     val qrCodeBitmap = generateQRCode("https://www.google.com")
+    var codigoPix by remember { mutableStateOf(gerarCodigoPix()) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(vertical = 16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        Text("Escaneie este código para pagar", fontSize = 14.sp)
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text("1. Acesse seu Internet Banking ou app de pagamentos.", fontSize = 14.sp)
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text("2. Escolha pagar via Pix.", fontSize = 14.sp)
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text("3. Escaneie o seguinte código QR.", fontSize = 14.sp)
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Image(bitmap = qrCodeBitmap.asImageBitmap(), contentDescription = "QR Code")
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            "Ou copie este código QR para fazer o pagamento pelo app de pagamentos.:",
-            fontSize = 14.sp
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Button(
-            onClick = {},
-            colors = ButtonDefaults.buttonColors(Primary)
+    Column {
+        Column (
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = 16.dp)
         ) {
-            Text("Copiar", fontSize = 14.sp)
+            Text("Escaneie este código para pagar", fontSize = 16.sp)
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text("1. Acesse seu Internet Banking ou app de pagamentos.", fontSize = 13.sp)
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text("2. Escolha pagar via Pix.", fontSize = 13.sp)
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text("3. Escaneie o seguinte código QR.", fontSize = 13.sp)
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
+        Column(
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+
+        ) {
+            Image(bitmap = qrCodeBitmap.asImageBitmap(), contentDescription = "QR Code")
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // CAMPO CÓDIGO PIX
+        val context = LocalContext.current
+        Column {
+            Text(
+                "Ou copie e cole este código QR para fazer o pagamento via app de pagamentos ou Internet Banking:",
+                fontSize = 14.sp
+            )
+
+            // Campo cinza com o número gerado
+            Row {
+                Text(
+                    text = codigoPix,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .background(color = Color(0xFFC1C1C1), shape = RoundedCornerShape(4.dp))
+                )
+
+                Spacer(modifier = Modifier.height(15.dp))
+
+                // Botão para copiar o número do Pix
+                Button(
+                    onClick = {
+                        copyToClipboard(context, codigoPix)
+                        Toast.makeText(
+                            context,
+                            "Código Pix copiado!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }, modifier = Modifier
+                        .padding(8.dp)
+                        .height(40.dp)
+                        .background(color = Color(0xFFC1C1C1),
+                            shape = RoundedCornerShape(4.dp))
+                ) {
+                    Text(
+                        text = "Copiar",
+                    )
+                }
+            }
+
+            Column {
+                Text(
+                    text = "Feito isso, basta acompanhar o status do seu pedido clicando no botão abaixo:",
+                    fontSize = 13.sp
+                )
+            }
         }
     }
 }
@@ -262,4 +316,14 @@ fun FinalStep() {
             }
         }
     }
+}
+
+fun gerarCodigoPix(): String {
+    return (10000000..99999999).random().toString()
+}
+
+fun copyToClipboard(context: Context, text: String) {
+    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    val clip = ClipData.newPlainText("Código Pix", text)
+    clipboard.setPrimaryClip(clip)
 }
