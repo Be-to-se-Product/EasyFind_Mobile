@@ -7,7 +7,7 @@ import com.easy.myapplication.services.endpoints.IProduto
 import retrofit2.converter.gson.GsonConverterFactory
 
 object Service {
-    const val BASE_URL = "http://162.198.16.34:8080/api/";
+    const val BASE_URL = "http://192.168.23.57:8080/api/";
     fun ProdutoService(): IProduto {
         val cliente = Retrofit.Builder()
             .baseUrl(BASE_URL)
