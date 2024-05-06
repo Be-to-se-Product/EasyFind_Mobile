@@ -62,11 +62,12 @@ class DateMaskTransformation : VisualTransformation {
             override fun transformedToOriginal(offset: Int): Int {
                 return when (offset) {
                     in 0..2 -> offset
-                    in 4..5 -> offset - 1
-                    in 7..10 -> offset - 2
+                    in 3..4 -> offset - 1
+                    in 5..9 -> offset - 2
                     else -> offset
                 }
             }
+
         }
         return TransformedText(outputText, offsetMapping = offsetTranslator)
     }
