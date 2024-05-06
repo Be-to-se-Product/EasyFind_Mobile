@@ -158,11 +158,11 @@ fun Mapa(viewModel: MapaViewModel) {
             }
 
 
-//            Mapa(
-//                originCoordinates = latLong,
-//                destinationCoordinates = destination.coordinates,
-//                filter = viewModel.filterMapa.value!!
-//            )
+            Mapa(
+                originCoordinates = latLong,
+                destinationCoordinates = destination.coordinates,
+                filter = viewModel.filterMapa.value!!
+            )
             ModalBottomSheet(
                 setShowBar = {
                     openFilter.value = it
@@ -203,9 +203,9 @@ fun Mapa(viewModel: MapaViewModel) {
                             ) {
                                 Text(text = item.nome)
                                 RadioButton(
-                                    selected = filter.metodoPagamento == item.key,
+                                    selected = filter.metodoPagamento == item.nome,
                                     onClick = {
-                                        setFilter(filter!!.copy(metodoPagamento = item.key))
+                                        setFilter(filter!!.copy(metodoPagamento = item.nome))
                                     })
 
                             }
@@ -238,9 +238,9 @@ fun Mapa(viewModel: MapaViewModel) {
 fun Mapa(originCoordinates: LatandLong, destinationCoordinates: LatandLong?, filter: FilterDTO) {
     val baseUrl = BuildConfig.HOST_WEB
     var destinationString = ""
-    val filters = "${if (filter.distancia != null) "&ditancia=" + filter.distancia else ""}"
-    "${if (filter.metodoPagamento != null) "&metodoPagamento=" + filter.metodoPagamento else ""}"
-    "&${if (filter.nome != null) "&nome=" + filter.nome else ""}"
+//    val filters = "${if (filter.distancia != null) "&ditancia=" + filter.distancia else ""}"
+//    "${if (filter.metodoPagamento != null) "&metodoPagamento=" + filter.metodoPagamento else ""}"
+//    "&${if (filter.nome != null) "&nome=" + filter.nome else ""}"
     if (destinationCoordinates != null) {
         destinationString =
             "&latitudeDestination=${destinationCoordinates.latitude}&longitudeDestination=${destinationCoordinates.longitude}"
@@ -248,8 +248,8 @@ fun Mapa(originCoordinates: LatandLong, destinationCoordinates: LatandLong?, fil
     var mUrl =
         "${baseUrl}/mapa/mobile?latitudeOrigin=${originCoordinates.latitude}&longitudeOrigin=${originCoordinates.longitude}"
 
-    mUrl += destinationString;
-    mUrl += filters
+//    mUrl += destinationString;
+//    mUrl += filters
 
     Column(modifier = Modifier.height(9000.dp)) {
         AndroidView(factory = {
@@ -258,8 +258,8 @@ fun Mapa(originCoordinates: LatandLong, destinationCoordinates: LatandLong?, fil
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
-                settings.javaScriptEnabled = true
                 webViewClient = WebViewClient()
+                settings.javaScriptEnabled = true
                 loadUrl(mUrl)
             }
         }, update = {

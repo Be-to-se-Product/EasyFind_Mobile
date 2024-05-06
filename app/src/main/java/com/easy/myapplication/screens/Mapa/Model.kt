@@ -48,7 +48,7 @@ class MapaViewModel : ViewModel() {
 
     fun applyFilters(){
         filterMapa.postValue(filterDTO.value)
-        getProdutos( distancia = filterDTO?.value?.distancia, metodoPagamento = filterDTO.value?.metodoPagamento?.name,
+        getProdutos( distancia = filterDTO?.value?.distancia, metodoPagamento = filterDTO.value?.metodoPagamento,
             nome = filterDTO.value?.nome)
     }
 
