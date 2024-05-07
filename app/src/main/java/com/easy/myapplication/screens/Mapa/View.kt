@@ -114,7 +114,7 @@ fun Mapa(viewModel: MapaViewModel,navController: NavController) {
                     )
                 }
             }
-Text(text =             navController.previousBackStackEntry?.savedStateHandle?.get<ProdutoPedido>("PRODUTO")?.preco.toString())
+            Text(text = navController.previousBackStackEntry?.savedStateHandle?.get<ProdutoPedido>("PRODUTO")?.preco.toString())
 //            MyContent(originCoordinates = latLong, destinationCoordinates = destination.coordinates)
 
 
