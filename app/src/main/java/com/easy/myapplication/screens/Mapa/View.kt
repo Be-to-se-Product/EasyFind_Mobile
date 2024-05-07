@@ -3,12 +3,11 @@ package com.easy.myapplication.screens.Mapa
 import DestinationTarget
 import MapaViewModel
 import android.annotation.SuppressLint
-
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.Image
-
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,9 +15,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
@@ -30,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.easy.myapplication.BuildConfig
 import com.easy.myapplication.R
 import com.easy.myapplication.dto.Produto
 import com.easy.myapplication.dto.RoutesMapper
@@ -124,8 +127,9 @@ fun MyContent(originCoordinates: LatandLong, destinationCoordinates: LatandLong?
         destinationString =
             "&latitudeDestination=${destinationCoordinates.latitude}&longitudeDestination=${destinationCoordinates.longitude}"
     }
+    val baseUrl = BuildConfig.HOST_WEB
     var mUrl =
-        "http://192.168.18.179/mapa/mobile?latitudeOrigin=${originCoordinates.latitude}&longitudeOrigin=${originCoordinates.longitude}"
+        "${baseUrl}/mapa/mobile?latitudeOrigin=${originCoordinates.latitude}&longitudeOrigin=${originCoordinates.longitude}"
 
     mUrl += destinationString;
 
@@ -194,8 +198,8 @@ fun Back() {
             modifier = Modifier.size(40.dp)
         )
     }
-
 }
+
 
 @Composable
 fun BarDirections(rotas: List<RoutesMapper>,destinationTarget: DestinationTarget) {
@@ -242,8 +246,6 @@ fun BarDirections(rotas: List<RoutesMapper>,destinationTarget: DestinationTarget
                 }
             })
         }
-
-
     }
 
 }
@@ -268,7 +270,6 @@ fun BarProducts(produtos: List<Produto>, getRouteCallback: GetRouteCallback) {
                         latitude = it.estabelecimento?.endereco?.latitude,
                         longitude = it.estabelecimento?.endereco?.longitude,
                         estabelecimento = it.estabelecimento
-
                     )
                 )
             })

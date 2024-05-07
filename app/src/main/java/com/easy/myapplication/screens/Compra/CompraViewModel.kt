@@ -25,7 +25,7 @@ class CompraViewModel() : ViewModel() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = compraService.getMetodosPagamento(id);
-                Log.e("Executou", "salve pessoal${response.isSuccessful}")
+                Log.e("Executou", "salve pessoal ${response.isSuccessful}")
                 if (response.isSuccessful) {
                     print("Chegou pessoal daora")
                     metodosPagamento.value!!.clear()

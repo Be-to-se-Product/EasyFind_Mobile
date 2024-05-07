@@ -13,6 +13,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,15 +28,16 @@ import androidx.compose.ui.unit.sp
 import com.easy.myapplication.utils.CpfMaskTransformation
 import com.easy.myapplication.utils.DateMaskTransformation
 import com.easy.myapplication.utils.PhoneMaskTransformation
+import java.text.SimpleDateFormat
 
 enum class Type {
     EMAIL, PASSWORD, CPF, DATE, PHONE
 }
 
 @Composable
-fun Input(value: String, onValueChange: (String) -> Unit, type: Type? = null, label: String = "",isValidate: Boolean=false , error: String = "",modifier: Modifier? = Modifier) {
+fun Input(value: String, onValueChange: (String) -> Unit, type: Type? = null, label: String = "", isValidate: Boolean = false, error: String = "", modifier: Modifier? = Modifier) {
     val color = if (error.isBlank() && !isValidate) Color(android.graphics.Color.parseColor("#FCA622")) else androidx.compose.ui.graphics.Color.Red;
-    Column(modifier=modifier!!) {
+    Column(modifier = modifier!!) {
         if (label.isNotBlank()) {
             Text(
                 text = label,
@@ -50,7 +52,7 @@ fun Input(value: String, onValueChange: (String) -> Unit, type: Type? = null, la
             value = value,
             keyboardOptions = KeyboardOptions(
                 keyboardType = when (type) {
-                    Type.EMAIL -> KeyboardType.Email
+                    Type.EMAIL -> KeyboardType.Text // Alterado de KeyboardType.Email para permitir caracteres especiais
                     Type.PASSWORD -> KeyboardType.Password
                     Type.CPF -> KeyboardType.Number
                     Type.DATE -> KeyboardType.Number
@@ -70,13 +72,7 @@ fun Input(value: String, onValueChange: (String) -> Unit, type: Type? = null, la
             } else {
                 VisualTransformation.None
             },
-            onValueChange = {
-                if (type == Type.CPF && it.length > 11 || type == Type.DATE && it.length > 8) {
-
-                } else {
-                    onValueChange(it)
-                }
-            },
+            onValueChange = { onValueChange(it) }, // Removido a lógica de remoção de espaços em branco
             textStyle = TextStyle(color = androidx.compose.ui.graphics.Color.White, fontSize = 14.sp),
             decorationBox = { innerTextField ->
                 Row(
@@ -85,7 +81,6 @@ fun Input(value: String, onValueChange: (String) -> Unit, type: Type? = null, la
                         .border(1.dp, color, RoundedCornerShape(20))
                         .padding(10.dp), verticalAlignment = Alignment.CenterVertically
                 ) {
-
                     innerTextField()
                 }
             }

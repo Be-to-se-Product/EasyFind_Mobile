@@ -12,7 +12,7 @@ data class Produto (
     val precoAntigo: Double? = null,
     val imagens: List<String>? = null,
     @SerializedName("avaliacao")
-    val avaliacao: List<Avaliacao>? = null,
+    val avaliacao: List<Avaliacao> = listOf(Avaliacao()),
     val mediaAvaliacao: Double? = null,
     val estabelecimento: Estabelecimento? = null
 )
