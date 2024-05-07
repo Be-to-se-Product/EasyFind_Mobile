@@ -1,6 +1,8 @@
 package com.easy.myapplication.screens.Produto
 
 
+import android.content.Intent
+import android.os.Bundle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -42,7 +44,9 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.navigation.NavController
 import com.easy.myapplication.dto.ProdutoVendaDTO
+import com.easy.myapplication.screens.Mapa.Mapa
 import com.easy.myapplication.shared.StarRatingBar.StarRatingBar
 import com.easy.myapplication.shared.Subtitle.Subtitle
 import com.easy.myapplication.shared.Title.Title
@@ -52,11 +56,14 @@ import com.easy.myapplication.utils.getLatLong
 
 
 @Composable
-fun Produto(view: ProdutoViewModel) {
+fun Produto(view: ProdutoViewModel,navController: NavController) {
 
-    var quantity = remember { mutableStateOf(0) }
     val isBuyButtonClicked = remember { mutableStateOf(false) }
     val setlatLong = view.latLong
+    val produtoVenda = view.produtoVenda.observeAsState().value!!
+    val setProduto = { it:ProdutoPedido->
+        view.produtoVenda.postValue(it)
+    }
     val latLong = view.latLong.observeAsState().value!!;
     val produto = view.produto.observeAsState().value!!;
     val context = LocalContext.current
@@ -108,15 +115,35 @@ fun Produto(view: ProdutoViewModel) {
 
                 }
 
-                ProdutoQuantityButton(
-                   quantity = quantity.value
-                    ,onIncrement = { quantity.value++ }
-                    , onDecrement = {
-                        if (quantity.value > 0){
-                            quantity.value--
+                produtoVenda.quantidade?.let {
+                    ProdutoQuantityButton(
+                        quantity = it,onIncrement = { setProduto(produtoVenda.copy(quantidade = produtoVenda.quantidade?.plus(
+                            1
+                        ))) }, onDecrement = {
+                            if (produtoVenda.quantidade > 0){
+
+                                setProduto(produtoVenda.copy(quantidade = produtoVenda.quantidade-1))
+
+                            }
                         }
+                    )
+                }
+
+                Column(modifier = Modifier.padding(5.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally) {
+                    Button(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(0.dp),
+                        colors = ButtonDefaults.buttonColors(Color(0xFFFCA622)),
+                        onClick = {
+                            navController.navigate("mapa/ ")
+                        }
+                    ) {
+                        Text(text = "Comprar")
+
                     }
-                )
+                }
 
 
 
@@ -127,7 +154,12 @@ fun Produto(view: ProdutoViewModel) {
                             .fillMaxWidth()
                             .padding(0.dp),
                         colors = ButtonDefaults.buttonColors(Color(0xFFFCA622)),
-                        onClick = { /*TODO*/ }) {
+                        onClick = {
+
+                            navController.currentBackStackEntry?.savedStateHandle?.set("PRODUTO", produtoVenda)
+                            navController.navigate("Mapa")
+
+                        }) {
                         Text(text = "Adicionar no carrinho")
                     }
                 }
@@ -335,27 +367,3 @@ fun ProdutoQuantityButton(
         }
     }
 }
-
-@Composable
-fun ComprarButton(
-    quantidade: Int,
-    onClickComprar: (ProdutoVendaDTO) -> Unit,
-    view: ProdutoViewModel
-){
-    val produtoId = view.produto.value?.id
-    Column(modifier = Modifier.padding(5.dp),
-        horizontalAlignment = Alignment.CenterHorizontally) {
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(0.dp),
-            colors = ButtonDefaults.buttonColors(Color(0xFFFCA622)),
-            onClick = {
-            }
-        ) {
-            Text(text = "Comprar")
-
-        }
-    }
-}
-
