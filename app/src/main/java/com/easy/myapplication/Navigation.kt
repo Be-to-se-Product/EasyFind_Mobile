@@ -29,11 +29,11 @@ fun AppNavHost(
         }
         composable("Mapa"){
             val mapa = MapaViewModel()
-            Mapa(mapa)
+            Mapa(mapa,navController)
         }
         composable("Produto"){
             val view = ProdutoViewModel()
-            Produto(view)
+            Produto(view,navController)
         }
     }
 }
