@@ -13,11 +13,21 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+
+data class ProdutoPedido(
+    val id:Long?=null,
+    val quantidade:Int?=null,
+    val idEstabelecimento:Long?=null,
+    val preco: Double?=null
+):java.io.Serializable
+
+
 class ProdutoViewModel : ViewModel() {
     val produto = MutableLiveData(Produto())
     val erroApi = MutableLiveData("")
     val avaliacao = MutableLiveData(AvaliacaoCadastrar())
     val latLong = MutableLiveData(LatandLong())
+    val produtoVenda = MutableLiveData(ProdutoPedido());
 
 
     private val produtoService = Service.ProdutoService()
@@ -28,8 +38,10 @@ class ProdutoViewModel : ViewModel() {
             try {
                 val response = produtoService.getProdutoId(id,latitude,longitude)
                 if(response.isSuccessful){
+
                     val produts = response.body()
                     produto.postValue(produts)
+                    produtoVenda.postValue(produtoVenda.value?.copy(produts?.id!!,1,produts.estabelecimento?.id!!,produts.precoAtual!!))
                 } else{
                     erroApi.postValue(response.errorBody()?.string() ?: "")
                 }

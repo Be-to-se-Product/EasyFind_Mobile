@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
@@ -32,10 +33,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.navigation.NavController
 import com.easy.myapplication.BuildConfig
 import com.easy.myapplication.R
 import com.easy.myapplication.dto.Produto
 import com.easy.myapplication.dto.RoutesMapper
+import com.easy.myapplication.screens.Produto.ProdutoPedido
 import com.easy.myapplication.shared.BarButton.BarButton
 import com.easy.myapplication.shared.Header.Header
 import com.easy.myapplication.shared.Input.Input
@@ -51,7 +54,7 @@ import com.easy.myapplication.utils.mediaAvaliacao
 
 
 @Composable
-fun Mapa(viewModel: MapaViewModel) {
+fun Mapa(viewModel: MapaViewModel,navController: NavController) {
 
     val searchProduct = remember { mutableStateOf("") }
     val produtos = viewModel.produtos.observeAsState().value!!;
@@ -96,6 +99,7 @@ fun Mapa(viewModel: MapaViewModel) {
         }
 
     }) {
+
         Header {
             Row(
                 horizontalArrangement = Arrangement.Center, modifier = Modifier
@@ -110,8 +114,8 @@ fun Mapa(viewModel: MapaViewModel) {
                     )
                 }
             }
-
-            MyContent(originCoordinates = latLong, destinationCoordinates = destination.coordinates)
+Text(text =             navController.previousBackStackEntry?.savedStateHandle?.get<ProdutoPedido>("PRODUTO")?.preco.toString())
+//            MyContent(originCoordinates = latLong, destinationCoordinates = destination.coordinates)
 
 
         }
