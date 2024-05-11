@@ -4,14 +4,19 @@ import DestinationTarget
 import LatandLong
 import MapaViewModel
 import android.os.Build
+import android.util.Log
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,23 +25,31 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.paint
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.zIndex
 import com.easy.myapplication.BuildConfig
 import com.easy.myapplication.R
 import com.easy.myapplication.dto.FilterDTO
@@ -56,6 +69,7 @@ import com.easy.myapplication.ui.theme.Primary
 import com.easy.myapplication.utils.LocationCallback
 import com.easy.myapplication.utils.getLatLong
 import com.easy.myapplication.utils.mediaAvaliacao
+import kotlinx.coroutines.launch
 
 
 data class MetodoPagamentoDefault(
@@ -64,22 +78,20 @@ data class MetodoPagamentoDefault(
 )
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Mapa(viewModel: MapaViewModel) {
-    val filter = viewModel.filterDTO.observeAsState().value!!;
-    val setFilter = { it: FilterDTO -> viewModel.filterDTO.postValue(it) };
-    val openFilter = remember { mutableStateOf(false) }
+
     val produtos = viewModel.produtos.observeAsState().value!!;
+    val filter = viewModel.filterMapa.observeAsState().value!!;
     val destination = viewModel.destination.observeAsState().value!!
     val routes = viewModel.routes.observeAsState().value!!;
-
     val context = LocalContext.current
     val latLong = viewModel.latLong.observeAsState().value!!;
     val setLatLong = { item: LatandLong ->
         viewModel.latLong.postValue(item)
     }
-
 
     val locationCallback = object : LocationCallback {
         override fun onSuccess(latitude: Double, longitude: Double) {
@@ -92,16 +104,6 @@ fun Mapa(viewModel: MapaViewModel) {
     }
 
 
-    val metodos = remember {
-        mutableStateListOf(
-            MetodoPagamentoDefault("Cartão de Crédito", Metodo.CARTAO_CREDITO),
-            MetodoPagamentoDefault("Cartão de Débito", Metodo.CARTAO_DEBITO),
-            MetodoPagamentoDefault("Dinheiro", Metodo.DINHEIRO),
-            MetodoPagamentoDefault("Pix", Metodo.PIX),
-        )
-    }
-
-
     val getRouteCallback = object : GetRouteCallback {
         override fun getRoute(destination: DestinationTarget) {
             viewModel.getRoute(destination, latLong)
@@ -111,136 +113,210 @@ fun Mapa(viewModel: MapaViewModel) {
     LaunchedEffect(key1 = Unit) {
         getLatLong(context, locationCallback)
     }
+
     LaunchedEffect(key1 = latLong.latitude) {
         if (latLong.latitude != 0.0) {
             viewModel.getProdutos()
         }
     }
 
+    Header {
+        BarButton(sheetContent = {
+            if (routes.size <= 0) {
+                BarProducts(produtos = produtos, getRouteCallback = getRouteCallback)
+            } else {
+                BarDirections(rotas = routes, destinationTarget = destination, clearRouter = {
+                    viewModel.routes.value!!.clear();
+                })
+            }
 
-
-    BarButton(sheetContent = {
-        if (routes.size <= 0) {
-            BarProducts(produtos = produtos, getRouteCallback = getRouteCallback)
-        } else {
-            BarDirections(rotas = routes, destinationTarget = destination, clearRouter = {
-                viewModel.routes.value!!.clear();
-            })
+        }) {
+            Filters(viewModel = viewModel, filter = filter)
+            ContentMapa(
+                originCoordinates = latLong,
+                destinationCoordinates = destination.coordinates,
+                filter = filter
+            )
         }
+    }
+
+}
 
 
-    }) {
-        Header {
-            Row(
-                horizontalArrangement = Arrangement.Center, modifier = Modifier
-                    .fillMaxWidth(1f)
-                    .padding(0.dp, 10.dp)
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        Input(
-                            value = filter.nome ?: "",
-                            onValueChange = { setFilter(filter.copy(nome = it)) },
-                            modifier = Modifier.fillMaxWidth(0.7f)
-                        )
-                        Button(onClick = { openFilter.value = true }) {
+@Composable
+fun Filters(filter: FilterDTO, viewModel: MapaViewModel) {
+    val (openFilter, setOpenFilter) = remember { mutableStateOf(false) }
+    val (filterMapper, setFilterMapper) = remember { mutableStateOf(FilterDTO()) }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .zIndex(10f)
+            .padding(0.dp, 10.dp)
+            .background(Color.Transparent)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                Box() {
+                    Box(
+                        modifier = Modifier
+                            .zIndex(1F)
+                            .absolutePadding(left = 220.dp, top = 13.dp)
+                    ) {
+                        IconButton(
+                            onClick = {
+                                viewModel.applyFilters(filter.copy(nome = filterMapper.nome))
+                            }, modifier = Modifier
+                                .width(16.dp)
+                                .height(16.dp)
+                        ) {
                             Image(
+                                painter = painterResource(id = R.mipmap.search),
+                                contentDescription = "yrdy",
                                 modifier = Modifier
-                                    .width(14.dp)
-                                    .height(14.dp),
-                                painter = painterResource(id = R.mipmap.settings),
-                                contentDescription = "Adjust"
+                                    .fillMaxWidth()
+                                    .fillMaxHeight()
                             )
                         }
                     }
+                    Input(
+                        cursorColor = Color.Black,
+                        value = filterMapper.nome ?: "",
+                        colorText = Color.Black,
+                        onValueChange = { setFilterMapper(filterMapper.copy(nome = it)) },
+                        modifier = Modifier
+                            .background(Color.White)
+                            .fillMaxWidth(0.7f)
+                    )
+                }
+                Button(onClick = { setOpenFilter(true) }) {
+                    Image(
+                        modifier = Modifier
+                            .width(14.dp)
+                            .height(14.dp),
+                        painter = painterResource(id = R.mipmap.settings),
+                        contentDescription = "Adjust"
+                    )
                 }
 
+
             }
+        }
+    }
+    ModalFilter(
+        closeFilter = { setOpenFilter(false) },
+        showFilter = openFilter,
+        filter = filterMapper,
+        setFilter = setFilterMapper,
+        viewModel = viewModel
+    )
+}
 
 
-            Mapa(
-                originCoordinates = latLong,
-                destinationCoordinates = destination.coordinates,
-                filter = viewModel.filterMapa.value!!
-            )
-            ModalBottomSheet(
-                setShowBar = {
-                    openFilter.value = it
-                },
-                showBar = openFilter.value
+@Composable
+fun ModalFilter(
+    closeFilter: () -> Unit,
+    showFilter: Boolean,
+    filter: FilterDTO,
+    setFilter: (FilterDTO) -> Unit,
+    viewModel: MapaViewModel
+) {
+    val slider = remember {
+        mutableFloatStateOf(filter.distancia ?: 50F);
+    }
+
+    val metodos = listOf(
+        MetodoPagamentoDefault("Cartão de Crédito", Metodo.CARTAO_CREDITO),
+        MetodoPagamentoDefault("Cartão de Débito", Metodo.CARTAO_DEBITO),
+        MetodoPagamentoDefault("Dinheiro", Metodo.DINHEIRO),
+        MetodoPagamentoDefault("Pix", Metodo.PIX),
+    )
+
+    ModalBottomSheet(
+        closeFilter = closeFilter,
+        showBar = showFilter
+    ) {
+
+        Column {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
             ) {
+                Title(content = "Distancia", maxLines = 1)
+                Text(text = filter.distancia.toString())
+            }
+            Row {
+                Slider(
+                    valueRange = 1f..100f,
+                    value = slider.value,
+                    onValueChange = { slider.value = it },
+                    onValueChangeFinished = {
+                        setFilter(filter.copy(distancia = slider.value))
+                    }
+                )
+            }
 
-                Column {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Title(content = "Método de pagamento", maxLines = 1)
+            }
+
+
+            LazyColumn() {
+                items(metodos) { item ->
                     Row(
+                        verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Title(content = "Distancia", maxLines = 1)
-                        Text(text = filter.distancia.toString())
-                    }
-                    Row {
-                        Slider(
-                            valueRange =1f..100f ,
-                            value = filter.distancia ?: 0F,
-                            onValueChange = { setFilter(filter.copy(distancia = it)) }
-                        )
-                    }
+                        Text(text = item.nome)
+                        RadioButton(
+                            selected = filter.metodoPagamento == item.nome,
+                            onClick = {
+                                setFilter(filter!!.copy(metodoPagamento = item.nome))
+                            })
 
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Title(content = "Método de pagamento", maxLines = 1)
-                    }
-
-
-                    LazyColumn() {
-                        items(metodos) { item ->
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text(text = item.nome)
-                                RadioButton(
-                                    selected = filter.metodoPagamento == item.nome,
-                                    onClick = {
-                                        setFilter(filter!!.copy(metodoPagamento = item.nome))
-                                    })
-
-                            }
-                        }
-                    }
-                    Row {
-                        Button(
-                            onClick = { viewModel.applyFilters() },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Subtitle(content = "Aplicar Filtros", fontSize = 18.sp)
-                        }
-                    }
-                    Row {
-                        Button(
-                            onClick = { viewModel.clearFilter() },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Subtitle(content = "Limpar Filtros", fontSize = 18.sp)
-                        }
                     }
                 }
             }
-
+            Row {
+                Button(
+                    onClick = { viewModel.applyFilters(filter) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Subtitle(content = "Aplicar Filtros", fontSize = 18.sp)
+                }
+            }
+            Row {
+                Button(
+                    onClick = { viewModel.clearFilter(setFilter) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Subtitle(content = "Limpar Filtros", fontSize = 18.sp)
+                }
+            }
         }
     }
 }
 
 @Composable
-fun Mapa(originCoordinates: LatandLong, destinationCoordinates: LatandLong?, filter: FilterDTO) {
+fun ContentMapa(
+    originCoordinates: LatandLong,
+    destinationCoordinates: LatandLong?,
+    filter: FilterDTO
+) {
     val baseUrl = BuildConfig.HOST_WEB
     var destinationString = ""
-//    val filters = "${if (filter.distancia != null) "&ditancia=" + filter.distancia else ""}"
-//    "${if (filter.metodoPagamento != null) "&metodoPagamento=" + filter.metodoPagamento else ""}"
-//    "&${if (filter.nome != null) "&nome=" + filter.nome else ""}"
+    Log.e("popop",filter.nome?:"")
+    var filters = "${if (filter.distancia != null) "&distance=" + filter.distancia else ""}"
+    filters += "${if (filter.metodoPagamento != null) "&paymentMethod=" + filter.metodoPagamento else ""}"
+    filters+="${if (filter.nome != null) "&name=" + filter.nome else ""}"
+    Log.e("Teste",filters)
     if (destinationCoordinates != null) {
         destinationString =
             "&latitudeDestination=${destinationCoordinates.latitude}&longitudeDestination=${destinationCoordinates.longitude}"
@@ -248,8 +324,8 @@ fun Mapa(originCoordinates: LatandLong, destinationCoordinates: LatandLong?, fil
     var mUrl =
         "${baseUrl}/mapa/mobile?latitudeOrigin=${originCoordinates.latitude}&longitudeOrigin=${originCoordinates.longitude}"
 
-//    mUrl += destinationString;
-//    mUrl += filters
+    mUrl += destinationString;
+    mUrl += filters
 
     Column(modifier = Modifier.height(9000.dp)) {
         AndroidView(factory = {
@@ -320,13 +396,17 @@ fun Back() {
 
 
 @Composable
-fun BarDirections(rotas: List<RoutesMapper>, destinationTarget: DestinationTarget,clearRouter:()->Unit) {
+fun BarDirections(
+    rotas: List<RoutesMapper>,
+    destinationTarget: DestinationTarget,
+    clearRouter: () -> Unit
+) {
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            IconButton(onClick = { clearRouter()}) {
+            IconButton(onClick = { clearRouter() }) {
                 Image(painter = painterResource(id = R.mipmap.left), contentDescription = "dsdsds")
             }
             Row {
@@ -400,5 +480,7 @@ fun BarProducts(produtos: List<Produto>, getRouteCallback: GetRouteCallback) {
 
     }
 }
+
+
 
 

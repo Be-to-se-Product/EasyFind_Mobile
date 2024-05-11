@@ -29,8 +29,7 @@ fun BarButton(sheetContent: @Composable () -> Unit, content: @Composable () -> U
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding),
-                contentAlignment = Alignment.Center
+                    .padding(innerPadding)
             ) {
                content()
             }

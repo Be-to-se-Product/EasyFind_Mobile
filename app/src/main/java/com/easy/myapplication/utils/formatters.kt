@@ -27,9 +27,8 @@ fun mediaAvaliacao(avaliacoes: List<Avaliacao>?): Double {
 
 @OptIn(ExperimentalTime::class)
 fun formatTime(time:Long): String{
-    Log.e("teste",time.toString())
     if (time != null) {
-        return Duration.convert(time.toDouble(),DurationUnit.MICROSECONDS,DurationUnit.HOURS)
+        return Duration.convert(time.toDouble(),DurationUnit.SECONDS,DurationUnit.HOURS)
             .toString()
             .replace(".","h:").substring(0,5)
     } else {

@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
@@ -35,7 +36,7 @@ enum class Type {
 }
 
 @Composable
-fun Input(value: String, onValueChange: (String) -> Unit, type: Type? = null, label: String = "",isValidate: Boolean=false , error: String = "",modifier: Modifier? = Modifier) {
+fun Input(value: String, onValueChange: (String) -> Unit, cursorColor:Color=Color.White,type: Type? = null, label: String = "",isValidate: Boolean=false , error: String = "",modifier: Modifier? = Modifier,colorText:Color= Color.White) {
     val color = if (error.isBlank() && !isValidate) Color(android.graphics.Color.parseColor("#FCA622")) else androidx.compose.ui.graphics.Color.Red;
     Column(modifier=modifier!!) {
         if (label.isNotBlank()) {
@@ -48,6 +49,7 @@ fun Input(value: String, onValueChange: (String) -> Unit, type: Type? = null, la
         }
         Spacer(modifier = Modifier.height(5.dp))
         BasicTextField(
+
             modifier = Modifier.fillMaxWidth(),
             value = value,
             keyboardOptions = KeyboardOptions(
@@ -60,7 +62,7 @@ fun Input(value: String, onValueChange: (String) -> Unit, type: Type? = null, la
                     else -> KeyboardType.Text
                 }
             ),
-            cursorBrush = SolidColor(androidx.compose.ui.graphics.Color.White),
+            cursorBrush = SolidColor(cursorColor),
             visualTransformation = if (type == Type.PASSWORD) {
                 PasswordVisualTransformation()
             } else if (type == Type.CPF) {
@@ -79,7 +81,8 @@ fun Input(value: String, onValueChange: (String) -> Unit, type: Type? = null, la
                     onValueChange(it)
                 }
             },
-            textStyle = TextStyle(color = androidx.compose.ui.graphics.Color.White, fontSize = 14.sp),
+
+            textStyle = TextStyle(color = colorText, fontSize = 14.sp),
             decorationBox = { innerTextField ->
                 Row(
                     modifier = Modifier

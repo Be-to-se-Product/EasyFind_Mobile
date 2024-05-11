@@ -35,7 +35,6 @@ data class DestinationTarget(
 
 
 class MapaViewModel : ViewModel() {
-    val filterDTO = MutableLiveData(FilterDTO());
     val filterMapa = MutableLiveData(FilterDTO());
     val produtos = MutableLiveData(SnapshotStateList<Produto>())
     val destination = MutableLiveData(DestinationTarget());
@@ -46,16 +45,15 @@ class MapaViewModel : ViewModel() {
     private val mapaService = MapBoxService();
 
 
-    fun applyFilters(){
-        filterMapa.postValue(filterDTO.value)
-        getProdutos( distancia = filterDTO?.value?.distancia, metodoPagamento = filterDTO.value?.metodoPagamento,
-            nome = filterDTO.value?.nome)
+    fun applyFilters(filterDTO:FilterDTO){
+        filterMapa.postValue(filterDTO)
+        getProdutos( distancia = filterDTO?.distancia, metodoPagamento = filterDTO?.metodoPagamento,
+            nome = filterDTO?.nome)
     }
 
-    fun clearFilter(){
+    fun clearFilter(setFilterDTO: (FilterDTO)->Unit){
         getProdutos()
-        filterMapa.postValue(FilterDTO())
-        filterDTO.postValue(FilterDTO())
+        setFilterDTO(FilterDTO())
     }
 
 
@@ -86,7 +84,6 @@ fun getRoute(destinationRoute:DestinationTarget, origin:LatandLong) {
             }
         }
         catch (e:Exception ){
-            Log.e("Erro",e.toString())
             if(e.message!=null){
                 erroApi.postValue(e.message)
             }
