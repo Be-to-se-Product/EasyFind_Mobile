@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
 
                 ) {
 
-                AppNavHost(navController = rememberNavController(), startDestination = "RealizarPedido")
+                AppNavHost(navController = rememberNavController(), startDestination = "Produto")
 
                 }
             }

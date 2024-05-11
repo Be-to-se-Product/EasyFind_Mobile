@@ -137,7 +137,8 @@ fun Produto(view: ProdutoViewModel,navController: NavController) {
                             .padding(0.dp),
                         colors = ButtonDefaults.buttonColors(Color(0xFFFCA622)),
                         onClick = {
-                            navController.navigate("mapa/ ")
+                            navController.currentBackStackEntry?.savedStateHandle?.set("PRODUTO", produtoVenda)
+                            navController.navigate("RealizarPedido")
                         }
                     ) {
                         Text(text = "Comprar")

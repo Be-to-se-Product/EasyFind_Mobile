@@ -39,7 +39,7 @@ fun AppNavHost(
 
         composable("RealizarPedido")
         {
-            Buy()
+            Buy(navController)
         }
     }
 }

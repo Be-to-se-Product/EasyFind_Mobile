@@ -18,7 +18,7 @@ object Service {
 
     fun ProdutoService(): IProduto {
         val cliente = Retrofit.Builder()
-            .baseUrl("$BASEURL/produtos/")
+            .baseUrl("${BASEURL}produtos/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(IProduto::class.java)
@@ -45,7 +45,7 @@ object Service {
 
     fun AvalicaoService(): IAvaliacao{
         val avalicao = Retrofit.Builder()
-            .baseUrl("$BASEURL/")
+            .baseUrl(BASEURL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(IAvaliacao::class.java)
@@ -68,7 +68,7 @@ object Service {
             .build()
 
         val cliente = Retrofit.Builder()
-            .baseUrl("$BASEURL")
+            .baseUrl(BASEURL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
