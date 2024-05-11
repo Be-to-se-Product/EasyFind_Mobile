@@ -36,7 +36,6 @@ fun getLatLong(context: Context, callback: LocationCallback){
             }
             .addOnFailureListener {
                 callback.onError(it.message)
-                Log.e("Location_error", "${it.message}")
             }
     }
 

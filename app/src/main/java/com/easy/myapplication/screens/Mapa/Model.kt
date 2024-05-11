@@ -62,10 +62,10 @@ fun getRoute(destinationRoute:DestinationTarget, origin:LatandLong) {
         try {
             val response = destinationRoute.coordinates?.let {
                 mapaService.getRoutesMap(
-                    latitudeOrigin = it.latitude,
+                    latitudeOrigin = origin.latitude,
                     longitudeDestination = it.longitude,
                     longitudeOrigin = origin.longitude,
-                    latitudeDestination = origin.latitude
+                    latitudeDestination = it.latitude
                 )
             };
             val directions = response?.body();

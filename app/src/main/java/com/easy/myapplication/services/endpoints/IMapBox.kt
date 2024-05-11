@@ -7,6 +7,6 @@ import retrofit2.http.Path
 
 
 interface IMapBox  {
-    @GET("cycling/{longitudeOrigin},{latitudeOrigin};{longitudeDestination},{latitudeDestination}?steps=true&language=pt-BR&access_token=${BuildConfig.TOKEN_MAPBOX}")
+    @GET("walking/{longitudeOrigin}%2C{latitudeOrigin}%3B{longitudeDestination}%2C{latitudeDestination}?steps=true&language=pt-BR&access_token=${BuildConfig.TOKEN_MAPBOX}")
     suspend fun getRoutesMap(@Path(value="longitudeOrigin") longitudeOrigin:Double, @Path(value="latitudeOrigin")latitudeOrigin:Double,@Path(value="longitudeDestination") longitudeDestination:Double,@Path(value="latitudeDestination") latitudeDestination:Double): Response<MapDirections>
 }

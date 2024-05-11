@@ -37,7 +37,6 @@ class Model(private val context: Context):ViewModel(){
                     erroApi.postValue(post.errorBody()!!.string())
                 }
             } catch (e:Exception){
-                Log.e("api","Deu ruim no post! ${e.message}, ${usuario}")
                 erroApi.postValue(e.message)
             }
         }
@@ -61,7 +60,6 @@ class Model(private val context: Context):ViewModel(){
                     Log.d("api ${consumidor} ",post.body().toString())
                 }
             }catch (e:Exception){
-                Log.e("api","Deu ruim no post! ${e.message} ${consumidor}")
                 erroApi.postValue(e.message)
             }
         }

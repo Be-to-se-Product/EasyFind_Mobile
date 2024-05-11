@@ -32,7 +32,7 @@ import com.easy.myapplication.utils.PhoneMaskTransformation
 import java.text.SimpleDateFormat
 
 enum class Type {
-    EMAIL, PASSWORD, CPF, DATE, PHONE
+    EMAIL, PASSWORD, CPF, DATE, PHONE, SEARCH
 }
 
 @Composable
@@ -59,6 +59,7 @@ fun Input(value: String, onValueChange: (String) -> Unit, cursorColor:Color=Colo
                     Type.CPF -> KeyboardType.Number
                     Type.DATE -> KeyboardType.Number
                     Type.PHONE -> KeyboardType.Number
+                    Type.SEARCH -> KeyboardType.Uri
                     else -> KeyboardType.Text
                 }
             ),
@@ -75,9 +76,7 @@ fun Input(value: String, onValueChange: (String) -> Unit, cursorColor:Color=Colo
                 VisualTransformation.None
             },
             onValueChange = {
-                if (type == Type.CPF && it.length > 11 || type == Type.DATE && it.length > 8) {
-
-                } else {
+                if (!(type == Type.CPF && it.length > 11 || type == Type.DATE && it.length > 8)) {
                     onValueChange(it)
                 }
             },

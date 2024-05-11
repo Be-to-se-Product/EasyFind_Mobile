@@ -34,7 +34,6 @@ class ProdutoViewModel : ViewModel() {
                     erroApi.postValue(response.errorBody()?.string() ?: "")
                 }
             }catch (e: Exception){
-                Log.e("Error",e.message.toString())
                 erroApi.postValue(e.message)
             }
         }
@@ -56,7 +55,6 @@ class ProdutoViewModel : ViewModel() {
                     }
                 }
             }catch (e: Exception){
-                Log.e("Error",e.message.toString())
                 erroApi.postValue(e.message)
             }
         }

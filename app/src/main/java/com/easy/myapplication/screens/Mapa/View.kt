@@ -3,8 +3,8 @@ package com.easy.myapplication.screens.Mapa
 import DestinationTarget
 import LatandLong
 import MapaViewModel
+import android.annotation.SuppressLint
 import android.os.Build
-import android.util.Log
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -25,25 +25,19 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -58,18 +52,17 @@ import com.easy.myapplication.dto.Produto
 import com.easy.myapplication.dto.RoutesMapper
 import com.easy.myapplication.shared.BarButton.BarButton
 import com.easy.myapplication.shared.Header.Header
-import com.easy.myapplication.shared.Input.Input
 import com.easy.myapplication.shared.ModalBottomSheet.ModalBottomSheet
 import com.easy.myapplication.shared.ProductItem.DataProductItem
 import com.easy.myapplication.shared.ProductItem.ProductItem
 import com.easy.myapplication.shared.ProductItem.Time
+import com.easy.myapplication.shared.SearchBar.SearchBar
 import com.easy.myapplication.shared.Subtitle.Subtitle
 import com.easy.myapplication.shared.Title.Title
 import com.easy.myapplication.ui.theme.Primary
 import com.easy.myapplication.utils.LocationCallback
 import com.easy.myapplication.utils.getLatLong
 import com.easy.myapplication.utils.mediaAvaliacao
-import kotlinx.coroutines.launch
 
 
 data class MetodoPagamentoDefault(
@@ -78,24 +71,23 @@ data class MetodoPagamentoDefault(
 )
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Mapa(viewModel: MapaViewModel) {
 
-    val produtos = viewModel.produtos.observeAsState().value!!;
-    val filter = viewModel.filterMapa.observeAsState().value!!;
+    val produtos = viewModel.produtos.observeAsState().value!!
+    val filter = viewModel.filterMapa.observeAsState().value!!
     val destination = viewModel.destination.observeAsState().value!!
-    val routes = viewModel.routes.observeAsState().value!!;
+    val routes = viewModel.routes.observeAsState().value!!
     val context = LocalContext.current
-    val latLong = viewModel.latLong.observeAsState().value!!;
+    val latLong = viewModel.latLong.observeAsState().value!!
     val setLatLong = { item: LatandLong ->
         viewModel.latLong.postValue(item)
     }
 
     val locationCallback = object : LocationCallback {
         override fun onSuccess(latitude: Double, longitude: Double) {
-            setLatLong(latLong.copy(latitude, longitude))
+            setLatLong(latLong.copy(latitude = latitude, longitude = longitude))
         }
 
         override fun onError(message: String?) {
@@ -126,7 +118,7 @@ fun Mapa(viewModel: MapaViewModel) {
                 BarProducts(produtos = produtos, getRouteCallback = getRouteCallback)
             } else {
                 BarDirections(rotas = routes, destinationTarget = destination, clearRouter = {
-                    viewModel.routes.value!!.clear();
+                    viewModel.routes.value!!.clear()
                 })
             }
 
@@ -154,17 +146,19 @@ fun Filters(filter: FilterDTO, viewModel: MapaViewModel) {
             .zIndex(10f)
             .padding(0.dp, 10.dp)
             .background(Color.Transparent)
+
     ) {
         Column(
+            modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
+            verticalArrangement = Arrangement.Center,
         ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Box() {
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
+                Box {
                     Box(
                         modifier = Modifier
                             .zIndex(1F)
-                            .absolutePadding(left = 220.dp, top = 13.dp)
+                            .absolutePadding(left = 220.dp, top = 9.dp)
                     ) {
                         IconButton(
                             onClick = {
@@ -175,22 +169,24 @@ fun Filters(filter: FilterDTO, viewModel: MapaViewModel) {
                         ) {
                             Image(
                                 painter = painterResource(id = R.mipmap.search),
-                                contentDescription = "yrdy",
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .fillMaxHeight()
+                                contentDescription = "Icone de busca",
+                                modifier = Modifier.fillMaxWidth().fillMaxHeight()
                             )
                         }
                     }
-                    Input(
-                        cursorColor = Color.Black,
-                        value = filterMapper.nome ?: "",
-                        colorText = Color.Black,
-                        onValueChange = { setFilterMapper(filterMapper.copy(nome = it)) },
+                    SearchBar(setValue = {
+                        setFilterMapper(filterMapper.copy(nome=it))
+                    },
+
                         modifier = Modifier
-                            .background(Color.White)
-                            .fillMaxWidth(0.7f)
+                            .fillMaxWidth(0.7f),
+                        onSearch = {
+                            viewModel.applyFilters(filterMapper)
+                        },
+                        value = filterMapper.nome?:""
+
                     )
+
                 }
                 Button(onClick = { setOpenFilter(true) }) {
                     Image(
@@ -216,6 +212,8 @@ fun Filters(filter: FilterDTO, viewModel: MapaViewModel) {
 }
 
 
+
+
 @Composable
 fun ModalFilter(
     closeFilter: () -> Unit,
@@ -225,7 +223,7 @@ fun ModalFilter(
     viewModel: MapaViewModel
 ) {
     val slider = remember {
-        mutableFloatStateOf(filter.distancia ?: 50F);
+        mutableFloatStateOf(filter.distancia ?: 50F)
     }
 
     val metodos = listOf(
@@ -251,10 +249,10 @@ fun ModalFilter(
             Row {
                 Slider(
                     valueRange = 1f..100f,
-                    value = slider.value,
-                    onValueChange = { slider.value = it },
+                    value = slider.floatValue,
+                    onValueChange = { slider.floatValue = it },
                     onValueChangeFinished = {
-                        setFilter(filter.copy(distancia = slider.value))
+                        setFilter(filter.copy(distancia = slider.floatValue))
                     }
                 )
             }
@@ -267,7 +265,7 @@ fun ModalFilter(
             }
 
 
-            LazyColumn() {
+            LazyColumn {
                 items(metodos) { item ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -278,7 +276,7 @@ fun ModalFilter(
                         RadioButton(
                             selected = filter.metodoPagamento == item.nome,
                             onClick = {
-                                setFilter(filter!!.copy(metodoPagamento = item.nome))
+                                setFilter(filter.copy(metodoPagamento = item.nome))
                             })
 
                     }
@@ -304,6 +302,7 @@ fun ModalFilter(
     }
 }
 
+@SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun ContentMapa(
     originCoordinates: LatandLong,
@@ -312,11 +311,9 @@ fun ContentMapa(
 ) {
     val baseUrl = BuildConfig.HOST_WEB
     var destinationString = ""
-    Log.e("popop",filter.nome?:"")
-    var filters = "${if (filter.distancia != null) "&distance=" + filter.distancia else ""}"
-    filters += "${if (filter.metodoPagamento != null) "&paymentMethod=" + filter.metodoPagamento else ""}"
-    filters+="${if (filter.nome != null) "&name=" + filter.nome else ""}"
-    Log.e("Teste",filters)
+    var filters = if (filter.distancia != null) "&distance=" + filter.distancia else ""
+    filters += if (filter.metodoPagamento != null) "&paymentMethod=" + filter.metodoPagamento else ""
+    filters+= if (filter.nome != null) "&name=" + filter.nome else ""
     if (destinationCoordinates != null) {
         destinationString =
             "&latitudeDestination=${destinationCoordinates.latitude}&longitudeDestination=${destinationCoordinates.longitude}"
@@ -324,7 +321,7 @@ fun ContentMapa(
     var mUrl =
         "${baseUrl}/mapa/mobile?latitudeOrigin=${originCoordinates.latitude}&longitudeOrigin=${originCoordinates.longitude}"
 
-    mUrl += destinationString;
+    mUrl += destinationString
     mUrl += filters
 
     Column(modifier = Modifier.height(9000.dp)) {
@@ -347,7 +344,7 @@ fun ContentMapa(
 
 @Composable
 fun Left() {
-    Column() {
+    Column {
         Image(
             painter = painterResource(id = R.mipmap.left),
             contentDescription = "Marcador Inicio",
