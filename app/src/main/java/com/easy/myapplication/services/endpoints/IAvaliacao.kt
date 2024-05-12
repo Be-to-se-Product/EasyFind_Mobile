@@ -10,5 +10,5 @@ import retrofit2.http.Query
 
 interface IAvaliacao {
     @POST("avaliacoes")
-    suspend fun postAvaliacao(@Header("Authorization") token: String = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjb25zdW1pZG9yMUBlbWFpbC5jb20iLCJpYXQiOjE3MTQ1MzE2MTAsImV4cCI6MTcxODEzMTYxMH0.Fywip0UCkpHft5NOl5ZHwztzsjQaxMvcstGpM8jzhmg", @Body avaliacaoCadastrar: AvaliacaoCadastrar): Response<Avaliacao>
+    suspend fun postAvaliacao(@Body avaliacaoCadastrar: AvaliacaoCadastrar): Response<Avaliacao>
 }

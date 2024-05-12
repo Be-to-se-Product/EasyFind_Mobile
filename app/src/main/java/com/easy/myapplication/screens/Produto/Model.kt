@@ -58,15 +58,18 @@ class ProdutoViewModel : ViewModel() {
                 if(avaliacao.value != null) {
                     val response = avalicaoService.postAvaliacao(avaliacaoCadastrar = avaliacao.value!!)
                     if (response.isSuccessful) {
+                        Log.e("Sucesso", response.body().toString())
                         latLong.value?.latitude?.let {
                             getProdutoById(id,
-                                it, latLong?.value!!.longitude)
+                                it, latLong.value!!.longitude)
                         }
                     } else {
+                        Log.e("Erro", response.errorBody()?.string() ?: "")
                         erroApi.postValue(response.errorBody()?.string() ?: "")
                     }
                 }
             }catch (e: Exception){
+                Log.e("Erro", e.message.toString())
                 erroApi.postValue(e.message)
             }
         }

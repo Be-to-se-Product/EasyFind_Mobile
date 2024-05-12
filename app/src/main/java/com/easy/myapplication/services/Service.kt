@@ -47,7 +47,7 @@ object Service: KoinComponent {
 
     fun AvalicaoService(): IAvaliacao{
 
-        val avalicao = Instance("avaliacoes")
+        val avalicao = Instance("")
             .create(IAvaliacao::class.java)
         return avalicao
     }
@@ -70,7 +70,6 @@ object Service: KoinComponent {
                 val token = runBlocking { storage.readFromDataStore("token") }
                 var newRequest = originalRequest.newBuilder()
                 if (token!=null) {
-                    Log.e("token", token.toString())
                 newRequest.header("Authorization", "Bearer $token")
                 }
                 chain.proceed(newRequest.build())

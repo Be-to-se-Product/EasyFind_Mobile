@@ -7,6 +7,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,6 +38,8 @@ import com.easy.myapplication.shared.Title.Title
 import com.easy.myapplication.ui.theme.Primary
 import com.easy.myapplication.utils.conversorTime
 import com.easy.myapplication.utils.formatTime
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import java.nio.file.WatchEvent
 import kotlin.time.ExperimentalTime
 
@@ -48,6 +51,7 @@ data class Time(
 )
 
 data class DataProductItem(
+    val id:Long=0L,
     val name: String,
     val image: String? = "",
     val qtdStars: Double,
@@ -62,11 +66,16 @@ data class DataProductItem(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-    fun ProductItem(data: DataProductItem, getRouteCallback: GetRouteCallback) {
+    fun ProductItem(data: DataProductItem, getRouteCallback: GetRouteCallback,navigate:(Long)->Unit) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(15.dp),
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(10.dp)
+        modifier = Modifier.padding(10.dp).clickable {
+            MainScope().launch {
+                navigate(data.id)
+            }
+        }
+
     ) {
         Column(
             modifier = Modifier
