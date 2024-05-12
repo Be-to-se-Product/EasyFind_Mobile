@@ -1,8 +1,6 @@
 package com.easy.myapplication.screens.Produto
 
 
-import android.content.Intent
-import android.os.Bundle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -45,8 +43,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
-import com.easy.myapplication.dto.ProdutoVendaDTO
-import com.easy.myapplication.screens.Mapa.Mapa
 import com.easy.myapplication.shared.StarRatingBar.StarRatingBar
 import com.easy.myapplication.shared.Subtitle.Subtitle
 import com.easy.myapplication.shared.Title.Title
@@ -56,7 +52,7 @@ import com.easy.myapplication.utils.getLatLong
 
 
 @Composable
-fun Produto(view: ProdutoViewModel,navController: NavController) {
+fun Produto(view: ProdutoViewModel, navController: NavController, id: String?) {
 
     val isBuyButtonClicked = remember { mutableStateOf(false) }
     val setlatLong = view.latLong
@@ -78,29 +74,32 @@ fun Produto(view: ProdutoViewModel,navController: NavController) {
     }
 
 
-    LaunchedEffect(key1 = Unit) {
-        getLatLong(context, locationCallback)
-    }
 
+    getLatLong(context, locationCallback)
     LaunchedEffect(key1 = latLong.latitude){
-        view.getProdutoById(1,latLong.latitude,latLong.longitude)
+        if (id != null) {
+            view.getProdutoById(id.toLong(),latLong.latitude,latLong.longitude)
+        }
     }
 
 
     Header{
-        Row(
-        ) {
+
+        Row{
             Column(modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())) {
                 Column(modifier = Modifier.padding(16.dp),
                     horizontalAlignment = Alignment.Start) {
                     produto.estabelecimento?.nome?.let {
-                        Title(content = it,
+                        Title(
+                            content = it,
                             fontSize = 20.sp,
-                            color = Primary)
+                            color = Primary,
+                            maxLines = 1
+                        )
                     }
-                    produto.nome?.let { Title(content = it, fontSize = 24.sp) }
+                    produto.nome?.let { Title(content = it, fontSize = 24.sp, maxLines = 1) }
                     Subtitle(content = produto.descricao,
                         fontSize = 15.sp)
                 }
@@ -111,7 +110,7 @@ fun Produto(view: ProdutoViewModel,navController: NavController) {
 
                 Column(modifier = Modifier.padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally) {
-                    Title(content = produto.precoAtual.toString())
+                    Title(content = produto.precoAtual.toString(), maxLines = 1)
 
                 }
 
@@ -181,7 +180,7 @@ fun Produto(view: ProdutoViewModel,navController: NavController) {
                             modifier = Modifier.padding(start = 16.dp),
                             verticalArrangement = Arrangement.Center
                         ) {
-                            produto.estabelecimento?.nome?.let { Title(content = it) }
+                            produto.estabelecimento?.nome?.let { Title(content = it, maxLines = 1) }
                             Subtitle(content = produto.estabelecimento?.segmento)
                         }
                     }
@@ -195,7 +194,7 @@ fun Produto(view: ProdutoViewModel,navController: NavController) {
                                 .fillMaxWidth()
                                 .padding(0.dp),
                             colors = ButtonDefaults.buttonColors(Color(0xFFFCA622)),
-                            onClick = { view.cadastroAvalicao(1) }) {
+                            onClick = { id?.toLong()?.let { view.cadastroAvalicao(it) } }) {
                             Text(text = "Postar")
                         }
                     }
@@ -206,7 +205,7 @@ fun Produto(view: ProdutoViewModel,navController: NavController) {
                         itemContent = {
                             Column(modifier = Modifier.padding(16.dp),
                                 horizontalAlignment = Alignment.Start) {
-                                it.usuario?.let { it1 -> Title(content = it1) }
+                                it.usuario?.let { it1 -> Title(content = it1, maxLines = 1) }
                                 it.qtdEstrela?.toFloat()?.let { it1 -> StarRatingBar(rating = it1) }
                                 Column {
                                     Subtitle(content = it.descricao)
@@ -280,7 +279,7 @@ fun ComentarioSection(view: ProdutoViewModel) {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Title(content = "Comentário")
+            Title(content = "Comentário", maxLines = 1)
         }
 
         Row(

@@ -9,10 +9,10 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface IConsumidor {
-    @POST("/api/consumidores")
+    @POST("consumidores")
     suspend fun cadastrarConsumidor(@Body novoConsumidor: ConsumidorCriacaoDTO): Response<ResponseConsumidorDTO>
 
-    @POST("/api/usuarios/login")
+    @POST("login")
     suspend fun loginConsumidor(@Body consumidor: UsuarioCriacaoDTO): Response<UsuarioTokenDTO>
 
 }

@@ -1,11 +1,11 @@
 package com.easy.myapplication.utils
 
+import LatandLong
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.app.ActivityCompat
-import com.easy.myapplication.screens.Mapa.LatandLong
 import com.google.android.gms.location.LocationServices
 
 
@@ -36,7 +36,6 @@ fun getLatLong(context: Context, callback: LocationCallback){
             }
             .addOnFailureListener {
                 callback.onError(it.message)
-                Log.e("Location_error", "${it.message}")
             }
     }
 

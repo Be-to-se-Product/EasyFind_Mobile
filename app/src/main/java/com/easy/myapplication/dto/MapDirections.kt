@@ -14,10 +14,13 @@ data class Steps(
 )
 
 data class Rota(
-    val steps: List<Steps>
+    val steps: List<Steps>,
+
 )
 
 data class Legs(
+    val distance: Double,
+    val duration: Double,
     val legs: List<Rota>
 )
 
