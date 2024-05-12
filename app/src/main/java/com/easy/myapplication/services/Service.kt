@@ -1,6 +1,7 @@
 package com.easy.myapplication.services
 
 import android.util.Log
+import com.easy.myapplication.services.endpoints.ICompra
 import com.easy.myapplication.BuildConfig
 import com.easy.myapplication.repositories.StorageRepository
 import com.easy.myapplication.services.endpoints.IAvaliacao
@@ -29,6 +30,12 @@ object Service: KoinComponent {
         return cliente;
     }
 
+    fun CompraService(): ICompra {
+        val cliente = Instance("")
+            .create(ICompra::class.java)
+        return cliente;
+    }
+
     fun MapBoxService(): IMapBox {
         val cliente = Retrofit.Builder()
             .baseUrl("https://api.mapbox.com/directions/v5/mapbox/")
@@ -39,6 +46,7 @@ object Service: KoinComponent {
     }
 
     fun AvalicaoService(): IAvaliacao{
+
         val avalicao = Instance("avaliacoes")
             .create(IAvaliacao::class.java)
         return avalicao
@@ -51,10 +59,11 @@ object Service: KoinComponent {
     }
 
     fun Instance(endpoint:String): Retrofit {
-        val client = Retrofit.Builder().baseUrl("$BASEURL/$endpoint/").client(Interceptor()).addConverterFactory(GsonConverterFactory.create(gson)).build()
+        val client = Retrofit.Builder().baseUrl("$BASEURL/${if (endpoint.isEmpty()) "" else "$endpoint/"}").client(Interceptor()).addConverterFactory(GsonConverterFactory.create(gson)).build()
         return client;
     }
      fun Interceptor(): OkHttpClient {
+
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor { chain ->
                 val originalRequest = chain.request()

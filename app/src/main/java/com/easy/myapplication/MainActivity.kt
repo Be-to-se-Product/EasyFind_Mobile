@@ -26,6 +26,7 @@ class MainActivity : ComponentActivity() {
 
                 ) {
                 AppNavHost(navController = rememberNavController(), startDestination = "Login")
+
                 }
             }
         }
