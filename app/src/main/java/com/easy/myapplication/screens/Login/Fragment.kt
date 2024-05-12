@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.easy.myapplication.dto.ConsumidorCriacaoDTO
 import com.easy.myapplication.dto.UsuarioCriacaoDTO
 import com.easy.myapplication.shared.Input.Input
@@ -24,7 +25,7 @@ import com.easy.myapplication.shared.Title.Title
 import com.easy.myapplication.utils.formatarData
 
 @Composable
-fun login(model: Model){
+fun login(model: Model,navController: NavController){
     val (usuario, usuarioSetter) = remember { mutableStateOf(UsuarioCriacaoDTO()) }
 
     Column(
@@ -35,7 +36,7 @@ fun login(model: Model){
         Spacer(modifier = Modifier.height(30.dp))
         Input(value = usuario.senha?:"", onValueChange = {usuarioSetter(usuario.copy(senha = it))}, type = Type.PASSWORD, label = "Senha")
         Spacer(modifier = Modifier.height(40.dp))
-        Button(onClick = {model.loginUsuario(usuario)}){
+        Button(onClick = {model.loginUsuario(usuario, { navController.navigate("Mapa") }) }){
             Title(content = "Entrar", fontSize = 14.sp, maxLines = 1)
         }
     }

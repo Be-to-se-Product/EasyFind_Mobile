@@ -28,7 +28,8 @@ fun AppNavHost(
     ){
         composable("Login")
         {
-            Login(rememberNavController())
+            val nav = rememberNavController();
+            Login(nav,navController)
         }
         composable("Mapa"){
             val mapa = MapaViewModel()
