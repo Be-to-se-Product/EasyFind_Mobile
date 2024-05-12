@@ -59,12 +59,11 @@ object Service {
             .build()
 
         val cliente = Retrofit.Builder()
-            .baseUrl("$BASEURL")
+            .baseUrl("$BASEURL/usuarios/")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(IConsumidor::class.java)
         return cliente
     }
-
 }

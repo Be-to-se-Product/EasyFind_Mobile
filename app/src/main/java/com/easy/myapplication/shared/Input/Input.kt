@@ -36,9 +36,10 @@ enum class Type {
 }
 
 @Composable
+
 fun Input(value: String, onValueChange: (String) -> Unit, cursorColor:Color=Color.White,type: Type? = null, label: String = "",isValidate: Boolean=false , error: String = "",modifier: Modifier? = Modifier,colorText:Color= Color.White) {
     val color = if (error.isBlank() && !isValidate) Color(android.graphics.Color.parseColor("#FCA622")) else androidx.compose.ui.graphics.Color.Red;
-    Column(modifier=modifier!!) {
+    Column(modifier = modifier!!) {
         if (label.isNotBlank()) {
             Text(
                 text = label,
@@ -54,7 +55,7 @@ fun Input(value: String, onValueChange: (String) -> Unit, cursorColor:Color=Colo
             value = value,
             keyboardOptions = KeyboardOptions(
                 keyboardType = when (type) {
-                    Type.EMAIL -> KeyboardType.Email
+                    Type.EMAIL -> KeyboardType.Text // Alterado de KeyboardType.Email para permitir caracteres especiais
                     Type.PASSWORD -> KeyboardType.Password
                     Type.CPF -> KeyboardType.Number
                     Type.DATE -> KeyboardType.Number
@@ -80,7 +81,6 @@ fun Input(value: String, onValueChange: (String) -> Unit, cursorColor:Color=Colo
                     onValueChange(it)
                 }
             },
-
             textStyle = TextStyle(color = colorText, fontSize = 14.sp),
             decorationBox = { innerTextField ->
                 Row(
@@ -89,7 +89,6 @@ fun Input(value: String, onValueChange: (String) -> Unit, cursorColor:Color=Colo
                         .border(1.dp, color, RoundedCornerShape(20))
                         .padding(10.dp), verticalAlignment = Alignment.CenterVertically
                 ) {
-
                     innerTextField()
                 }
             }

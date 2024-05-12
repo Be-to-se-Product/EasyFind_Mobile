@@ -5,7 +5,6 @@ import LatandLong
 import MapaViewModel
 import android.annotation.SuppressLint
 import android.os.Build
-import android.util.Log
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -45,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.zIndex
+import androidx.navigation.NavController
 import com.easy.myapplication.BuildConfig
 import com.easy.myapplication.R
 import com.easy.myapplication.dto.FilterDTO
@@ -63,7 +63,6 @@ import com.easy.myapplication.shared.Title.Title
 import com.easy.myapplication.ui.theme.Primary
 import com.easy.myapplication.utils.LocationCallback
 import com.easy.myapplication.utils.conversorDistancia
-import com.easy.myapplication.utils.conversorTime
 import com.easy.myapplication.utils.getLatLong
 import com.easy.myapplication.utils.mediaAvaliacao
 
@@ -76,7 +75,7 @@ data class MetodoPagamentoDefault(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Mapa(viewModel: MapaViewModel) {
+fun Mapa(viewModel: MapaViewModel,navController: NavController) {
 
     val produtos = viewModel.produtos.observeAsState().value!!
     val filter = viewModel.filterMapa.observeAsState().value!!
@@ -136,6 +135,7 @@ fun Mapa(viewModel: MapaViewModel) {
     }
 
 }
+
 
 
 @Composable
