@@ -191,7 +191,7 @@ fun Login(nav:NavHostController,navController: NavHostController, modifier: Modi
                     startDestination = "LOGIN"
                 ) {
                     composable("LOGIN") {
-                        login(model, a)
+                        login(model, navController)
                     }
                     composable("CADASTRO") {
                         cadastro(model)
