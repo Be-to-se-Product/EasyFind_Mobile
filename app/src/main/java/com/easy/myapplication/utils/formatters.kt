@@ -1,5 +1,6 @@
 package com.easy.myapplication.utils
 
+import android.annotation.SuppressLint
 import android.util.Log
 import com.easy.myapplication.dto.Avaliacao
 import kotlin.time.Duration
@@ -33,5 +34,29 @@ fun formatTime(time:Long): String{
             .replace(".","h:").substring(0,5)
     } else {
         return "00:00";
+    }
+}
+
+
+fun conversorDistancia(metros: Double): String {
+    val medidas = listOf("m", "km");
+    var contadora = 0;
+    var distanciaConvertida = metros ;
+    while(distanciaConvertida > 1000 && contadora < medidas.size-1){
+        distanciaConvertida /= 1000;
+        contadora++;
+    }
+    return "$distanciaConvertida ${medidas[contadora]}";
+}
+//Quero arredondar para 2 casas decimais
+
+@SuppressLint("DefaultLocale")
+fun conversorTime(segundos: Double): String {
+    val horas = segundos / 3600
+    val minutos = (segundos % 3600) / 60
+    return if (horas > 0) {
+        String.format("%.0fh %.0f min", horas, minutos)
+    } else {
+       String.format("%.0fmin", minutos)
     }
 }

@@ -5,6 +5,7 @@ import LatandLong
 import MapaViewModel
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -49,7 +50,7 @@ import com.easy.myapplication.R
 import com.easy.myapplication.dto.FilterDTO
 import com.easy.myapplication.dto.Metodo
 import com.easy.myapplication.dto.Produto
-import com.easy.myapplication.dto.RoutesMapper
+import com.easy.myapplication.dto.TargetRoutes
 import com.easy.myapplication.shared.BarButton.BarButton
 import com.easy.myapplication.shared.Header.Header
 import com.easy.myapplication.shared.ModalBottomSheet.ModalBottomSheet
@@ -61,6 +62,8 @@ import com.easy.myapplication.shared.Subtitle.Subtitle
 import com.easy.myapplication.shared.Title.Title
 import com.easy.myapplication.ui.theme.Primary
 import com.easy.myapplication.utils.LocationCallback
+import com.easy.myapplication.utils.conversorDistancia
+import com.easy.myapplication.utils.conversorTime
 import com.easy.myapplication.utils.getLatLong
 import com.easy.myapplication.utils.mediaAvaliacao
 
@@ -78,7 +81,7 @@ fun Mapa(viewModel: MapaViewModel) {
     val produtos = viewModel.produtos.observeAsState().value!!
     val filter = viewModel.filterMapa.observeAsState().value!!
     val destination = viewModel.destination.observeAsState().value!!
-    val routes = viewModel.routes.observeAsState().value!!
+    val infoRoutes = viewModel.infoRoutes.observeAsState().value!!
     val context = LocalContext.current
     val latLong = viewModel.latLong.observeAsState().value!!
     val setLatLong = { item: LatandLong ->
@@ -114,11 +117,11 @@ fun Mapa(viewModel: MapaViewModel) {
 
     Header {
         BarButton(sheetContent = {
-            if (routes.size <= 0) {
+            if (infoRoutes.routes.size <= 0) {
                 BarProducts(produtos = produtos, getRouteCallback = getRouteCallback)
             } else {
-                BarDirections(rotas = routes, destinationTarget = destination, clearRouter = {
-                    viewModel.routes.value!!.clear()
+                BarDirections(infoRotas = infoRoutes, destinationTarget = destination, clearRouter = {
+                    viewModel.infoRoutes.value!!.routes.clear()
                 })
             }
 
@@ -394,7 +397,7 @@ fun Back() {
 
 @Composable
 fun BarDirections(
-    rotas: List<RoutesMapper>,
+    infoRotas: TargetRoutes,
     destinationTarget: DestinationTarget,
     clearRouter: () -> Unit
 ) {
@@ -410,13 +413,13 @@ fun BarDirections(
                 destinationTarget.estabelecimento?.nome?.let { Title(content = it, maxLines = 1) }
             }
             Row {
-                Subtitle(content = "4min(300m)", color = Primary)
+                Subtitle(content = conversorDistancia(infoRotas.distance), color = Primary)
             }
         }
 
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-            items(items = rotas, itemContent = {
+            items(items = infoRotas.routes, itemContent = {
                 Row {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -452,6 +455,7 @@ fun BarDirections(
 @Composable
 fun BarProducts(produtos: List<Produto>, getRouteCallback: GetRouteCallback) {
     Column {
+
         LazyColumn {
             items(items = produtos, itemContent = {
                 ProductItem(
@@ -473,8 +477,6 @@ fun BarProducts(produtos: List<Produto>, getRouteCallback: GetRouteCallback) {
                 )
             })
         }
-
-
     }
 }
 

@@ -1,6 +1,5 @@
 import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
-
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.easy.myapplication.dto.Estabelecimento
@@ -8,6 +7,7 @@ import com.easy.myapplication.dto.FilterDTO
 import com.easy.myapplication.dto.Metodo
 import com.easy.myapplication.dto.Produto
 import com.easy.myapplication.dto.RoutesMapper
+import com.easy.myapplication.dto.TargetRoutes
 import com.easy.myapplication.services.Service.MapBoxService
 import com.easy.myapplication.services.Service
 import kotlinx.coroutines.CoroutineScope
@@ -40,15 +40,16 @@ class MapaViewModel : ViewModel() {
     val destination = MutableLiveData(DestinationTarget());
     val erroApi = MutableLiveData("")
     val latLong = MutableLiveData(LatandLong())
-    val routes = MutableLiveData(SnapshotStateList<RoutesMapper>())
+    val infoRoutes = MutableLiveData(TargetRoutes())
     private val produtoService = Service.ProdutoService();
     private val mapaService = MapBoxService();
 
 
     fun applyFilters(filterDTO:FilterDTO){
         filterMapa.postValue(filterDTO)
-        getProdutos( distancia = filterDTO?.distancia, metodoPagamento = filterDTO?.metodoPagamento,
-            nome = filterDTO?.nome)
+        getProdutos( distancia = filterDTO.distancia, metodoPagamento = filterDTO.metodoPagamento,
+            nome = filterDTO.nome
+        )
     }
 
     fun clearFilter(setFilterDTO: (FilterDTO)->Unit){
@@ -59,6 +60,7 @@ class MapaViewModel : ViewModel() {
 
 fun getRoute(destinationRoute:DestinationTarget, origin:LatandLong) {
     CoroutineScope(Dispatchers.IO).launch {
+
         try {
             val response = destinationRoute.coordinates?.let {
                 mapaService.getRoutesMap(
@@ -68,9 +70,12 @@ fun getRoute(destinationRoute:DestinationTarget, origin:LatandLong) {
                     latitudeDestination = it.latitude
                 )
             };
+
             val directions = response?.body();
+
             if (directions!!.routes.isNotEmpty()) {
-                val routesMapper = directions!!.routes[0].legs[0].steps.map {
+
+                val routesMapper = directions.routes[0].legs[0].steps.map {
                     RoutesMapper(
                         it.name,
                         it.duration,
@@ -79,7 +84,15 @@ fun getRoute(destinationRoute:DestinationTarget, origin:LatandLong) {
                         it.maneuver.modifier
                     )
                 }
-                routes.value!!.addAll(routesMapper)
+
+
+                val routesDestination=TargetRoutes(
+                    distance = directions.routes[0].distance,
+                    duration = directions.routes[0].duration,
+                )
+
+                routesDestination.routes.addAll(routesMapper)
+                infoRoutes.postValue(routesDestination)
                 destination.postValue(destinationRoute)
             }
         }

@@ -35,15 +35,16 @@ import com.easy.myapplication.shared.StarRatingBar.StarRatingBar
 import com.easy.myapplication.shared.Subtitle.Subtitle
 import com.easy.myapplication.shared.Title.Title
 import com.easy.myapplication.ui.theme.Primary
+import com.easy.myapplication.utils.conversorTime
 import com.easy.myapplication.utils.formatTime
 import java.nio.file.WatchEvent
 import kotlin.time.ExperimentalTime
 
 
 data class Time(
-    val car: Long?,
-    val bike: Long?,
-    val people: Long?
+    val car: Double?,
+    val bike: Double?,
+    val people: Double?
 )
 
 data class DataProductItem(
@@ -58,10 +59,10 @@ data class DataProductItem(
     val estabelecimento:Estabelecimento?
 )
 
-@OptIn(ExperimentalTime::class)
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ProductItem(data: DataProductItem, getRouteCallback: GetRouteCallback) {
+    fun ProductItem(data: DataProductItem, getRouteCallback: GetRouteCallback) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(15.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -106,26 +107,8 @@ fun ProductItem(data: DataProductItem, getRouteCallback: GetRouteCallback) {
 
             Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.fillMaxWidth(0.8f)) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(20.dp)){
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)){
 
-
-                        Column {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(10.dp)
-                            ) {
-                                Column {
-                                    Image(
-                                        painter = painterResource(id = R.mipmap.bike),
-                                        contentDescription = "Icone",
-                                        modifier = Modifier.width(15.dp)
-                                    )
-                                }
-                                Column {
-                                    Subtitle(content = (data.time?.bike?.let { formatTime(it) }))
-                                }
-                            }
-                        }
                         Column {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -140,7 +123,7 @@ fun ProductItem(data: DataProductItem, getRouteCallback: GetRouteCallback) {
                                 }
                                 Column {
                                     Subtitle(
-                                        content = data.time?.car?.let { formatTime(it) },
+                                        content = data.time?.car?.let { conversorTime(it) },
                                     )
                                 }
                             }
@@ -159,7 +142,7 @@ fun ProductItem(data: DataProductItem, getRouteCallback: GetRouteCallback) {
                                 }
                                 Column {
                                     Subtitle(
-                                        content = data.time?.people?.let { formatTime(it) }
+                                        content = data.time?.people?.let { conversorTime(it) }
                                     )
                                 }
                             }

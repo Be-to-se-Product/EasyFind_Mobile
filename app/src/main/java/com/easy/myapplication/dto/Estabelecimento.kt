@@ -14,7 +14,7 @@ data class Estabelecimento (
     val metodoPagamento: List<MetodoPagamento>? = null,
     val telefone: String? = null,
     val site: String? = null,
-    val tempoCarro: Long? = null,
-    val tempoPessoa: Long? = null,
-    val tempoBike: Long? = null
+    val tempoCarro: Double? = null,
+    val tempoPessoa: Double? = null,
+    val tempoBike: Double? = null
 )
