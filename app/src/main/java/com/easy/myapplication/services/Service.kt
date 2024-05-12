@@ -1,5 +1,6 @@
 package com.easy.myapplication.services
 
+import com.easy.myapplication.services.endpoints.ICompra
 import com.easy.myapplication.BuildConfig
 import com.easy.myapplication.services.endpoints.IAvaliacao
 import com.easy.myapplication.services.endpoints.IConsumidor
@@ -17,10 +18,19 @@ object Service {
 
     fun ProdutoService(): IProduto {
         val cliente = Retrofit.Builder()
-            .baseUrl("$BASEURL/produtos/")
+            .baseUrl("${BASEURL}produtos/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(IProduto::class.java)
+        return cliente;
+    }
+
+    fun CompraService(): ICompra {
+        val cliente = Retrofit.Builder()
+            .baseUrl(BASEURL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ICompra::class.java)
         return cliente;
     }
 
@@ -35,13 +45,13 @@ object Service {
 
     fun AvalicaoService(): IAvaliacao{
         val avalicao = Retrofit.Builder()
-            .baseUrl("$BASEURL/")
+            .baseUrl(BASEURL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(IAvaliacao::class.java)
         return avalicao
     }
-    
+
     fun getApiEasyFind(token: String? = null): IConsumidor {
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor { chain ->
@@ -58,7 +68,7 @@ object Service {
             .build()
 
         val cliente = Retrofit.Builder()
-            .baseUrl("$BASEURL")
+            .baseUrl(BASEURL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
