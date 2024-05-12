@@ -2,13 +2,8 @@ package com.easy.myapplication.screens.Compra
 
 import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.easy.myapplication.dto.MetodoPagamento
-import com.easy.myapplication.dto.Produto
-import com.easy.myapplication.screens.Compra.Integration.ItemVenda
 import com.easy.myapplication.screens.Compra.Integration.MetodoPagamentoAceito
 import com.easy.myapplication.screens.Compra.Integration.PedidoCadastro
 import com.easy.myapplication.services.Service
@@ -16,7 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class CompraViewModel() : ViewModel() {
+class Model() : ViewModel() {
     val metodosPagamento = MutableLiveData(SnapshotStateList<MetodoPagamentoAceito>())
     private val erroApi = MutableLiveData("")
     private val compraService = Service.CompraService()

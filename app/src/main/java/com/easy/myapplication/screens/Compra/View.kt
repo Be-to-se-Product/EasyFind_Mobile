@@ -24,7 +24,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -32,7 +31,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -47,7 +45,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.easy.myapplication.screens.Compra.Integration.ItemVenda
 import com.easy.myapplication.screens.Compra.Integration.MetodoPagamento
-import com.easy.myapplication.screens.Compra.Integration.MetodoPagamentoAceito
 import com.easy.myapplication.screens.Compra.Integration.PedidoCadastro
 import com.easy.myapplication.screens.Produto.ProdutoPedido
 import com.easy.myapplication.shared.Header.Header
@@ -59,7 +56,7 @@ import com.easy.myapplication.utils.generateQRCode
 fun Buy(navController: NavController) {
     val currentStep = remember { mutableStateOf(1) }
     val totalSteps = 3
-    val viewModel = remember { CompraViewModel() }
+    val viewModel = remember { Model() }
     val selectedOption = remember { mutableStateOf<String?>(null) }
     val isFinalStep = remember { mutableStateOf(false) }
 
@@ -69,7 +66,7 @@ fun Buy(navController: NavController) {
     val productId = products.id
     val storeId = products.idEstabelecimento
     val isPaymentOnline = remember{ mutableStateOf(false) }
-    val paymentMethodId = remember { mutableStateOf(1L) }
+    val paymentMethodId = remember { mutableStateOf(2L) }
     val consumerId = 1L
     Header {
         Column(
@@ -108,7 +105,7 @@ fun Buy(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(16.dp))
                 Row {
-                    if (currentStep.value > 1) {
+                    if (currentStep.value > 1 && !isFinalStep.value) {
                         Button(
                             onClick = { if (currentStep.value > 1) currentStep.value-- },
                             colors = ButtonDefaults.buttonColors(Primary)
@@ -117,23 +114,26 @@ fun Buy(navController: NavController) {
                         }
                         Spacer(modifier = Modifier.width(8.dp))
                     }
-                    Button(
-                        onClick = {
-                            if (currentStep.value < totalSteps) {
-                                currentStep.value++
-                                if (currentStep.value == totalSteps && selectedOption.value != "pix") {
-                                    sendRequest(consumerId, storeId!!, productId!!, quantity, paymentMethodId.value, isPaymentOnline, viewModel)
+                    if (!isFinalStep.value) {
+                        Button(
+                            onClick = {
+                                if (currentStep.value < totalSteps) {
+                                    currentStep.value++
+                                    if (currentStep.value == totalSteps && selectedOption.value != "pix") {
+                                        sendRequest(consumerId, storeId!!, productId!!, quantity, paymentMethodId.value, isPaymentOnline, viewModel)
+                                    }
+                                } else {
+                                    if (selectedOption.value == "pix") {
+                                        sendRequest(consumerId, storeId!!, productId!!, quantity, paymentMethodId.value, isPaymentOnline, viewModel)
+                                        isFinalStep.value = true
+                                    }
+                                    currentStep.value = totalSteps
                                 }
-                            } else {
-                                if (selectedOption.value == "pix") {
-                                    sendRequest(consumerId, storeId!!, productId!!, quantity, paymentMethodId.value, isPaymentOnline, viewModel)
-                                }
-                                currentStep.value = totalSteps
-                            }
-                        },
-                        colors = ButtonDefaults.buttonColors(Primary)
-                    ) {
-                        Text(if (currentStep.value == totalSteps) "Finalizar" else "Continuar")
+                            },
+                            colors = ButtonDefaults.buttonColors(Primary)
+                        ) {
+                            Text(if (currentStep.value == totalSteps) "Finalizar" else "Continuar")
+                        }
                     }
                 }
             }
@@ -155,6 +155,7 @@ fun Buy(navController: NavController) {
         }
     }
 }
+
 
 
 @Composable
@@ -188,7 +189,7 @@ fun StepTwo(
     selectedOption: MutableState<String?>,
     paymentMethodId: MutableState<Long>,
     onOptionSelected: (String) -> Unit,
-    viewModel: CompraViewModel = CompraViewModel()
+    viewModel: Model = Model()
 ) {
     viewModel.getMetodos()
 
@@ -359,7 +360,7 @@ fun copyToClipboard(context: Context, text: String) {
     clipboard.setPrimaryClip(clip)
 }
 
-fun sendRequest(consumerId: Long, storeId: Long, productId: Long, quantity: Int, paymentMethodId: Long, isPaymentOnline: MutableState<Boolean>, viewModel: CompraViewModel) {
+fun sendRequest(consumerId: Long, storeId: Long, productId: Long, quantity: Int, paymentMethodId: Long, isPaymentOnline: MutableState<Boolean>, viewModel: Model) {
     val pedido = PedidoCadastro().apply {
         idConsumidor = consumerId
         idEstabelecimento = storeId
