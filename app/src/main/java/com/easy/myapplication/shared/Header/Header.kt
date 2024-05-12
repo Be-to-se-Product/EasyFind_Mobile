@@ -14,6 +14,9 @@ import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -21,16 +24,35 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.easy.myapplication.R
+import com.easy.myapplication.repositories.StorageRepository
 import com.easy.myapplication.shared.Drawble.Drawble
 import com.easy.myapplication.shared.Title.Title
 import com.easy.myapplication.shared.UserHead.UserHead
 import com.easy.myapplication.ui.theme.Primary
 import com.easy.myapplication.ui.theme.Seconday
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import org.koin.androidx.compose.inject
+import org.koin.core.component.inject
 
 @Composable
 fun Header(content:@Composable ()-> Unit) {
+    val storage : StorageRepository by inject<StorageRepository>();
+
+    val nome = remember { mutableStateOf("") }
+
+    fun getUserName() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val nomeValue = storage.readFromDataStore("nome").toString()
+            withContext(Dispatchers.Main) {
+                nome.value = nomeValue
+            }
+        }
+    }
+    getUserName()
 
     Surface {
         Drawble() { drawerState: DrawerState, scope: CoroutineScope ->
@@ -51,8 +73,8 @@ fun Header(content:@Composable ()-> Unit) {
                         ) {
                             UserHead(
                                 id = "1",
-                                firstName = "Matheus",
-                                lastName = "Lessa",
+                                firstName = nome.value,
+                                lastName = "",
                                 modifier = Modifier.clickable(
                                     onClick = { scope.launch { drawerState.open() } },
                                     enabled = true

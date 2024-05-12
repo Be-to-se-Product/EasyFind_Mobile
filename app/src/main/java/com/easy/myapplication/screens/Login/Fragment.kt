@@ -1,5 +1,6 @@
 package com.easy.myapplication.screens.Login
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,7 +26,7 @@ import com.easy.myapplication.shared.Title.Title
 import com.easy.myapplication.utils.formatarData
 
 @Composable
-fun login(model: Model,navController: NavController){
+fun login(model: Model,navigation: ()->Unit ){
     val (usuario, usuarioSetter) = remember { mutableStateOf(UsuarioCriacaoDTO()) }
 
     Column(
@@ -36,7 +37,7 @@ fun login(model: Model,navController: NavController){
         Spacer(modifier = Modifier.height(30.dp))
         Input(value = usuario.senha?:"", onValueChange = {usuarioSetter(usuario.copy(senha = it))}, type = Type.PASSWORD, label = "Senha")
         Spacer(modifier = Modifier.height(40.dp))
-        Button(onClick = {model.loginUsuario(usuario, { navController.navigate("Mapa") }) }){
+        Button(onClick = { model.loginUsuario(usuario,navigation) }){
             Title(content = "Entrar", fontSize = 14.sp, maxLines = 1)
         }
     }

@@ -63,7 +63,6 @@ import com.easy.myapplication.shared.Title.Title
 import com.easy.myapplication.ui.theme.Primary
 import com.easy.myapplication.utils.LocationCallback
 import com.easy.myapplication.utils.conversorDistancia
-import com.easy.myapplication.utils.getLatLong
 import com.easy.myapplication.utils.mediaAvaliacao
 
 
@@ -83,18 +82,8 @@ fun Mapa(viewModel: MapaViewModel,navController: NavController) {
     val infoRoutes = viewModel.infoRoutes.observeAsState().value!!
     val context = LocalContext.current
     val latLong = viewModel.latLong.observeAsState().value!!
-    val setLatLong = { item: LatandLong ->
-        viewModel.latLong.postValue(item)
-    }
-
-    val locationCallback = object : LocationCallback {
-        override fun onSuccess(latitude: Double, longitude: Double) {
-            setLatLong(latLong.copy(latitude = latitude, longitude = longitude))
-        }
-
-        override fun onError(message: String?) {
-            print(message)
-        }
+    val navigate = { id: Long ->
+        navController.navigate("Produto/${id}" )
     }
 
 
@@ -103,10 +92,7 @@ fun Mapa(viewModel: MapaViewModel,navController: NavController) {
             viewModel.getRoute(destination, latLong)
         }
     }
-
-    LaunchedEffect(key1 = Unit) {
-        getLatLong(context, locationCallback)
-    }
+    viewModel.getLocations(context)
 
     LaunchedEffect(key1 = latLong.latitude) {
         if (latLong.latitude != 0.0) {
@@ -117,7 +103,7 @@ fun Mapa(viewModel: MapaViewModel,navController: NavController) {
     Header {
         BarButton(sheetContent = {
             if (infoRoutes.routes.size <= 0) {
-                BarProducts(produtos = produtos, getRouteCallback = getRouteCallback)
+                BarProducts(produtos = produtos, getRouteCallback = getRouteCallback,navigate = navigate)
             } else {
                 BarDirections(infoRotas = infoRoutes, destinationTarget = destination, clearRouter = {
                     viewModel.infoRoutes.value!!.routes.clear()
@@ -453,14 +439,16 @@ fun BarDirections(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun BarProducts(produtos: List<Produto>, getRouteCallback: GetRouteCallback) {
+fun BarProducts(produtos: List<Produto>, getRouteCallback: GetRouteCallback, navigate: (Long) -> Unit) {
     Column {
 
         LazyColumn {
             items(items = produtos, itemContent = {
                 ProductItem(
                     getRouteCallback = getRouteCallback,
+                    navigate = navigate,
                     data = DataProductItem(
+                        id = it.id?:0L,
                         name = it.nome.toString(),
                         qtdStars = mediaAvaliacao(it.avaliacao),
                         shop = it.estabelecimento?.nome ?: "",

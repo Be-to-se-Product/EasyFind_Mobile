@@ -1,5 +1,7 @@
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.easy.myapplication.dto.Estabelecimento
@@ -10,6 +12,8 @@ import com.easy.myapplication.dto.RoutesMapper
 import com.easy.myapplication.dto.TargetRoutes
 import com.easy.myapplication.services.Service.MapBoxService
 import com.easy.myapplication.services.Service
+import com.easy.myapplication.utils.LocationCallback
+import com.easy.myapplication.utils.getLatLong
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -43,6 +47,21 @@ class MapaViewModel : ViewModel() {
     val infoRoutes = MutableLiveData(TargetRoutes())
     private val produtoService = Service.ProdutoService();
     private val mapaService = MapBoxService();
+
+    val locationCallback = object : LocationCallback {
+        override fun onSuccess(latitude: Double, longitude: Double) {
+            latLong.postValue(latLong.value?.copy(latitude = latitude, longitude = longitude))
+        }
+
+        override fun onError(message: String?) {
+            print(message)
+        }
+    }
+
+   fun getLocations(context: Context){
+       getLatLong(context, locationCallback)
+   }
+
 
 
     fun applyFilters(filterDTO:FilterDTO){
@@ -121,6 +140,8 @@ fun getRoute(destinationRoute:DestinationTarget, origin:LatandLong) {
         }
 
     }
+
+
 
 
 }
