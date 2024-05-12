@@ -6,6 +6,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.MutableLiveData
@@ -19,8 +20,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 val Context.tokenUsuario: DataStore<Preferences> by preferencesDataStore("token")
+val Context.idUsuario: DataStore<Preferences> by preferencesDataStore("id")
 class Model(private val context: Context):ViewModel(){
-    val filmes = MutableLiveData(SnapshotStateList<UsuarioCriacaoDTO>())
     val erroApi = MutableLiveData("")
 
     fun loginUsuario(usuario: UsuarioCriacaoDTO){
@@ -31,6 +32,7 @@ class Model(private val context: Context):ViewModel(){
                 val post  = api.loginConsumidor(usuario)
                 if (post.isSuccessful){
                     post.body()?.token?.let { saveToken(it) }
+                    post.body()?.id?.let { saveId(it) }
                     erroApi.postValue("")
                     Log.d("api",post.body().toString())
                 }else{
@@ -73,4 +75,9 @@ class Model(private val context: Context):ViewModel(){
         }
     }
 
+    private suspend fun saveId(id: Long) {
+        context.idUsuario.edit { settings ->
+            settings[longPreferencesKey("id")] = id
+        }
+    }
 }
