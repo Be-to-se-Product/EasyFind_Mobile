@@ -39,19 +39,21 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.easy.myapplication.R
 import com.easy.myapplication.shared.Subtitle.Subtitle
 import com.easy.myapplication.shared.Title.Title
 import com.easy.myapplication.ui.theme.Primary
 import com.easy.myapplication.ui.theme.Seconday
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun Login(navController: NavHostController, modifier: Modifier = Modifier) {
+fun Login(nav:NavHostController,navController: NavHostController, modifier: Modifier = Modifier) {
+
     Surface(color = Color(0xFF292929)) {
 
         val switch = remember { mutableStateOf(true) }
-        val context = LocalContext.current
-        val model = Model(context)
+        val model = koinViewModel<Model>()
 
         val animatedButtonEnabled = animateColorAsState(
             targetValue = if (switch.value) Primary else Seconday, animationSpec = tween(
@@ -68,7 +70,8 @@ fun Login(navController: NavHostController, modifier: Modifier = Modifier) {
         )
 
         Column(
-            modifier = Modifier.verticalScroll(rememberScrollState())
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
                 .padding(PaddingValues(top = 25.dp))
         ) {
             Box(
@@ -93,7 +96,7 @@ fun Login(navController: NavHostController, modifier: Modifier = Modifier) {
                             modifier = Modifier.fillMaxWidth(1f)
                         ) {
                             Row() {
-                                Title(content = "Bem vindo a Easy Find")
+                                Title(content = "Bem vindo a Easy Find", maxLines = 1)
                             }
                             Row {
                                 Subtitle(content = "Conectando você ao comércio local")
@@ -184,20 +187,20 @@ fun Login(navController: NavHostController, modifier: Modifier = Modifier) {
             Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth(1f)) {
                 NavHost(
                     modifier = modifier,
-                    navController = navController,
+                    navController = nav,
                     startDestination = "LOGIN"
                 ) {
                     composable("LOGIN") {
-                        login(model)
+                        login(model, navController)
                     }
                     composable("CADASTRO") {
                         cadastro(model)
                     }
                 }
                 if (switch.value) {
-                    navController.navigate("LOGIN")
+                    nav.navigate("LOGIN")
                 } else {
-                    navController.navigate("CADASTRO")
+                    nav.navigate("CADASTRO")
                 }
             }
         }

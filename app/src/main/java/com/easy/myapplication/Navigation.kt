@@ -1,6 +1,8 @@
 package com.easy.myapplication
 
 import MapaViewModel
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -13,6 +15,7 @@ import com.easy.myapplication.screens.Mapa.Mapa
 import com.easy.myapplication.screens.Produto.Produto
 import com.easy.myapplication.screens.Produto.ProdutoViewModel
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppNavHost(
     modifier: Modifier = Modifier,
@@ -26,7 +29,8 @@ fun AppNavHost(
     ){
         composable("Login")
         {
-            Login(rememberNavController())
+            val nav = rememberNavController();
+            Login(nav,navController)
         }
         composable("Mapa"){
             val mapa = MapaViewModel()
