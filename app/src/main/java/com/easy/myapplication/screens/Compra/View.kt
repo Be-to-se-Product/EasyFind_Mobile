@@ -405,7 +405,7 @@ fun sendRequest(
             idMetodoPagamento = paymentMethodId
             isPagamentoOnline = isPaymentOnline.value
         }
-        origem = "app"
+        origem = "Tela compra"
     }
     viewModel.postPedido(pedido)
 }
