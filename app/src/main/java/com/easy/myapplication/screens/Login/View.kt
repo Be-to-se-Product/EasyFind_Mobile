@@ -193,9 +193,9 @@ fun Login(navController: NavHostController, model:Model) {
                         login(model, navigate)
 //                    }
                 
-                Button(onClick = { navigate() }) {
+               // Button(onClick = { navigate() }) {
                     
-                }
+               // }
 //                    composable("CADASTROTELA") {
 //                        cadastro(model)
 //                    }

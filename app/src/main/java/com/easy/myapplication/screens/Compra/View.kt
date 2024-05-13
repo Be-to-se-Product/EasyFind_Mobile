@@ -60,14 +60,15 @@ fun Buy(navController: NavController) {
     val selectedOption = remember { mutableStateOf<String?>(null) }
     val isFinalStep = remember { mutableStateOf(false) }
 
-    val products = navController.previousBackStackEntry?.savedStateHandle?.get<ProdutoPedido>("PRODUTO")
+    val products =
+        navController.previousBackStackEntry?.savedStateHandle?.get<ProdutoPedido>("PRODUTO")
     val total = products?.quantidade!! * products.preco!!
     val quantity = products.quantidade
     val productId = products.id
     val storeId = products.idEstabelecimento
-    val isPaymentOnline = remember{ mutableStateOf(false) }
+    val isPaymentOnline = remember { mutableStateOf(false) }
     val paymentMethodId = remember { mutableStateOf(2L) }
-    val consumerId = 1L
+    val consumerId = 2L
     Header {
         Column(
             modifier = Modifier
@@ -93,6 +94,7 @@ fun Buy(navController: NavController) {
                         viewModel = viewModel,
                         onOptionSelected = { selectedOption.value = it }
                     )
+
                     3 -> {
                         if (selectedOption.value == "Pix" && !isFinalStep.value) {
                             StepThree()
@@ -120,11 +122,27 @@ fun Buy(navController: NavController) {
                                 if (currentStep.value < totalSteps) {
                                     currentStep.value++
                                     if (currentStep.value == totalSteps && selectedOption.value != "pix") {
-                                        sendRequest(consumerId, storeId!!, productId!!, quantity, paymentMethodId.value, isPaymentOnline, viewModel)
+                                        sendRequest(
+                                            consumerId,
+                                            storeId!!,
+                                            productId!!,
+                                            quantity,
+                                            paymentMethodId.value,
+                                            isPaymentOnline,
+                                            viewModel
+                                        )
                                     }
                                 } else {
                                     if (selectedOption.value == "pix") {
-                                        sendRequest(consumerId, storeId!!, productId!!, quantity, paymentMethodId.value, isPaymentOnline, viewModel)
+                                        sendRequest(
+                                            consumerId,
+                                            storeId!!,
+                                            productId!!,
+                                            quantity,
+                                            paymentMethodId.value,
+                                            isPaymentOnline,
+                                            viewModel
+                                        )
                                         isFinalStep.value = true
                                     }
                                     currentStep.value = totalSteps
@@ -137,29 +155,36 @@ fun Buy(navController: NavController) {
                     }
                 }
             }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(1.dp, Color(0xFFFCFCFC), RoundedCornerShape(4.dp))
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Button(
-                    onClick = { /*TODO: Handle cancel action*/ },
-                    colors = ButtonDefaults.buttonColors(Primary)
+            if (!isFinalStep.value) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(1.dp, Color(0xFFFCFCFC), RoundedCornerShape(4.dp))
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("Cancelar")
+                    Button(
+                        onClick = { /*TODO: Handle cancel action*/ },
+                        colors = ButtonDefaults.buttonColors(Primary)
+                    ) {
+                        Text("Cancelar")
+                    }
+                    val totalFormatado = String.format("%.2f", total)
+                    Text(text = "Total : R$$totalFormatado")
+
                 }
-                Text(text = "Total : R$${total}")
             }
         }
     }
 }
 
 
-
 @Composable
-fun StepOne(selectedOption: MutableState<String?>, isPaymentOnline: MutableState<Boolean>, onOptionSelected: (String) -> Unit) {
+fun StepOne(
+    selectedOption: MutableState<String?>,
+    isPaymentOnline: MutableState<Boolean>,
+    onOptionSelected: (String) -> Unit
+) {
     Text(
         text = "Como deseja realizar o pagamento?",
         modifier = Modifier.fillMaxWidth(),
@@ -221,7 +246,7 @@ fun StepThree() {
     var codigoPix by remember { mutableStateOf(gerarCodigoPix()) }
 
     Column {
-        Column (
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(vertical = 16.dp)
@@ -360,7 +385,15 @@ fun copyToClipboard(context: Context, text: String) {
     clipboard.setPrimaryClip(clip)
 }
 
-fun sendRequest(consumerId: Long, storeId: Long, productId: Long, quantity: Int, paymentMethodId: Long, isPaymentOnline: MutableState<Boolean>, viewModel: Model) {
+fun sendRequest(
+    consumerId: Long,
+    storeId: Long,
+    productId: Long,
+    quantity: Int,
+    paymentMethodId: Long,
+    isPaymentOnline: MutableState<Boolean>,
+    viewModel: Model
+) {
     val pedido = PedidoCadastro().apply {
         idConsumidor = consumerId
         idEstabelecimento = storeId
@@ -370,9 +403,9 @@ fun sendRequest(consumerId: Long, storeId: Long, productId: Long, quantity: Int,
         })
         metodo = MetodoPagamento().apply {
             idMetodoPagamento = paymentMethodId
-             isPagamentoOnline = isPaymentOnline.value
+            isPagamentoOnline = isPaymentOnline.value
         }
-        origem = "app"
+        origem = "Tela compra"
     }
     viewModel.postPedido(pedido)
 }

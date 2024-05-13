@@ -52,7 +52,7 @@ fun ProgressBar(currentStep: Int, totalStep: Int) {
 
                     CircleNumber(
                         number = i,
-                        isSelected = i <= currentStep,
+                         isSelected = i <= currentStep,
                         activeColor = activeColor,
                         inactiveColor = inactiveColor,
                         activeTextColor = activeTextColor,

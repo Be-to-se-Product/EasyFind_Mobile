@@ -12,6 +12,6 @@ interface ICompra {
     @GET("estabelecimentos/metodos/{id}")
     suspend fun getMetodosPagamento(@Path(value = "id") id: Int): Response<List<MetodoPagamentoAceito>>
 
-    @POST("/pedidos")
+    @POST("pedidos")
     suspend fun postPedido(@Body pedido: PedidoCadastro): Response<Void>
 }
