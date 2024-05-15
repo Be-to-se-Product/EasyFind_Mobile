@@ -1,8 +1,7 @@
 package com.easy.myapplication.screens.Produto
 
 
-import android.content.Intent
-import android.os.Bundle
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -22,8 +21,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -40,13 +38,10 @@ import com.easy.myapplication.shared.Header.Header
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
-
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
-import com.easy.myapplication.dto.ProdutoVendaDTO
-import com.easy.myapplication.screens.Mapa.Mapa
+import com.easy.myapplication.dto.AvaliacaoCadastrar
+import com.easy.myapplication.shared.ButtonQuantidadeProduto.ProdutoQuantityButton
 import com.easy.myapplication.shared.StarRatingBar.StarRatingBar
 import com.easy.myapplication.shared.Subtitle.Subtitle
 import com.easy.myapplication.shared.Title.Title
@@ -58,7 +53,6 @@ import com.easy.myapplication.utils.getLatLong
 @Composable
 fun Produto(view: ProdutoViewModel,navController: NavController) {
 
-    val isBuyButtonClicked = remember { mutableStateOf(false) }
     val setlatLong = view.latLong
     val produtoVenda = view.produtoVenda.observeAsState().value!!
     val setProduto = { it:ProdutoPedido->
@@ -182,19 +176,8 @@ fun Produto(view: ProdutoViewModel,navController: NavController) {
                         }
                     }
 
-                    ComentarioSection(view)
+                    produtoVenda.id?.let { ComentarioSection(view, it) }
 
-                    Column(modifier = Modifier.padding(5.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally) {
-                        Button(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(0.dp),
-                            colors = ButtonDefaults.buttonColors(Color(0xFFFCA622)),
-                            onClick = { view.cadastroAvalicao(1) }) {
-                            Text(text = "Postar")
-                        }
-                    }
                 }
 
                 LazyColumn(modifier = Modifier.height(900.dp)) {
@@ -216,7 +199,6 @@ fun Produto(view: ProdutoViewModel,navController: NavController) {
     }
 }
 
-// Função da distancia do mercado
 @Composable
 fun RouteProduto(view: ProdutoViewModel){
     val produtoTempo = view.produto
@@ -265,9 +247,10 @@ fun IconWithTime(icon: Int, time: String){
 }
 
 @Composable
-fun ComentarioSection(view: ProdutoViewModel) {
-    val setAvaliacao = view.avaliacao
-    val avaliacao = view.avaliacao.observeAsState().value!!;
+fun ComentarioSection(view: ProdutoViewModel, id:Long) {
+    val (avaliacao,setAvaliacao) = remember {
+       mutableStateOf(AvaliacaoCadastrar(produto = id))
+    };
 
     Column(
         modifier = Modifier.padding(16.dp),
@@ -282,11 +265,11 @@ fun ComentarioSection(view: ProdutoViewModel) {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            avaliacao.qtdEstrela?.let {
+            avaliacao.qtdEstrela.let {
                 StarRatingBar(
                     rating = it,
                     onRatingChanged = {
-                        setAvaliacao.postValue(avaliacao.copy(qtdEstrela = it))
+                        setAvaliacao(avaliacao.copy(qtdEstrela = it))
                     }
                 )
             }
@@ -301,7 +284,7 @@ fun ComentarioSection(view: ProdutoViewModel) {
         avaliacao.comentario?.let {
             TextField(
                 value = it,
-                onValueChange = { newValue -> setAvaliacao.postValue(avaliacao.copy(comentario = newValue)) },
+                onValueChange = { newValue -> setAvaliacao(avaliacao.copy(comentario = newValue)) },
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                 modifier = Modifier
                     .border(1.dp, color = Color(0xFFFCA622), shape = RoundedCornerShape(5.dp))
@@ -311,56 +294,18 @@ fun ComentarioSection(view: ProdutoViewModel) {
 
             )
         }
-    }
-}
 
-@Composable
-fun ProdutoQuantityButton(
-    quantity: Int,
-    onIncrement: () -> Unit,
-    onDecrement: () -> Unit
-){
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(18.dp)
-            .border(
-                width = 1.dp,
-                color = Color(0xFFFCA622),
-                shape = RoundedCornerShape(8.dp)
-            ),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ){
-        IconButton(
-            onClick = {
-                if (quantity > 0){
-                onDecrement()
-                }
+        Column(modifier = Modifier.padding(5.dp),
+            horizontalAlignment = Alignment.CenterHorizontally) {
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(0.dp),
+                colors = ButtonDefaults.buttonColors(Color(0xFFFCA622)),
+                onClick = { view.cadastroAvalicao(avaliacaoCadastrar = avaliacao) }) {
+                Text(text = "Postar")
             }
-        ) {
-            Icon(
-                painter = painterResource(id = R.mipmap.remover)
-                ,contentDescription = "Remover a quantidade"
-                ,tint = Color(0xFFFCA622)
-            )
-        }
-        Text(
-            text = quantity.toString(),
-            style = TextStyle(fontSize = 18.sp),
-            fontWeight = FontWeight.Bold
-        )
-
-        IconButton(
-            onClick = {
-                onIncrement()
-            }
-        ) {
-            Icon(
-                painter = painterResource(id = R.mipmap.adicionar)
-                ,contentDescription = "Adicionar quantidade"
-                , tint = Color(0xFFFCA622)
-            )
         }
     }
 }
+
