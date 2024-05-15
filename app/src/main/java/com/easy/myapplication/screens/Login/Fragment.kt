@@ -1,5 +1,6 @@
 package com.easy.myapplication.screens.Login
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.easy.myapplication.dto.ConsumidorCriacaoDTO
 import com.easy.myapplication.dto.UsuarioCriacaoDTO
 import com.easy.myapplication.shared.Input.Input
@@ -24,7 +26,7 @@ import com.easy.myapplication.shared.Title.Title
 import com.easy.myapplication.utils.formatarData
 
 @Composable
-fun login(model: Model){
+fun login(model: Model,navigation: ()->Unit ){
     val (usuario, usuarioSetter) = remember { mutableStateOf(UsuarioCriacaoDTO()) }
 
     Column(
@@ -35,8 +37,8 @@ fun login(model: Model){
         Spacer(modifier = Modifier.height(30.dp))
         Input(value = usuario.senha?:"", onValueChange = {usuarioSetter(usuario.copy(senha = it))}, type = Type.PASSWORD, label = "Senha")
         Spacer(modifier = Modifier.height(40.dp))
-        Button(onClick = {model.loginUsuario(usuario)}){
-            Title(content = "Entrar", fontSize = 14.sp)
+        Button(onClick = { model.loginUsuario(usuario,navigation) }){
+            Title(content = "Entrar", fontSize = 14.sp, maxLines = 1)
         }
     }
 }
@@ -103,7 +105,7 @@ fun cadastro(model: Model){
         }
         Spacer(modifier = Modifier.height(40.dp))
         Button(onClick = {model.cadastrarUsuario(consumidor)}){
-            Title(content = "Cadastrar", fontSize = 14.sp)
+            Title(content = "Cadastrar", fontSize = 14.sp, maxLines = 1)
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.easy.myapplication.screens.Produto
 
+import LatandLong
 import android.util.Log
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -7,7 +8,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.easy.myapplication.dto.AvaliacaoCadastrar
 import com.easy.myapplication.dto.Produto
-import com.easy.myapplication.screens.Mapa.LatandLong
 import com.easy.myapplication.services.Service
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -45,7 +45,6 @@ class ProdutoViewModel : ViewModel() {
                     erroApi.postValue(response.errorBody()?.string() ?: "")
                 }
             }catch (e: Exception){
-                Log.e("Error",e.message.toString())
                 erroApi.postValue(e.message)
             }
         }
@@ -65,7 +64,7 @@ class ProdutoViewModel : ViewModel() {
                     erroApi.postValue(response.errorBody()?.string() ?: "")
                 }
             }catch (e: Exception){
-                Log.e("Error",e.message.toString())
+                Log.e("Erro", e.message.toString())
                 erroApi.postValue(e.message)
             }
         }

@@ -1,5 +1,6 @@
 package com.easy.myapplication.screens.Login
 
+import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
@@ -31,14 +32,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import com.easy.myapplication.R
 import com.easy.myapplication.shared.Subtitle.Subtitle
 import com.easy.myapplication.shared.Title.Title
@@ -46,12 +45,14 @@ import com.easy.myapplication.ui.theme.Primary
 import com.easy.myapplication.ui.theme.Seconday
 
 @Composable
-fun Login(navController: NavHostController, modifier: Modifier = Modifier) {
+fun Login(navController: NavHostController, model:Model) {
+    val navigate = {
+        Log.d("Login", "Login: ")
+        navController.navigate("Mapa")
+    }
     Surface(color = Color(0xFF292929)) {
 
         val switch = remember { mutableStateOf(true) }
-        val context = LocalContext.current
-        val model = Model(context)
 
         val animatedButtonEnabled = animateColorAsState(
             targetValue = if (switch.value) Primary else Seconday, animationSpec = tween(
@@ -68,7 +69,8 @@ fun Login(navController: NavHostController, modifier: Modifier = Modifier) {
         )
 
         Column(
-            modifier = Modifier.verticalScroll(rememberScrollState())
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
                 .padding(PaddingValues(top = 25.dp))
         ) {
             Box(
@@ -93,7 +95,7 @@ fun Login(navController: NavHostController, modifier: Modifier = Modifier) {
                             modifier = Modifier.fillMaxWidth(1f)
                         ) {
                             Row() {
-                                Title(content = "Bem vindo a Easy Find")
+                                Title(content = "Bem vindo a Easy Find", maxLines = 1)
                             }
                             Row {
                                 Subtitle(content = "Conectando você ao comércio local")
@@ -182,23 +184,27 @@ fun Login(navController: NavHostController, modifier: Modifier = Modifier) {
             }
             Spacer(modifier = Modifier.height(30.dp))
             Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth(1f)) {
-                NavHost(
-                    modifier = modifier,
-                    navController = navController,
-                    startDestination = "LOGIN"
-                ) {
-                    composable("LOGIN") {
-                        login(model)
-                    }
-                    composable("CADASTRO") {
-                        cadastro(model)
-                    }
-                }
-                if (switch.value) {
-                    navController.navigate("LOGIN")
-                } else {
-                    navController.navigate("CADASTRO")
-                }
+//                NavHost(
+//                    modifier = modifier,
+//                    navController = nav,
+//                    startDestination = "LOGINTELA"
+//                ) {
+//                    composable("LOGINTELA") {
+                        login(model, navigate)
+//                    }
+                
+               // Button(onClick = { navigate() }) {
+                    
+               // }
+//                    composable("CADASTROTELA") {
+//                        cadastro(model)
+//                    }
+//                }
+//                if (switch.value) {
+//                    nav.navigate("LOGINTELA")
+//                } else {
+//                    nav.navigate("CADASTROTELA")
+//                }
             }
         }
     }
