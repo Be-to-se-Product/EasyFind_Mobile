@@ -1,6 +1,7 @@
 package com.easy.myapplication.screens.Produto
 
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -86,8 +87,10 @@ fun Produto(view: ProdutoViewModel, navController: NavController, id: String?) {
             Column(modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())) {
-                Column(modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.Start) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.Start
+                ) {
                     produto.estabelecimento?.nome?.let {
                         Title(
                             content = it,
@@ -97,43 +100,58 @@ fun Produto(view: ProdutoViewModel, navController: NavController, id: String?) {
                         )
                     }
                     produto.nome?.let { Title(content = it, fontSize = 24.sp, maxLines = 1) }
-                    Subtitle(content = produto.descricao,
-                        fontSize = 15.sp)
+                    Subtitle(
+                        content = produto.descricao,
+                        fontSize = 15.sp
+                    )
                 }
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     RouteProduto(view)
                 }
 
-                Column(modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Title(content = produto.precoAtual.toString(), maxLines = 1)
 
                 }
 
                 produtoVenda.quantidade?.let {
                     ProdutoQuantityButton(
-                        quantity = it,onIncrement = { setProduto(produtoVenda.copy(quantidade = produtoVenda.quantidade?.plus(
-                            1
-                        ))) }, onDecrement = {
-                            if (produtoVenda.quantidade > 0){
+                        quantity = it, onIncrement = {
+                            setProduto(
+                                produtoVenda.copy(
+                                    quantidade = produtoVenda.quantidade?.plus(
+                                        1
+                                    )
+                                )
+                            )
+                        }, onDecrement = {
+                            if (produtoVenda.quantidade > 0) {
 
-                                setProduto(produtoVenda.copy(quantidade = produtoVenda.quantidade-1))
+                                setProduto(produtoVenda.copy(quantidade = produtoVenda.quantidade - 1))
 
                             }
                         }
                     )
                 }
 
-                Column(modifier = Modifier.padding(5.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(
+                    modifier = Modifier.padding(5.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Button(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(0.dp),
                         colors = ButtonDefaults.buttonColors(Color(0xFFFCA622)),
                         onClick = {
-                            navController.currentBackStackEntry?.savedStateHandle?.set("PRODUTO", produtoVenda)
+                            navController.currentBackStackEntry?.savedStateHandle?.set(
+                                "PRODUTO",
+                                produtoVenda
+                            )
                             navController.navigate("RealizarPedido")
                         }
                     ) {
@@ -143,8 +161,10 @@ fun Produto(view: ProdutoViewModel, navController: NavController, id: String?) {
 
 
 
-                Column(modifier = Modifier.padding(5.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(
+                    modifier = Modifier.padding(5.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Button(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -179,14 +199,15 @@ fun Produto(view: ProdutoViewModel, navController: NavController, id: String?) {
                     }
 
                     produtoVenda.id?.let { ComentarioSection(view, it) }
-                    }
                 }
 
                 LazyColumn(modifier = Modifier.height(900.dp)) {
                     items(items = produto.avaliacao,
                         itemContent = {
-                            Column(modifier = Modifier.padding(16.dp),
-                                horizontalAlignment = Alignment.Start) {
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                horizontalAlignment = Alignment.Start
+                            ) {
                                 it.usuario?.let { it1 -> Title(content = it1, maxLines = 1) }
                                 it.qtdEstrela?.toFloat()?.let { it1 -> StarRatingBar(rating = it1) }
                                 Column {
@@ -199,6 +220,7 @@ fun Produto(view: ProdutoViewModel, navController: NavController, id: String?) {
             }
         }
     }
+}
 
 @Composable
 fun RouteProduto(view: ProdutoViewModel){
