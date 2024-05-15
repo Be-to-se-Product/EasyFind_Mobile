@@ -36,6 +36,12 @@ object Service: KoinComponent {
         return cliente;
     }
 
+
+    fun CadastrarService() :IConsumidor{
+        val cliente = Instance("")
+            .create(IConsumidor::class.java)
+        return cliente
+    }
     fun MapBoxService(): IMapBox {
         val cliente = Retrofit.Builder()
             .baseUrl("https://api.mapbox.com/directions/v5/mapbox/")
