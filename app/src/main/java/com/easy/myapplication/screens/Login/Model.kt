@@ -14,18 +14,35 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Objects
 import java.util.logging.Handler
 
 
-class Model(private val storage: StorageRepository):ViewModel(
-
-){
-    val usuario = MutableLiveData(UsuarioCriacaoDTO())
+class Model(private val storage: StorageRepository):ViewModel(){
     val erroApi = MutableLiveData("")
     val message = MutableLiveData(Message());
     val loading = MutableLiveData(false);
     val ConsumidorService = Service.AutheticationService();
     val CadastroService = Service.CadastrarService();
+
+
+
+     fun verificarUsuarioLogado(navigate: () -> Unit){
+        CoroutineScope(Dispatchers.IO).launch{
+            try {
+                val token = storage.readFromDataStore("token")
+                if(Objects.nonNull(token)){
+                    MainScope().launch{
+                        navigate()
+                    }
+                }
+            }
+            catch (e :Exception){
+                    Log.e("Erro",e.message.toString())
+            }
+
+        }
+    }
 
     fun loginUsuario(usuario: UsuarioCriacaoDTO, navigate: () -> Unit){
         loading.postValue(true)
@@ -44,17 +61,19 @@ class Model(private val storage: StorageRepository):ViewModel(
                     body?.token?.let {
                         Log.d("Login", "Login bem-sucedido, token recebido: $it")
                         storage.saveToDataStore("token",it)
-
                         MainScope().launch {
                             navigate()
                         }
                     }
 
-
-
                 } else {
                     if(post.code()==401 || post.code()==403){
                         message.postValue(message.value?.copy(show = true,message="Email e/ou senha inválidos"))
+
+                    }
+                    else{
+
+                        message.postValue(message.value?.copy(show = true,message="Houve um erro de conexão"))
                     }
 
                     erroApi.postValue(post.errorBody()?.string() ?: "Erro desconhecido")
@@ -68,7 +87,7 @@ class Model(private val storage: StorageRepository):ViewModel(
             finally {
                 loading.postValue(false)
                 delay(2000)
-                message.postValue(message.value?.copy(show=false))
+                message.postValue(Message(show = false))
             }
 
         }

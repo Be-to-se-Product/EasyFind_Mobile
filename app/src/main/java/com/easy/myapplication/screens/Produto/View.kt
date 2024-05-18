@@ -43,6 +43,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
+import com.easy.myapplication.LocalNavController
 import com.easy.myapplication.shared.StarRatingBar.StarRatingBar
 import com.easy.myapplication.shared.Subtitle.Subtitle
 import com.easy.myapplication.shared.Title.Title
@@ -52,9 +53,9 @@ import com.easy.myapplication.utils.getLatLong
 
 
 @Composable
-fun Produto(view: ProdutoViewModel, navController: NavController, id: String?) {
-
-    val isBuyButtonClicked = remember { mutableStateOf(false) }
+fun Produto(view: ProdutoViewModel, id: String?) {
+    val navController = LocalNavController.current;
+    val context = LocalContext.current
     val setlatLong = view.latLong
     val produtoVenda = view.produtoVenda.observeAsState().value!!
     val setProduto = { it:ProdutoPedido->
@@ -62,7 +63,7 @@ fun Produto(view: ProdutoViewModel, navController: NavController, id: String?) {
     }
     val latLong = view.latLong.observeAsState().value!!;
     val produto = view.produto.observeAsState().value!!;
-    val context = LocalContext.current
+
     val locationCallback = object : LocationCallback {
         override fun onSuccess(latitude: Double, longitude: Double) {
             setlatLong.postValue(latLong.copy(latitude, longitude))

@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.easy.myapplication.LocalNavController
 import com.easy.myapplication.screens.Compra.Integration.ItemVenda
 import com.easy.myapplication.screens.Compra.Integration.MetodoPagamento
 import com.easy.myapplication.screens.Compra.Integration.PedidoCadastro
@@ -53,7 +54,8 @@ import com.easy.myapplication.utils.generateQRCode
 
 
 @Composable
-fun Buy(navController: NavController) {
+fun Buy() {
+    val navController = LocalNavController.current;
     val currentStep = remember { mutableStateOf(1) }
     val totalSteps = 3
     val viewModel = remember { Model() }

@@ -40,6 +40,7 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.easy.myapplication.LocalNavController
 import com.easy.myapplication.R
 import com.easy.myapplication.shared.Subtitle.Subtitle
 import com.easy.myapplication.shared.Title.Title
@@ -47,11 +48,15 @@ import com.easy.myapplication.ui.theme.Primary
 import com.easy.myapplication.ui.theme.Seconday
 
 @Composable
-fun Login(navController: NavHostController, model:Model,nav:NavHostController) {
+fun Login(model:Model,nav:NavHostController) {
+
+    val navController = LocalNavController.current
+
     val navigate = {
-        Log.d("Login", "Login: ")
         navController.navigate("Mapa")
     }
+
+    model.verificarUsuarioLogado(navigate)
     Surface(color = Color(0xFF292929)) {
 
         val switch = remember { mutableStateOf(true) }

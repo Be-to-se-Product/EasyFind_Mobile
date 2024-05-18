@@ -22,8 +22,9 @@ object Service: KoinComponent {
 
     private val BASEURL = BuildConfig.HOST_API
     val gson =GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create()
-
     val storage : StorageRepository by inject<StorageRepository>();
+    var navigate = {};
+
     fun ProdutoService(): IProduto {
         val cliente = Instance("produtos")
             .create(IProduto::class.java)
@@ -58,7 +59,6 @@ object Service: KoinComponent {
         return avalicao
     }
 
-
     fun AutheticationService(): IConsumidor {
         val cliente = Instance("usuarios").create(IConsumidor::class.java);
         return cliente;
@@ -79,7 +79,18 @@ object Service: KoinComponent {
                 newRequest.header("Authorization", "Bearer $token")
                 }
                 chain.proceed(newRequest.build())
+
             }
+
+        okHttpClient.addInterceptor{
+            chain->
+            val request = chain.request();
+            val response = chain.proceed(request)
+            if(response.code() == 401 || response.code()==403){
+                navigate()
+            }
+            response
+        }
 
          return okHttpClient.build()
 
