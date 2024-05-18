@@ -25,7 +25,6 @@ data class ProdutoPedido(
 class ProdutoViewModel : ViewModel() {
     val produto = MutableLiveData(Produto())
     val erroApi = MutableLiveData("")
-    val avaliacao = MutableLiveData(AvaliacaoCadastrar())
     val latLong = MutableLiveData(LatandLong())
     val produtoVenda = MutableLiveData(ProdutoPedido());
 
@@ -51,22 +50,18 @@ class ProdutoViewModel : ViewModel() {
         }
     }
 
-    fun cadastroAvalicao(id: Long){
+    fun cadastroAvalicao(avaliacaoCadastrar: AvaliacaoCadastrar){
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                avaliacao.postValue(avaliacao.value?.copy(produto = id))
-                if(avaliacao.value != null) {
-                    val response = avalicaoService.postAvaliacao(avaliacaoCadastrar = avaliacao.value!!)
-                    if (response.isSuccessful) {
-                        Log.e("Sucesso", response.body().toString())
-                        latLong.value?.latitude?.let {
-                            getProdutoById(id,
-                                it, latLong.value!!.longitude)
-                        }
-                    } else {
-                        Log.e("Erro", response.errorBody()?.string() ?: "")
-                        erroApi.postValue(response.errorBody()?.string() ?: "")
+                val response = avalicaoService.postAvaliacao(avaliacaoCadastrar = avaliacaoCadastrar)
+                if (response.isSuccessful) {
+                    latLong.value?.latitude?.let {
+                        getProdutoById(
+                            avaliacaoCadastrar.produto,
+                            it, latLong.value!!.longitude)
                     }
+                } else {
+                    erroApi.postValue(response.errorBody()?.string() ?: "")
                 }
             }catch (e: Exception){
                 Log.e("Erro", e.message.toString())
