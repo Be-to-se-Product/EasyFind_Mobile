@@ -129,7 +129,7 @@ fun getRoute(destinationRoute:DestinationTarget, origin:LatandLong) {
                 val response = produtoService.getMapaProdutos(latitude = latLong.value?.latitude,longitude= latLong.value?.longitude, nome = nome, metodoPagamento =metodoPagamento, distancia = distancia);
                 if (response.isSuccessful) {
                     produtos.value!!.clear()
-                    produtos.value!!.addAll(response.body() ?: listOf(Produto()) )
+                    produtos.value!!.addAll(response.body() ?: listOf() )
                 } else {
                     erroApi.postValue(response.errorBody()?.string() ?: "")
                 }

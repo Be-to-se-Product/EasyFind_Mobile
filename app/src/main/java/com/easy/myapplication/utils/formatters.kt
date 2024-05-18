@@ -48,7 +48,6 @@ fun conversorDistancia(metros: Double): String {
     }
     return "$distanciaConvertida ${medidas[contadora]}";
 }
-//Quero arredondar para 2 casas decimais
 
 @SuppressLint("DefaultLocale")
 fun conversorTime(segundos: Double): String {

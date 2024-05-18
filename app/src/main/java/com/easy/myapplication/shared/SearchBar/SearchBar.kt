@@ -38,10 +38,13 @@ fun SearchBar(modifier: Modifier=Modifier,value:String="",setValue:(value:String
             decorationBox = { innerTextField ->
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.White)
                         .border(1.dp, borderColor, RoundedCornerShape(20))
-                        .padding(10.dp), verticalAlignment = Alignment.CenterVertically
+                        .background(Color.White)
+                        .padding(10.dp)
+                        .fillMaxWidth()
+
+
+                        , verticalAlignment = Alignment.CenterVertically
                 ) {
 
                     innerTextField()

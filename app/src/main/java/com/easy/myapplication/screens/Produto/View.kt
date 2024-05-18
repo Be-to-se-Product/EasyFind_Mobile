@@ -40,6 +40,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
+import com.easy.myapplication.LocalNavController
 import com.easy.myapplication.dto.AvaliacaoCadastrar
 import com.easy.myapplication.shared.ButtonQuantidadeProduto.ProdutoQuantityButton
 import com.easy.myapplication.shared.StarRatingBar.StarRatingBar
@@ -51,8 +52,9 @@ import com.easy.myapplication.utils.getLatLong
 
 
 @Composable
-fun Produto(view: ProdutoViewModel, navController: NavController, id: String?) {
-
+fun Produto(view: ProdutoViewModel, id: String?) {
+    val navController = LocalNavController.current;
+    val context = LocalContext.current
     val setlatLong = view.latLong
     val produtoVenda = view.produtoVenda.observeAsState().value!!
     val setProduto = { it:ProdutoPedido->
@@ -60,7 +62,7 @@ fun Produto(view: ProdutoViewModel, navController: NavController, id: String?) {
     }
     val latLong = view.latLong.observeAsState().value!!;
     val produto = view.produto.observeAsState().value!!;
-    val context = LocalContext.current
+
     val locationCallback = object : LocationCallback {
         override fun onSuccess(latitude: Double, longitude: Double) {
             setlatLong.postValue(latLong.copy(latitude, longitude))

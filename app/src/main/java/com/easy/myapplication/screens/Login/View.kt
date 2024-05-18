@@ -38,6 +38,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import com.easy.myapplication.LocalNavController
 import com.easy.myapplication.R
 import com.easy.myapplication.shared.Subtitle.Subtitle
 import com.easy.myapplication.shared.Title.Title
@@ -45,11 +48,15 @@ import com.easy.myapplication.ui.theme.Primary
 import com.easy.myapplication.ui.theme.Seconday
 
 @Composable
-fun Login(navController: NavHostController, model:Model) {
+fun Login(model:Model,nav:NavHostController) {
+
+    val navController = LocalNavController.current
+
     val navigate = {
-        Log.d("Login", "Login: ")
         navController.navigate("Mapa")
     }
+
+    model.verificarUsuarioLogado(navigate)
     Surface(color = Color(0xFF292929)) {
 
         val switch = remember { mutableStateOf(true) }
@@ -184,27 +191,22 @@ fun Login(navController: NavHostController, model:Model) {
             }
             Spacer(modifier = Modifier.height(30.dp))
             Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth(1f)) {
-//                NavHost(
-//                    modifier = modifier,
-//                    navController = nav,
-//                    startDestination = "LOGINTELA"
-//                ) {
-//                    composable("LOGINTELA") {
+                NavHost(
+                    navController = nav,
+                    startDestination = "LOGINTELA"
+                ) {
+                    composable("LOGINTELA") {
                         login(model, navigate)
-//                    }
-                
-               // Button(onClick = { navigate() }) {
-                    
-               // }
-//                    composable("CADASTROTELA") {
-//                        cadastro(model)
-//                    }
-//                }
-//                if (switch.value) {
-//                    nav.navigate("LOGINTELA")
-//                } else {
-//                    nav.navigate("CADASTROTELA")
-//                }
+                    }
+                    composable("CADASTROTELA") {
+                        cadastro(model)
+                    }
+                }
+                if (switch.value) {
+                    nav.navigate("LOGINTELA")
+                } else {
+                    nav.navigate("CADASTROTELA")
+                }
             }
         }
     }
