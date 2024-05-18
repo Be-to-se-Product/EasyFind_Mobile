@@ -40,6 +40,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
+import com.easy.myapplication.LocalNavController
 import com.easy.myapplication.dto.AvaliacaoCadastrar
 import com.easy.myapplication.shared.ButtonQuantidadeProduto.ProdutoQuantityButton
 import com.easy.myapplication.shared.StarRatingBar.StarRatingBar
