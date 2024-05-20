@@ -47,6 +47,7 @@ import com.easy.myapplication.shared.Subtitle.Subtitle
 import com.easy.myapplication.shared.Title.Title
 import com.easy.myapplication.ui.theme.Primary
 import com.easy.myapplication.utils.LocationCallback
+import com.easy.myapplication.utils.conversorTime
 import com.easy.myapplication.utils.getLatLong
 
 
@@ -114,7 +115,7 @@ fun Produto(view: ProdutoViewModel, navController: NavController, id: String?) {
                     modifier = Modifier.padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Title(content = produto.precoAtual.toString(), maxLines = 1)
+                    Title(content = "R$"+ produto.precoAtual.toString(), maxLines = 1)
 
                 }
 
@@ -159,8 +160,6 @@ fun Produto(view: ProdutoViewModel, navController: NavController, id: String?) {
                     }
                 }
 
-
-
                 Column(
                     modifier = Modifier.padding(5.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -201,7 +200,7 @@ fun Produto(view: ProdutoViewModel, navController: NavController, id: String?) {
                     produtoVenda.id?.let { ComentarioSection(view, it) }
                 }
 
-                LazyColumn(modifier = Modifier.height(900.dp)) {
+                LazyColumn(modifier = Modifier.height(650.dp)) {
                     items(items = produto.avaliacao,
                         itemContent = {
                             Column(
@@ -233,7 +232,7 @@ fun RouteProduto(view: ProdutoViewModel){
 
         )
         {
-            IconWithTime(icon = R.mipmap.a_pe, time = produtoTempo.value?.estabelecimento?.tempoPessoa.toString())
+            IconWithTime(icon = R.mipmap.a_pe, time = conversorTime(produtoTempo.value?.estabelecimento?.tempoPessoa?:0.0))
         }
 
         Column(
@@ -241,7 +240,7 @@ fun RouteProduto(view: ProdutoViewModel){
             horizontalAlignment = Alignment.CenterHorizontally
         )
         {
-            IconWithTime(icon = R.mipmap.carro, time = produtoTempo.value?.estabelecimento?.tempoCarro.toString())
+            IconWithTime(icon = R.mipmap.carro, time = conversorTime(produtoTempo.value?.estabelecimento?.tempoCarro?:0.0))
         }
 
         Column(
@@ -250,7 +249,7 @@ fun RouteProduto(view: ProdutoViewModel){
 
         )
         {
-            IconWithTime(icon = R.mipmap.bike, time = produtoTempo.value?.estabelecimento?.tempoBike.toString())
+            IconWithTime(icon = R.mipmap.bicicleta, time = conversorTime(produtoTempo.value?.estabelecimento?.tempoBike?:0.0))
         }
     }
 }
