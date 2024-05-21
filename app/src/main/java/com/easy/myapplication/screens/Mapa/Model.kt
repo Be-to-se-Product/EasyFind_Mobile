@@ -124,16 +124,19 @@ fun getRoute(destinationRoute:DestinationTarget, origin:LatandLong) {
 }
 
      fun getProdutos(metodoPagamento:String?=null,distancia:Float?=null,nome:String?=null) {
+         Log.e("Teste","Executoru")
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = produtoService.getMapaProdutos(latitude = latLong.value?.latitude,longitude= latLong.value?.longitude, nome = nome, metodoPagamento =metodoPagamento, distancia = distancia);
                 if (response.isSuccessful) {
                     produtos.value!!.clear()
+                    Log.e("Produtos",response.body()!!.size.toString())
                     produtos.value!!.addAll(response.body() ?: listOf() )
                 } else {
                     erroApi.postValue(response.errorBody()?.string() ?: "")
                 }
             } catch (e: Exception) {
+                Log.e("Error",e.message.toString())
                 erroApi.postValue(e.message)
             }
 

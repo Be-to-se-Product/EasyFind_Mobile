@@ -5,6 +5,7 @@ import LatandLong
 import MapaViewModel
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -103,6 +104,7 @@ fun Mapa(viewModel: MapaViewModel) {
 
     LaunchedEffect(key1 = latLong.latitude) {
         if (latLong.latitude != 0.0) {
+
             viewModel.getProdutos()
         }
     }
