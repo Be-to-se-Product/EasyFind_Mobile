@@ -296,7 +296,6 @@ fun StepThree() {
 
                 Spacer(modifier = Modifier.height(15.dp))
 
-                // Botão para copiar o número do Pix
                 Button(
                     onClick = {
                         copyToClipboard(context, codigoPix)
@@ -331,6 +330,8 @@ fun StepThree() {
 
 @Composable
 fun FinalStep() {
+
+    val navigation = LocalNavController.current;
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Icon(
@@ -364,7 +365,9 @@ fun FinalStep() {
                 )
             }
             Button(
-                onClick = {},
+                onClick = {
+                          navigation.navigate("Mapa")
+                },
                 colors = ButtonDefaults.buttonColors(Primary),
                 modifier = Modifier.padding(top = 8.dp)
             ) {

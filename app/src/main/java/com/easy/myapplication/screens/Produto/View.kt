@@ -203,7 +203,7 @@ fun Produto(view: ProdutoViewModel, id: String?) {
                 }
 
                 LazyColumn(modifier = Modifier.height(650.dp)) {
-                    items(items = produto.avaliacao,
+                    items(items = produto.avaliacao.reversed(),
                         itemContent = {
                             Column(
                                 modifier = Modifier.padding(16.dp),
@@ -263,7 +263,7 @@ fun IconWithTime(icon: Int, time: String){
     ) {
         Image(painter = painterResource(id = icon),
             contentDescription = null,
-            modifier = Modifier.size(15.dp)
+            modifier = Modifier.size(12.dp)
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(time,color = Color(0xFFFCA622))
