@@ -12,6 +12,7 @@ import com.easy.myapplication.dto.RoutesMapper
 import com.easy.myapplication.dto.TargetRoutes
 import com.easy.myapplication.services.Service.MapBoxService
 import com.easy.myapplication.services.Service
+import com.easy.myapplication.text.Message
 import com.easy.myapplication.utils.LocationCallback
 import com.easy.myapplication.utils.getLatLong
 import kotlinx.coroutines.CoroutineScope
@@ -47,18 +48,20 @@ class MapaViewModel : ViewModel() {
     val infoRoutes = MutableLiveData(TargetRoutes())
     private val produtoService = Service.ProdutoService();
     private val mapaService = MapBoxService();
-
+    val isLoading = MutableLiveData(Message())
     val locationCallback = object : LocationCallback {
         override fun onSuccess(latitude: Double, longitude: Double) {
-            latLong.postValue(latLong.value?.copy(latitude = latitude, longitude = longitude))
+            latLong.postValue(LatandLong(latitude = latitude, longitude = longitude))
         }
 
         override fun onError(message: String?) {
-            print(message)
+            Log.e("teste",message.toString())
         }
     }
 
+
    fun getLocations(context: Context){
+       latLong.postValue(LatandLong(latitude = 1.0, longitude = 1.0))
        getLatLong(context, locationCallback)
    }
 
@@ -78,8 +81,9 @@ class MapaViewModel : ViewModel() {
 
 
 fun getRoute(destinationRoute:DestinationTarget, origin:LatandLong) {
-    CoroutineScope(Dispatchers.IO).launch {
 
+    isLoading.postValue(isLoading.value?.copy(show = true, message = "Carregando Rota..."))
+    CoroutineScope(Dispatchers.IO).launch {
         try {
             val response = destinationRoute.coordinates?.let {
                 mapaService.getRoutesMap(
@@ -120,17 +124,19 @@ fun getRoute(destinationRoute:DestinationTarget, origin:LatandLong) {
                 erroApi.postValue(e.message)
             }
         }
+        finally {
+            isLoading.postValue(isLoading.value?.copy(show = false))
+        }
     }
 }
 
      fun getProdutos(metodoPagamento:String?=null,distancia:Float?=null,nome:String?=null) {
-         Log.e("Teste","Executoru")
+         isLoading.postValue(isLoading.value?.copy(show = true, message = "Carregando produtos...."))
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = produtoService.getMapaProdutos(latitude = latLong.value?.latitude,longitude= latLong.value?.longitude, nome = nome, metodoPagamento =metodoPagamento, distancia = distancia);
                 if (response.isSuccessful) {
                     produtos.value!!.clear()
-                    Log.e("Produtos",response.body()!!.size.toString())
                     produtos.value!!.addAll(response.body() ?: listOf() )
                 } else {
                     erroApi.postValue(response.errorBody()?.string() ?: "")
@@ -139,6 +145,10 @@ fun getRoute(destinationRoute:DestinationTarget, origin:LatandLong) {
                 Log.e("Error",e.message.toString())
                 erroApi.postValue(e.message)
             }
+            finally {
+                isLoading.postValue(isLoading.value?.copy(show = false))
+            }
+
 
         }
 

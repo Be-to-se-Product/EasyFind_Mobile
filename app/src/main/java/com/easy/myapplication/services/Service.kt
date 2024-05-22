@@ -79,7 +79,6 @@ object Service: KoinComponent {
                 newRequest.header("Authorization", "Bearer $token")
                 }
                 chain.proceed(newRequest.build())
-
             }
 
         okHttpClient.addInterceptor{

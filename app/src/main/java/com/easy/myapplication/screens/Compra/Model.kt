@@ -20,7 +20,6 @@ class Model() : ViewModel() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = compraService.getMetodosPagamento(id);
-                Log.e("Executou", "salve pessoal ${response.isSuccessful}")
                 if (response.isSuccessful) {
                     print("Chegou pessoal daora")
                     metodosPagamento.value!!.clear()
@@ -45,7 +44,6 @@ class Model() : ViewModel() {
             try {
                 val response = compraService.postPedido(pedidoCadastro)
                 if (response.isSuccessful) {
-                    print("Pedido cadastrado com sucesso")
                 } else {
                     erroApi.postValue(response.errorBody()?.string() ?: "")
                 }
