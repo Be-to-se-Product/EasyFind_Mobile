@@ -4,10 +4,12 @@ package com.easy.myapplication.screens.Produto
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,7 +23,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -37,9 +38,9 @@ import com.easy.myapplication.R
 import com.easy.myapplication.shared.Header.Header
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavController
 import com.easy.myapplication.LocalNavController
 import com.easy.myapplication.dto.AvaliacaoCadastrar
 import com.easy.myapplication.shared.ButtonQuantidadeProduto.ProdutoQuantityButton
@@ -64,6 +65,7 @@ fun Produto(view: ProdutoViewModel, id: String?) {
     val latLong = view.latLong.observeAsState().value!!;
     val produto = view.produto.observeAsState().value!!;
 
+
     val locationCallback = object : LocationCallback {
         override fun onSuccess(latitude: Double, longitude: Double) {
             setlatLong.postValue(latLong.copy(latitude, longitude))
@@ -85,8 +87,11 @@ fun Produto(view: ProdutoViewModel, id: String?) {
 
 
     Header{
-
         Row{
+            Column {
+                PhotoComponent()
+            }
+
             Column(modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())) {
@@ -117,7 +122,7 @@ fun Produto(view: ProdutoViewModel, id: String?) {
                     modifier = Modifier.padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Title(content = "R$"+ produto.precoAtual.toString(), maxLines = 1)
+                    Title(content = "R$ " + produto.precoAtual.toString(), maxLines = 1)
 
                 }
 
@@ -333,3 +338,40 @@ fun ComentarioSection(view: ProdutoViewModel, id:Long) {
     }
 }
 
+@Composable
+fun PhotoComponent() {
+    val selectedImageState = remember { mutableStateOf(R.mipmap.fone) }
+
+    Column {
+        Row {
+            ImageColumn(listOf(R.mipmap.imagem1, R.mipmap.imagem2, R.mipmap.imagem3), selectedImageState)
+            Spacer(modifier = Modifier.width(16.dp))
+            MainImageColumn(selectedImageState)
+        }
+    }
+}
+
+@Composable
+fun ImageColumn(images: List<Int>, selectedImageState: MutableState<Int>) {
+    Column {
+        images.forEach { image ->
+            Image(
+                painter = painterResource(id = image),
+                contentDescription = null,
+                modifier = Modifier.clickable {
+                    selectedImageState.value = image
+                }
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+    }
+}
+
+@Composable
+fun MainImageColumn(selectedImageState: MutableState<Int>) {
+    Image(
+        painter = painterResource(id = selectedImageState.value),
+        contentDescription = null,
+        modifier = Modifier.fillMaxWidth()
+    )
+}
