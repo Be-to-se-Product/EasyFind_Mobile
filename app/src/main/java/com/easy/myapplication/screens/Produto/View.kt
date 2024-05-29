@@ -1,6 +1,7 @@
 package com.easy.myapplication.screens.Produto
 
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -20,8 +21,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -38,96 +38,140 @@ import com.easy.myapplication.shared.Header.Header
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
-
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import com.easy.myapplication.dto.ProdutoVendaDTO
+import androidx.navigation.NavController
+import com.easy.myapplication.LocalNavController
+import com.easy.myapplication.dto.AvaliacaoCadastrar
+import com.easy.myapplication.shared.ButtonQuantidadeProduto.ProdutoQuantityButton
 import com.easy.myapplication.shared.StarRatingBar.StarRatingBar
 import com.easy.myapplication.shared.Subtitle.Subtitle
 import com.easy.myapplication.shared.Title.Title
 import com.easy.myapplication.ui.theme.Primary
 import com.easy.myapplication.utils.LocationCallback
+import com.easy.myapplication.utils.conversorTime
 import com.easy.myapplication.utils.getLatLong
 
 
 @Composable
-fun Produto(view: ProdutoViewModel) {
-
-    var quantity = remember { mutableStateOf(0) }
-    val isBuyButtonClicked = remember { mutableStateOf(false) }
+fun Produto(view: ProdutoViewModel, id: String?) {
+    val navController = LocalNavController.current;
+    val context = LocalContext.current
     val setlatLong = view.latLong
+    val produtoVenda = view.produtoVenda.observeAsState().value!!
+    val setProduto = { it: ProdutoPedido ->
+        view.produtoVenda.postValue(it)
+    }
     val latLong = view.latLong.observeAsState().value!!;
     val produto = view.produto.observeAsState().value!!;
-    val context = LocalContext.current
-    val locationCallback = object : LocationCallback {
-        override fun onSuccess(latitude: Double, longitude: Double) {
-            setlatLong.postValue(latLong.copy(latitude, longitude))
-        }
-
-        override fun onError(message: String?) {
-            print(message)
-        }
-    }
 
 
     LaunchedEffect(key1 = Unit) {
-        getLatLong(context, locationCallback)
+        getLatLong(context, onSucess = { latitude, longitude ->
+            setlatLong.postValue(latLong.copy(latitude, longitude))
+        }, onFailure = { message ->
+            Log.e("Errror", message)
+        })
     }
 
-    LaunchedEffect(key1 = latLong.latitude){
-        view.getProdutoById(1,latLong.latitude,latLong.longitude)
+    LaunchedEffect(key1 = latLong.latitude) {
+        if (id != null) {
+            view.getProdutoById(id.toLong(), latLong.latitude, latLong.longitude)
+        }
     }
 
 
-    Header{
-        Row(
-        ) {
-            Column(modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())) {
-                Column(modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.Start) {
+    Header {
+
+        Row {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.Start
+                ) {
                     produto.estabelecimento?.nome?.let {
-                        Title(content = it,
+                        Title(
+                            content = it,
                             fontSize = 20.sp,
-                            color = Primary)
+                            color = Primary,
+                            maxLines = 1
+                        )
                     }
-                    produto.nome?.let { Title(content = it, fontSize = 24.sp) }
-                    Subtitle(content = produto.descricao,
-                        fontSize = 15.sp)
+                    produto.nome?.let { Title(content = it, fontSize = 24.sp, maxLines = 1) }
+                    Subtitle(
+                        content = produto.descricao,
+                        fontSize = 15.sp
+                    )
                 }
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     RouteProduto(view)
                 }
 
-                Column(modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally) {
-                    Title(content = produto.precoAtual.toString())
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Title(content = "R$" + produto.precoAtual.toString(), maxLines = 1)
 
                 }
 
-                ProdutoQuantityButton(
-                   quantity = quantity.value
-                    ,onIncrement = { quantity.value++ }
-                    , onDecrement = {
-                        if (quantity.value > 0){
-                            quantity.value--
+                produtoVenda.quantidade?.let {
+                    ProdutoQuantityButton(
+                        quantity = it, onIncrement = {
+                            setProduto(
+                                produtoVenda.copy(
+                                    quantidade = produtoVenda.quantidade?.plus(
+                                        1
+                                    )
+                                )
+                            )
+                        }, onDecrement = {
+                            if (produtoVenda.quantidade > 0) {
+
+                                setProduto(produtoVenda.copy(quantidade = produtoVenda.quantidade - 1))
+
+                            }
                         }
-                    }
-                )
+                    )
+                }
 
-
-
-                Column(modifier = Modifier.padding(5.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(
+                    modifier = Modifier.padding(5.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Button(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(0.dp),
                         colors = ButtonDefaults.buttonColors(Color(0xFFFCA622)),
-                        onClick = { /*TODO*/ }) {
+                        onClick = {
+                            navController.currentBackStackEntry?.savedStateHandle?.set(
+                                "PRODUTO",
+                                produtoVenda
+                            )
+                            navController.navigate("RealizarPedido")
+                        }
+                    ) {
+                        Text(text = "Comprar")
+                    }
+                }
+
+                Column(
+                    modifier = Modifier.padding(5.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Button(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(0.dp),
+                        colors = ButtonDefaults.buttonColors(Color(0xFFFCA622)),
+                        onClick = {
+
+                        }) {
                         Text(text = "Adicionar no carrinho")
                     }
                 }
@@ -148,32 +192,22 @@ fun Produto(view: ProdutoViewModel) {
                             modifier = Modifier.padding(start = 16.dp),
                             verticalArrangement = Arrangement.Center
                         ) {
-                            produto.estabelecimento?.nome?.let { Title(content = it) }
+                            produto.estabelecimento?.nome?.let { Title(content = it, maxLines = 1) }
                             Subtitle(content = produto.estabelecimento?.segmento)
                         }
                     }
 
-                    ComentarioSection(view)
-
-                    Column(modifier = Modifier.padding(5.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally) {
-                        Button(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(0.dp),
-                            colors = ButtonDefaults.buttonColors(Color(0xFFFCA622)),
-                            onClick = { view.cadastroAvalicao(1) }) {
-                            Text(text = "Postar")
-                        }
-                    }
+                    produtoVenda.id?.let { ComentarioSection(view, it) }
                 }
 
-                LazyColumn(modifier = Modifier.height(900.dp)) {
-                    items(items = produto.avaliacao,
+                LazyColumn(modifier = Modifier.height(650.dp)) {
+                    items(items = produto.avaliacao.reversed(),
                         itemContent = {
-                            Column(modifier = Modifier.padding(16.dp),
-                                horizontalAlignment = Alignment.Start) {
-                                it.usuario?.let { it1 -> Title(content = it1) }
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                it.usuario?.let { it1 -> Title(content = it1, maxLines = 1) }
                                 it.qtdEstrela?.toFloat()?.let { it1 -> StarRatingBar(rating = it1) }
                                 Column {
                                     Subtitle(content = it.descricao)
@@ -187,9 +221,8 @@ fun Produto(view: ProdutoViewModel) {
     }
 }
 
-// Função da distancia do mercado
 @Composable
-fun RouteProduto(view: ProdutoViewModel){
+fun RouteProduto(view: ProdutoViewModel) {
     val produtoTempo = view.produto
 
     Row(horizontalArrangement = Arrangement.Center) {
@@ -199,7 +232,10 @@ fun RouteProduto(view: ProdutoViewModel){
 
         )
         {
-            IconWithTime(icon = R.mipmap.a_pe, time = produtoTempo.value?.estabelecimento?.tempoPessoa.toString())
+            IconWithTime(
+                icon = R.mipmap.a_pe,
+                time = conversorTime(produtoTempo.value?.estabelecimento?.tempoPessoa ?: 0.0)
+            )
         }
 
         Column(
@@ -207,7 +243,10 @@ fun RouteProduto(view: ProdutoViewModel){
             horizontalAlignment = Alignment.CenterHorizontally
         )
         {
-            IconWithTime(icon = R.mipmap.carro, time = produtoTempo.value?.estabelecimento?.tempoCarro.toString())
+            IconWithTime(
+                icon = R.mipmap.carro,
+                time = conversorTime(produtoTempo.value?.estabelecimento?.tempoCarro ?: 0.0)
+            )
         }
 
         Column(
@@ -216,29 +255,34 @@ fun RouteProduto(view: ProdutoViewModel){
 
         )
         {
-            IconWithTime(icon = R.mipmap.bike, time = produtoTempo.value?.estabelecimento?.tempoBike.toString())
+            IconWithTime(
+                icon = R.mipmap.bicicleta,
+                time = conversorTime(produtoTempo.value?.estabelecimento?.tempoBike ?: 0.0)
+            )
         }
     }
 }
 
 @Composable
-fun IconWithTime(icon: Int, time: String){
+fun IconWithTime(icon: Int, time: String) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(painter = painterResource(id = icon),
+        Image(
+            painter = painterResource(id = icon),
             contentDescription = null,
-            modifier = Modifier.size(15.dp)
+            modifier = Modifier.size(12.dp)
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Text(time,color = Color(0xFFFCA622))
+        Text(time, color = Color(0xFFFCA622))
     }
 }
 
 @Composable
-fun ComentarioSection(view: ProdutoViewModel) {
-    val setAvaliacao = view.avaliacao
-    val avaliacao = view.avaliacao.observeAsState().value!!;
+fun ComentarioSection(view: ProdutoViewModel, id: Long) {
+    val (avaliacao, setAvaliacao) = remember {
+        mutableStateOf(AvaliacaoCadastrar(produto = id))
+    };
 
     Column(
         modifier = Modifier.padding(16.dp),
@@ -247,17 +291,17 @@ fun ComentarioSection(view: ProdutoViewModel) {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Title(content = "Comentário")
+            Title(content = "Comentário", maxLines = 1)
         }
 
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            avaliacao.qtdEstrela?.let {
+            avaliacao.qtdEstrela.let {
                 StarRatingBar(
                     rating = it,
                     onRatingChanged = {
-                        setAvaliacao.postValue(avaliacao.copy(qtdEstrela = it))
+                        setAvaliacao(avaliacao.copy(qtdEstrela = it))
                     }
                 )
             }
@@ -272,7 +316,7 @@ fun ComentarioSection(view: ProdutoViewModel) {
         avaliacao.comentario?.let {
             TextField(
                 value = it,
-                onValueChange = { newValue -> setAvaliacao.postValue(avaliacao.copy(comentario = newValue)) },
+                onValueChange = { newValue -> setAvaliacao(avaliacao.copy(comentario = newValue)) },
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                 modifier = Modifier
                     .border(1.dp, color = Color(0xFFFCA622), shape = RoundedCornerShape(5.dp))
@@ -282,79 +326,19 @@ fun ComentarioSection(view: ProdutoViewModel) {
 
             )
         }
-    }
-}
 
-@Composable
-fun ProdutoQuantityButton(
-    quantity: Int,
-    onIncrement: () -> Unit,
-    onDecrement: () -> Unit
-){
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(18.dp)
-            .border(
-                width = 1.dp,
-                color = Color(0xFFFCA622),
-                shape = RoundedCornerShape(8.dp)
-            ),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ){
-        IconButton(
-            onClick = {
-                if (quantity > 0){
-                onDecrement()
-                }
-            }
+        Column(
+            modifier = Modifier.padding(5.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Icon(
-                painter = painterResource(id = R.mipmap.remover)
-                ,contentDescription = "Remover a quantidade"
-                ,tint = Color(0xFFFCA622)
-            )
-        }
-        Text(
-            text = quantity.toString(),
-            style = TextStyle(fontSize = 18.sp),
-            fontWeight = FontWeight.Bold
-        )
-
-        IconButton(
-            onClick = {
-                onIncrement()
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(0.dp),
+                colors = ButtonDefaults.buttonColors(Color(0xFFFCA622)),
+                onClick = { view.cadastroAvalicao(avaliacaoCadastrar = avaliacao) }) {
+                Text(text = "Postar")
             }
-        ) {
-            Icon(
-                painter = painterResource(id = R.mipmap.adicionar)
-                ,contentDescription = "Adicionar quantidade"
-                , tint = Color(0xFFFCA622)
-            )
-        }
-    }
-}
-
-@Composable
-fun ComprarButton(
-    quantidade: Int,
-    onClickComprar: (ProdutoVendaDTO) -> Unit,
-    view: ProdutoViewModel
-){
-    val produtoId = view.produto.value?.id
-    Column(modifier = Modifier.padding(5.dp),
-        horizontalAlignment = Alignment.CenterHorizontally) {
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(0.dp),
-            colors = ButtonDefaults.buttonColors(Color(0xFFFCA622)),
-            onClick = {
-            }
-        ) {
-            Text(text = "Comprar")
-
         }
     }
 }
