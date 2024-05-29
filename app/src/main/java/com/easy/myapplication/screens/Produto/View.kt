@@ -58,38 +58,36 @@ fun Produto(view: ProdutoViewModel, id: String?) {
     val context = LocalContext.current
     val setlatLong = view.latLong
     val produtoVenda = view.produtoVenda.observeAsState().value!!
-    val setProduto = { it:ProdutoPedido->
+    val setProduto = { it: ProdutoPedido ->
         view.produtoVenda.postValue(it)
     }
     val latLong = view.latLong.observeAsState().value!!;
     val produto = view.produto.observeAsState().value!!;
 
-    val locationCallback = object : LocationCallback {
-        override fun onSuccess(latitude: Double, longitude: Double) {
+
+    LaunchedEffect(key1 = Unit) {
+        getLatLong(context, onSucess = { latitude, longitude ->
             setlatLong.postValue(latLong.copy(latitude, longitude))
-        }
-
-        override fun onError(message: String?) {
-            print(message)
-        }
+        }, onFailure = { message ->
+            Log.e("Errror", message)
+        })
     }
 
-
-
-    getLatLong(context, locationCallback)
-    LaunchedEffect(key1 = latLong.latitude){
+    LaunchedEffect(key1 = latLong.latitude) {
         if (id != null) {
-            view.getProdutoById(id.toLong(),latLong.latitude,latLong.longitude)
+            view.getProdutoById(id.toLong(), latLong.latitude, latLong.longitude)
         }
     }
 
 
-    Header{
+    Header {
 
-        Row{
-            Column(modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())) {
+        Row {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+            ) {
                 Column(
                     modifier = Modifier.padding(16.dp),
                     horizontalAlignment = Alignment.Start
@@ -117,7 +115,7 @@ fun Produto(view: ProdutoViewModel, id: String?) {
                     modifier = Modifier.padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Title(content = "R$"+ produto.precoAtual.toString(), maxLines = 1)
+                    Title(content = "R$" + produto.precoAtual.toString(), maxLines = 1)
 
                 }
 
@@ -224,7 +222,7 @@ fun Produto(view: ProdutoViewModel, id: String?) {
 }
 
 @Composable
-fun RouteProduto(view: ProdutoViewModel){
+fun RouteProduto(view: ProdutoViewModel) {
     val produtoTempo = view.produto
 
     Row(horizontalArrangement = Arrangement.Center) {
@@ -234,7 +232,10 @@ fun RouteProduto(view: ProdutoViewModel){
 
         )
         {
-            IconWithTime(icon = R.mipmap.a_pe, time = conversorTime(produtoTempo.value?.estabelecimento?.tempoPessoa?:0.0))
+            IconWithTime(
+                icon = R.mipmap.a_pe,
+                time = conversorTime(produtoTempo.value?.estabelecimento?.tempoPessoa ?: 0.0)
+            )
         }
 
         Column(
@@ -242,7 +243,10 @@ fun RouteProduto(view: ProdutoViewModel){
             horizontalAlignment = Alignment.CenterHorizontally
         )
         {
-            IconWithTime(icon = R.mipmap.carro, time = conversorTime(produtoTempo.value?.estabelecimento?.tempoCarro?:0.0))
+            IconWithTime(
+                icon = R.mipmap.carro,
+                time = conversorTime(produtoTempo.value?.estabelecimento?.tempoCarro ?: 0.0)
+            )
         }
 
         Column(
@@ -251,29 +255,33 @@ fun RouteProduto(view: ProdutoViewModel){
 
         )
         {
-            IconWithTime(icon = R.mipmap.bicicleta, time = conversorTime(produtoTempo.value?.estabelecimento?.tempoBike?:0.0))
+            IconWithTime(
+                icon = R.mipmap.bicicleta,
+                time = conversorTime(produtoTempo.value?.estabelecimento?.tempoBike ?: 0.0)
+            )
         }
     }
 }
 
 @Composable
-fun IconWithTime(icon: Int, time: String){
+fun IconWithTime(icon: Int, time: String) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(painter = painterResource(id = icon),
+        Image(
+            painter = painterResource(id = icon),
             contentDescription = null,
             modifier = Modifier.size(12.dp)
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Text(time,color = Color(0xFFFCA622))
+        Text(time, color = Color(0xFFFCA622))
     }
 }
 
 @Composable
-fun ComentarioSection(view: ProdutoViewModel, id:Long) {
-    val (avaliacao,setAvaliacao) = remember {
-       mutableStateOf(AvaliacaoCadastrar(produto = id))
+fun ComentarioSection(view: ProdutoViewModel, id: Long) {
+    val (avaliacao, setAvaliacao) = remember {
+        mutableStateOf(AvaliacaoCadastrar(produto = id))
     };
 
     Column(
@@ -319,8 +327,10 @@ fun ComentarioSection(view: ProdutoViewModel, id:Long) {
             )
         }
 
-        Column(modifier = Modifier.padding(5.dp),
-            horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            modifier = Modifier.padding(5.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Button(
                 modifier = Modifier
                     .fillMaxWidth()

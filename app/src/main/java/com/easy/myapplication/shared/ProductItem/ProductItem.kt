@@ -3,6 +3,7 @@ package com.easy.myapplication.shared.ProductItem
 import DestinationTarget
 import LatandLong
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -29,6 +30,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.easy.myapplication.R
 import com.easy.myapplication.dto.Estabelecimento
 import com.easy.myapplication.screens.Mapa.GetRouteCallback
@@ -53,7 +55,7 @@ data class Time(
 data class DataProductItem(
     val id:Long=0L,
     val name: String,
-    val image: String? = "",
+    val imagens: String? = "",
     val qtdStars: Double,
     val shop: String,
     val price: Double,
@@ -67,7 +69,9 @@ data class DataProductItem(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
     fun ProductItem(data: DataProductItem, getRouteCallback: GetRouteCallback,navigate:(Long)->Unit) {
-    Row(
+
+
+        Row(
         horizontalArrangement = Arrangement.spacedBy(15.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(10.dp).clickable {
@@ -76,6 +80,8 @@ data class DataProductItem(
             }
         }
 
+
+
     ) {
         Column(
             modifier = Modifier
@@ -83,9 +89,10 @@ data class DataProductItem(
                 .width(75.dp)
                 .height(85.dp)
         ) {
-            Image(
-                painter = painterResource(id = R.mipmap.fone),
+            AsyncImage(
+                model =  data.imagens,
                 contentDescription = "Imagem do produto",
+                error = painterResource(R.mipmap.fone),
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(),
@@ -117,7 +124,6 @@ data class DataProductItem(
             Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.fillMaxWidth(0.8f)) {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)){
-
                         Column {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -159,7 +165,6 @@ data class DataProductItem(
                     }
                 }
                 Column( horizontalAlignment = Alignment.End) {
-
                     IconButton(modifier = Modifier.background(Primary).border(1.dp,
                         Color.Transparent, RoundedCornerShape(100)).width(20.dp).height(20.dp).padding(5.dp) ,onClick = {
                         if (data.latitude != null && data.longitude != null) {
