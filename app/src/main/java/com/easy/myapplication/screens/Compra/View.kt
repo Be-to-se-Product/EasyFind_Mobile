@@ -28,9 +28,12 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -42,7 +45,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.easy.myapplication.LocalNavController
 import com.easy.myapplication.screens.Compra.Integration.ItemVenda
 import com.easy.myapplication.screens.Compra.Integration.MetodoPagamento
@@ -55,8 +57,8 @@ import com.easy.myapplication.utils.generateQRCode
 
 @Composable
 fun Buy() {
-    val navController = LocalNavController.current;
-    val currentStep = remember { mutableStateOf(1) }
+    val navController= LocalNavController.current
+    val currentStep = remember { mutableIntStateOf(1) }
     val totalSteps = 3
     val viewModel = remember { Model() }
     val selectedOption = remember { mutableStateOf<String?>(null) }
@@ -69,8 +71,14 @@ fun Buy() {
     val productId = products.id
     val storeId = products.idEstabelecimento
     val isPaymentOnline = remember { mutableStateOf(false) }
-    val paymentMethodId = remember { mutableStateOf(2L) }
-    val consumerId = 2L
+    val paymentMethodId = remember { mutableLongStateOf(2L) }
+
+    LaunchedEffect(key1 = storeId) {
+        if (storeId != null) {
+            viewModel.getMetodos(storeId)
+        }
+    }
+
     Header {
         Column(
             modifier = Modifier
@@ -125,7 +133,6 @@ fun Buy() {
                                     currentStep.value++
                                     if (currentStep.value == totalSteps && selectedOption.value != "pix") {
                                         sendRequest(
-                                            consumerId,
                                             storeId!!,
                                             productId!!,
                                             quantity,
@@ -137,7 +144,6 @@ fun Buy() {
                                 } else {
                                     if (selectedOption.value == "pix") {
                                         sendRequest(
-                                            consumerId,
                                             storeId!!,
                                             productId!!,
                                             quantity,
@@ -163,10 +169,11 @@ fun Buy() {
                         .fillMaxWidth()
                         .border(1.dp, Color(0xFFFCFCFC), RoundedCornerShape(4.dp))
                         .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Button(
-                        onClick = { /*TODO: Handle cancel action*/ },
+                        onClick = { navController.popBackStack()},
                         colors = ButtonDefaults.buttonColors(Primary)
                     ) {
                         Text("Cancelar")
@@ -218,9 +225,13 @@ fun StepTwo(
     onOptionSelected: (String) -> Unit,
     viewModel: Model = Model()
 ) {
-    viewModel.getMetodos()
+
+
 
     val metodosPagamento = viewModel.metodosPagamento.observeAsState()
+
+
+
 
     Text(
         text = "Selecione o método de pagamento",
@@ -391,7 +402,6 @@ fun copyToClipboard(context: Context, text: String) {
 }
 
 fun sendRequest(
-    consumerId: Long,
     storeId: Long,
     productId: Long,
     quantity: Int,
@@ -400,7 +410,6 @@ fun sendRequest(
     viewModel: Model
 ) {
     val pedido = PedidoCadastro().apply {
-        idConsumidor = consumerId
         idEstabelecimento = storeId
         itens = listOf(ItemVenda().apply {
             idProduto = productId

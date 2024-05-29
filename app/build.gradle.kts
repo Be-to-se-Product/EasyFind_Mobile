@@ -92,7 +92,7 @@ dependencies {
 
     implementation("com.google.android.gms:play-services-location:21.1.0")
     implementation("com.google.accompanist:accompanist-permissions:0.35.0-alpha")
-
+    implementation("io.coil-kt:coil-compose:2.4.0")
     implementation(platform("androidx.compose:compose-bom:2024.05.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")

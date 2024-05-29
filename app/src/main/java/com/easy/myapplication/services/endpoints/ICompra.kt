@@ -10,7 +10,7 @@ import retrofit2.http.Path
 
 interface ICompra {
     @GET("estabelecimentos/metodos/{id}")
-    suspend fun getMetodosPagamento(@Path(value = "id") id: Int): Response<List<MetodoPagamentoAceito>>
+    suspend fun getMetodosPagamento(@Path(value = "id") id: Long): Response<List<MetodoPagamentoAceito>>
 
     @POST("pedidos")
     suspend fun postPedido(@Body pedido: PedidoCadastro): Response<Void>

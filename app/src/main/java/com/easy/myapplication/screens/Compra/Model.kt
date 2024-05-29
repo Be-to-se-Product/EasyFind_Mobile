@@ -16,7 +16,9 @@ class Model() : ViewModel() {
     private val erroApi = MutableLiveData("")
     private val compraService = Service.CompraService()
 
-    fun getMetodos(id: Int = 1) {
+
+
+    fun getMetodos(id:Long) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = compraService.getMetodosPagamento(id);

@@ -4,13 +4,8 @@ import MapaViewModel
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.Navigation
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -19,6 +14,7 @@ import com.easy.myapplication.screens.Login.Login
 import com.easy.myapplication.screens.Login.Model
 import com.easy.myapplication.screens.Mapa.Mapa
 import com.easy.myapplication.screens.Produto.Produto
+import com.easy.myapplication.screens.Produto.ProdutoPedido
 import com.easy.myapplication.screens.Produto.ProdutoViewModel
 import com.easy.myapplication.services.Service
 import org.koin.androidx.compose.koinViewModel
@@ -35,7 +31,6 @@ fun  AppNavHost(
         navController.navigate("/Login")
     }
 
-
         NavHost(
             modifier = modifier,
             navController = navController,
@@ -47,16 +42,16 @@ fun  AppNavHost(
                 Login( model, rememberNavController())
             }
             composable("Mapa") {
-                val mapa = MapaViewModel()
+                val mapa: MapaViewModel = viewModel()
                 Mapa(mapa)
             }
             composable("Produto/{id}") { backStackEntry ->
-                val view = ProdutoViewModel()
+                val view :ProdutoViewModel = viewModel()
                 Produto(view,backStackEntry.arguments?.getString("id"))
             }
             composable("RealizarPedido")
-            {
-                Buy()
+            {backStackEntry ->
+                Buy( );
             }
         }
     }

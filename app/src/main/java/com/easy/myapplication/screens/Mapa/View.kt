@@ -39,10 +39,12 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -78,6 +80,7 @@ import com.easy.myapplication.utils.LocationCallback
 import com.easy.myapplication.utils.conversorDistancia
 import com.easy.myapplication.utils.mediaAvaliacao
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
@@ -88,6 +91,7 @@ data class MetodoPagamentoDefault(
 )
 
 
+@OptIn(ExperimentalPermissionsApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Mapa(viewModel: MapaViewModel) {
@@ -97,7 +101,7 @@ fun Mapa(viewModel: MapaViewModel) {
     val destination = viewModel.destination.observeAsState().value!!
     val infoRoutes = viewModel.infoRoutes.observeAsState().value!!
     val context = LocalContext.current
-    val latLong = viewModel.latLong.observeAsState().value!!
+    val latLong = viewModel.latLong.observeAsState()
     val navigate = { id: Long ->
         navController.navigate("Produto/${id}")
     }
@@ -105,23 +109,24 @@ fun Mapa(viewModel: MapaViewModel) {
 
     val getRouteCallback = object : GetRouteCallback {
         override fun getRoute(destination: DestinationTarget) {
-            viewModel.getRoute(destination, latLong)
+            viewModel.getRoute(destination, latLong.value!!)
         }
     }
-Log.e("sdksldks",latLong.latitude.toString())
 
-    LaunchedEffect(key1 = latLong.latitude) {
-        if (latLong.latitude != 0.0) {
+    LaunchedEffect(key1 = latLong.value) {
+        if (latLong.value!=null) {
             viewModel.getProdutos()
         }
     }
 
 
+
+
     ScreenLoading(isLoading = loading.value?.show?:false, text = loading.value?.message?:"")
 
     Header() {
-
-        BarButton(sheetContent = {
+        Text(text = latLong.value?.latitude.toString()?:"")
+            BarButton(sheetContent = {
             if (infoRoutes.routes.size <= 0) {
                 BarProducts(
                     produtos = produtos,
@@ -140,7 +145,7 @@ Log.e("sdksldks",latLong.latitude.toString())
         }) {
             Filters(viewModel = viewModel, filter = filter)
             ContentMapa(
-                originCoordinates = latLong,
+                originCoordinates = latLong.value?:LatandLong(),
                 destinationCoordinates = destination.coordinates,
                 filter = filter
             )
@@ -164,13 +169,6 @@ Log.e("sdksldks",latLong.latitude.toString())
 
 
 
-/**
- * Função combinável para solicitar permissões de localização e lidar com diferentes cenários.
- *
- * @param onPermissionGranted Retorno de chamada a ser executado quando todas as permissões solicitadas forem concedidas.
- * @param onPermissionDenied Callback a ser executado quando qualquer permissão solicitada for negada.
- * @param onPermissionsRevoked Retorno de chamada a ser executado quando permissões concedidas anteriormente forem revogadas.
- */
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun RequestLocationPermission (
@@ -178,7 +176,6 @@ fun RequestLocationPermission (
     onPermissionDenied: () -> Unit ,
     onPermissionsRevoked: () -> Unit
 ) {
-    // Inicializa o estado para gerenciar múltiplas permissões de localização .
     val permissionState = rememberMultiplePermissionsState(
         listOf(
             Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -186,21 +183,17 @@ fun RequestLocationPermission (
         )
     )
 
-    // Use LaunchedEffect para manipular a lógica de permissões quando a composição for iniciada.
     LaunchedEffect(key1 = permissionState) {
-        // Verifica se todas as permissões concedidas anteriormente foram revogadas.
-        val allPermissionsRevoked =
-            permissionState.permissions.size == permissionState.revokedPermissions.size
 
-        // Filtre as permissões que precisam ser solicitadas.
+
         val permissionsToRequest = permissionState.permissions.filter {
             !it.status.isGranted
         }
+        val allPermissionsRevoked =
+            permissionState.permissions.size == permissionState.revokedPermissions.size
 
-        // Se houver permissões para solicitar, inicie a solicitação de permissão.
         if (permissionsToRequest.isNotEmpty()) permissionState.launchMultiplePermissionRequest()
 
-        // Executa retornos de chamada com base no status da permissão.
         if (allPermissionsRevoked) {
             onPermissionsRevoked()
         } else {
@@ -212,6 +205,8 @@ fun RequestLocationPermission (
         }
     }
 }
+
+
 
 @Composable
 fun Filters(filter: FilterDTO, viewModel: MapaViewModel) {
@@ -299,43 +294,6 @@ fun Filters(filter: FilterDTO, viewModel: MapaViewModel) {
     )
 }
 
-@Composable
-fun ExampleScreen() {
-    val launcher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted) {
-            // Permission Accepted: Do something
-            Log.d("ExampleScreen","PERMISSION GRANTED")
-
-        } else {
-            // Permission Denied: Do something
-            Log.d("ExampleScreen","PERMISSION DENIED")
-        }
-    }
-    val context = LocalContext.current
-
-    androidx.compose.material3.Button(
-        onClick = {
-            // Check permission
-            when (PackageManager.PERMISSION_GRANTED) {
-                ContextCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                ) -> {
-                    // Some works that require permission
-                    Log.d("ExampleScreen","Code requires permission")
-                }
-                else -> {
-                    // Asking for permission
-                    launcher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-                }
-            }
-        }
-    ) {
-        Text(text = "Check and Request Permission")
-    }
-}
 
 @Composable
 fun ModalFilter(
@@ -593,6 +551,7 @@ fun BarProducts(
     getRouteCallback: GetRouteCallback,
     navigate: (Long) -> Unit
 ) {
+
     Column {
 
         if (produtos.isNotEmpty()) {
@@ -612,6 +571,7 @@ fun BarProducts(
                                 it.estabelecimento?.tempoBike,
                                 it.estabelecimento?.tempoPessoa
                             ),
+                            imagens = if(it.imagens?.size!! > 0)   it.imagens[0] else "",
                             latitude = it.estabelecimento?.endereco?.latitude,
                             longitude = it.estabelecimento?.endereco?.longitude,
                             estabelecimento = it.estabelecimento
