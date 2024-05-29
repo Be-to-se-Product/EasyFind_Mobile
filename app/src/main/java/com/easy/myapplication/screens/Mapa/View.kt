@@ -3,12 +3,16 @@ package com.easy.myapplication.screens.Mapa
 import DestinationTarget
 import LatandLong
 import MapaViewModel
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -35,10 +39,12 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.zIndex
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.easy.myapplication.BuildConfig
 import com.easy.myapplication.LocalNavController
@@ -64,6 +71,7 @@ import com.easy.myapplication.shared.ModalBottomSheet.ModalBottomSheet
 import com.easy.myapplication.shared.ProductItem.DataProductItem
 import com.easy.myapplication.shared.ProductItem.ProductItem
 import com.easy.myapplication.shared.ProductItem.Time
+import com.easy.myapplication.shared.ScreenLoading
 import com.easy.myapplication.shared.SearchBar.SearchBar
 import com.easy.myapplication.shared.Subtitle.Subtitle
 import com.easy.myapplication.shared.Title.Title
@@ -71,6 +79,10 @@ import com.easy.myapplication.ui.theme.Primary
 import com.easy.myapplication.utils.LocationCallback
 import com.easy.myapplication.utils.conversorDistancia
 import com.easy.myapplication.utils.mediaAvaliacao
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.MultiplePermissionsState
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
 
 data class MetodoPagamentoDefault(
@@ -79,6 +91,7 @@ data class MetodoPagamentoDefault(
 )
 
 
+@OptIn(ExperimentalPermissionsApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Mapa(viewModel: MapaViewModel) {
@@ -88,29 +101,32 @@ fun Mapa(viewModel: MapaViewModel) {
     val destination = viewModel.destination.observeAsState().value!!
     val infoRoutes = viewModel.infoRoutes.observeAsState().value!!
     val context = LocalContext.current
-    val latLong = viewModel.latLong.observeAsState().value!!
+    val latLong = viewModel.latLong.observeAsState()
     val navigate = { id: Long ->
         navController.navigate("Produto/${id}")
     }
-
+    val loading = viewModel.isLoading.observeAsState();
 
     val getRouteCallback = object : GetRouteCallback {
         override fun getRoute(destination: DestinationTarget) {
-            viewModel.getRoute(destination, latLong)
+            viewModel.getRoute(destination, latLong.value!!)
         }
     }
-    viewModel.getLocations(context)
 
-
-    LaunchedEffect(key1 = latLong.latitude) {
-        if (latLong.latitude != 0.0) {
-
+    LaunchedEffect(key1 = latLong.value) {
+        if (latLong.value!=null) {
             viewModel.getProdutos()
         }
     }
 
+
+
+
+    ScreenLoading(isLoading = loading.value?.show?:false, text = loading.value?.message?:"")
+
     Header() {
-        BarButton(sheetContent = {
+        Text(text = latLong.value?.latitude.toString()?:"")
+            BarButton(sheetContent = {
             if (infoRoutes.routes.size <= 0) {
                 BarProducts(
                     produtos = produtos,
@@ -129,14 +145,67 @@ fun Mapa(viewModel: MapaViewModel) {
         }) {
             Filters(viewModel = viewModel, filter = filter)
             ContentMapa(
-                originCoordinates = latLong,
+                originCoordinates = latLong.value?:LatandLong(),
                 destinationCoordinates = destination.coordinates,
                 filter = filter
             )
+            RequestLocationPermission(onPermissionDenied = {
+                Log.e("Foi","sds")
+            },
+                onPermissionGranted = {
+                   viewModel.getLocations(context)
+                },
+
+                onPermissionsRevoked = {
+                    Log.e("sdsd","sddsd")
+                }
+
+
+
+            )
         }
     }
+    }
 
+
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+fun RequestLocationPermission (
+    onPermissionGranted: () -> Unit ,
+    onPermissionDenied: () -> Unit ,
+    onPermissionsRevoked: () -> Unit
+) {
+    val permissionState = rememberMultiplePermissionsState(
+        listOf(
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+        )
+    )
+
+    LaunchedEffect(key1 = permissionState) {
+
+
+        val permissionsToRequest = permissionState.permissions.filter {
+            !it.status.isGranted
+        }
+        val allPermissionsRevoked =
+            permissionState.permissions.size == permissionState.revokedPermissions.size
+
+        if (permissionsToRequest.isNotEmpty()) permissionState.launchMultiplePermissionRequest()
+
+        if (allPermissionsRevoked) {
+            onPermissionsRevoked()
+        } else {
+            if (permissionState.allPermissionsGranted) {
+                onPermissionGranted()
+            } else {
+                onPermissionDenied()
+            }
+        }
+    }
 }
+
 
 
 @Composable
@@ -482,6 +551,7 @@ fun BarProducts(
     getRouteCallback: GetRouteCallback,
     navigate: (Long) -> Unit
 ) {
+
     Column {
 
         if (produtos.isNotEmpty()) {
@@ -501,6 +571,7 @@ fun BarProducts(
                                 it.estabelecimento?.tempoBike,
                                 it.estabelecimento?.tempoPessoa
                             ),
+                            imagens = if(it.imagens?.size!! > 0)   it.imagens[0] else "",
                             latitude = it.estabelecimento?.endereco?.latitude,
                             longitude = it.estabelecimento?.endereco?.longitude,
                             estabelecimento = it.estabelecimento

@@ -43,7 +43,7 @@ fun login(model: Model,navigation: ()->Unit ){
         Spacer(modifier = Modifier.height(30.dp))
         Input(value = usuario.senha?:"", onValueChange = {usuarioSetter(usuario.copy(senha = it))}, type = Type.PASSWORD, label = "Senha")
         Spacer(modifier = Modifier.height(40.dp))
-        Button(onClick = {model.loginUsuario(usuario,navigation) }, isLoading = loading, content = {
+        Button(onClick = {model.loginUsuario(usuario,navigation) }, isLoading = loading.show, content = {
             Text(text = "Entrar")
         })
 Spacer(modifier = Modifier.height(10.dp))
