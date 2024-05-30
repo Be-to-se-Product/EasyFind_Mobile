@@ -10,6 +10,7 @@ data class Estabelecimento (
     val segmento: String? = null,
     val dataCriacao: String? = null,
     val endereco: Endereco? = null,
+    val imagem:String?=null,
     val agenda: List<Agenda>? = null,
     val metodoPagamento: List<MetodoPagamento>? = null,
     val telefone: String? = null,

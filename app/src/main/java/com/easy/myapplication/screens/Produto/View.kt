@@ -4,10 +4,13 @@ package com.easy.myapplication.screens.Produto
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,7 +24,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -37,9 +39,12 @@ import com.easy.myapplication.R
 import com.easy.myapplication.shared.Header.Header
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.easy.myapplication.LocalNavController
 import com.easy.myapplication.dto.AvaliacaoCadastrar
 import com.easy.myapplication.shared.ButtonQuantidadeProduto.ProdutoQuantityButton
@@ -65,6 +70,7 @@ fun Produto(view: ProdutoViewModel, id: String?) {
     val produto = view.produto.observeAsState().value!!;
 
 
+
     LaunchedEffect(key1 = Unit) {
         getLatLong(context, onSucess = { latitude, longitude ->
             setlatLong.postValue(latLong.copy(latitude, longitude))
@@ -88,6 +94,7 @@ fun Produto(view: ProdutoViewModel, id: String?) {
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
             ) {
+                produto.imagens?.let { PhotoComponent(it) }
                 Column(
                     modifier = Modifier.padding(16.dp),
                     horizontalAlignment = Alignment.Start
@@ -115,7 +122,9 @@ fun Produto(view: ProdutoViewModel, id: String?) {
                     modifier = Modifier.padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Title(content = "R$" + produto.precoAtual.toString(), maxLines = 1)
+
+                    Title(content = "R$ " + produto.precoAtual.toString(), maxLines = 1)
+
 
                 }
 
@@ -131,9 +140,7 @@ fun Produto(view: ProdutoViewModel, id: String?) {
                             )
                         }, onDecrement = {
                             if (produtoVenda.quantidade > 0) {
-
                                 setProduto(produtoVenda.copy(quantidade = produtoVenda.quantidade - 1))
-
                             }
                         }
                     )
@@ -182,10 +189,12 @@ fun Produto(view: ProdutoViewModel, id: String?) {
                         modifier = Modifier.padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Image(
-                            painter = painterResource(id = R.mipmap.mercado),
+                        AsyncImage(
+                            model = produto.estabelecimento?.imagem?:"",
                             contentDescription = "Mercado",
-                            modifier = Modifier.size(60.dp)
+                            modifier = Modifier.size(60.dp).clip(RoundedCornerShape(8.dp, 8.dp, 8.dp, 8.dp)),
+                            contentScale = ContentScale.Crop,
+
                         )
 
                         Column(
@@ -343,3 +352,55 @@ fun ComentarioSection(view: ProdutoViewModel, id: Long) {
     }
 }
 
+@Composable
+fun PhotoComponent(images:List<String>) {
+    val selectedImageState = remember { mutableStateOf(images[0]) }
+
+    Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            ImageColumn(
+                images,
+                selectedImageState
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Column(modifier = Modifier.fillMaxHeight()) {
+                MainImageColumn(selectedImageState)
+            }
+        }
+    }
+}
+
+@Composable
+fun ImageColumn(images: List<String>, selectedImageState: MutableState<String>) {
+    Column(verticalArrangement = Arrangement.SpaceBetween, modifier = Modifier.height(270.dp)) {
+
+        images.forEach { image ->
+            AsyncImage(
+                model = image,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .clickable {
+                        selectedImageState.value = image
+                    }
+                    .height(70.dp)
+                    .fillMaxWidth(0.2f)
+                    .clip(RoundedCornerShape(10.dp))
+
+            )
+        }
+    }
+}
+
+@Composable
+fun MainImageColumn(selectedImageState: MutableState<String>) {
+    AsyncImage(
+        model = selectedImageState.value,
+        contentDescription = null,
+        contentScale = ContentScale.Crop,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(275.dp)
+            .clip(RoundedCornerShape(10.dp))
+    )
+}
