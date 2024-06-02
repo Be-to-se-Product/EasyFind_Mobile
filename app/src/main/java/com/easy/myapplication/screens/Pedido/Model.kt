@@ -21,13 +21,13 @@ class Model : ViewModel()  {
                 val response = pedidoService.getPedidos(status = status);
                 if (response.isSuccessful) {
                     pedidos.value!!.clear()
-                    Log.e("Pedidos",response.body()!!.size.toString())
+                    Log.e("Pedidos",response.body().toString())
                     pedidos.value!!.addAll(response.body() ?: listOf() )
                 } else {
                     erroApi.postValue(response.errorBody()?.string() ?: "")
                 }
             } catch (e: Exception) {
-                Log.e("Error sexo",e.message.toString())
+                Log.e("Error",e.message.toString())
                 erroApi.postValue(e.message)
             }
 
