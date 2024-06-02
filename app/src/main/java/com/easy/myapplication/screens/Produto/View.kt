@@ -163,6 +163,7 @@ fun Produto(view: ProdutoViewModel, id: String?) {
                             navController.navigate("RealizarPedido")
                         }
                     ) {
+
                         Text(text = "Comprar")
                     }
                 }
