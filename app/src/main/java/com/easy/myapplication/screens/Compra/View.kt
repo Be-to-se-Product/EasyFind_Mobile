@@ -355,7 +355,7 @@ fun FinalStep() {
                 modifier = Modifier.padding(top = 8.dp)
             )
             Button(
-                onClick = {},
+                onClick = { navigation.navigate("Pedidos")},
                 colors = ButtonDefaults.buttonColors(Primary),
                 modifier = Modifier.padding(top = 16.dp)
             ) {

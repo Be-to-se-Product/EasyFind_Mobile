@@ -18,6 +18,8 @@ import com.easy.myapplication.screens.Compra.Buy
 import com.easy.myapplication.screens.Login.Login
 import com.easy.myapplication.screens.Login.Model
 import com.easy.myapplication.screens.Mapa.Mapa
+import com.easy.myapplication.screens.Pedido.ItensPedido
+import com.easy.myapplication.screens.Pedido.Pedidos
 import com.easy.myapplication.screens.Produto.Produto
 import com.easy.myapplication.screens.Produto.ProdutoViewModel
 import com.easy.myapplication.services.Service
@@ -57,6 +59,15 @@ fun     AppNavHost(
             composable("RealizarPedido")
             {
                 Buy()
+            }
+            composable("Pedidos")
+            {
+                val model = com.easy.myapplication.screens.Pedido.Model()
+                Pedidos(rememberNavController(), model)
+            }
+            composable("Itens")
+            {
+                ItensPedido()
             }
         }
     }

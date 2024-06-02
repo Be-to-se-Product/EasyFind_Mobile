@@ -96,7 +96,7 @@ fun Drawble(content: @Composable (DrawerState, CoroutineScope) -> Unit) {
                                         )
                                     },
                                     selected = false,
-                                    onClick = {}
+                                    onClick = {navigation.navigate("Pedidos")}
                                 )
                                 NavigationDrawerItem(
                                     label = {
