@@ -85,14 +85,13 @@ object Service: KoinComponent {
                 newRequest.header("Authorization", "Bearer $token")
                 }
                 chain.proceed(newRequest.build())
-
             }
 
         okHttpClient.addInterceptor{
             chain->
             val request = chain.request();
             val response = chain.proceed(request)
-            if(response.code() == 401 || response.code()==403){
+            if(response.code == 401 || response.code ==403){
                 navigate()
             }
             response

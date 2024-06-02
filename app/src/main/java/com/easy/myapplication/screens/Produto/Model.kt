@@ -27,8 +27,6 @@ class ProdutoViewModel : ViewModel() {
     val erroApi = MutableLiveData("")
     val latLong = MutableLiveData(LatandLong())
     val produtoVenda = MutableLiveData(ProdutoPedido());
-
-
     private val produtoService = Service.ProdutoService()
     private val avalicaoService = Service.AvalicaoService()
 

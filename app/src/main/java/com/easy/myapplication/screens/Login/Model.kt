@@ -1,7 +1,6 @@
 package com.easy.myapplication.screens.Login
 
 import android.util.Log
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.easy.myapplication.services.Service
@@ -15,37 +14,44 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Objects
-import java.util.logging.Handler
 
 
 class Model(private val storage: StorageRepository):ViewModel(){
     val erroApi = MutableLiveData("")
     val message = MutableLiveData(Message());
-    val loading = MutableLiveData(false);
+    val loading = MutableLiveData(Message());
     val ConsumidorService = Service.AutheticationService();
     val CadastroService = Service.CadastrarService();
 
 
 
      fun verificarUsuarioLogado(navigate: () -> Unit){
+         loading.postValue(loading.value?.copy(show = true,message="Verificando acessos..."))
         CoroutineScope(Dispatchers.IO).launch{
             try {
                 val token = storage.readFromDataStore("token")
+                delay(2000)
+                loading.postValue(loading.value?.copy(show = false,message=""))
+
                 if(Objects.nonNull(token)){
                     MainScope().launch{
+
                         navigate()
                     }
                 }
             }
             catch (e :Exception){
-                    Log.e("Erro",e.message.toString())
+                loading.postValue(loading.value?.copy(show = false,message=""))
+
+                Log.e("Erro",e.message.toString())
             }
+
 
         }
     }
 
     fun loginUsuario(usuario: UsuarioCriacaoDTO, navigate: () -> Unit){
-        loading.postValue(true)
+        loading.postValue(loading.value?.copy(show = true))
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val post  = ConsumidorService.loginConsumidor(usuario)
@@ -85,7 +91,7 @@ class Model(private val storage: StorageRepository):ViewModel(){
 
             }
             finally {
-                loading.postValue(false)
+                loading.postValue(loading.value?.copy(show = false))
                 delay(2000)
                 message.postValue(Message(show = false))
             }
@@ -94,7 +100,7 @@ class Model(private val storage: StorageRepository):ViewModel(){
     }
 
     fun cadastrarUsuario(consumidor: ConsumidorCriacaoDTO){
-        loading.postValue(true)
+        loading.postValue(loading.value?.copy(show = true))
         CoroutineScope(Dispatchers.IO).launch {
             try{
                 val post  = CadastroService.cadastrarConsumidor(consumidor)
@@ -113,7 +119,7 @@ class Model(private val storage: StorageRepository):ViewModel(){
                 erroApi.postValue(e.message)
             }
             finally {
-                loading.postValue(false)
+                loading.postValue(loading.value?.copy(show = false))
                 delay(2000)
                 message.postValue(message.value?.copy(show=false))
             }

@@ -13,7 +13,7 @@ interface LocationCallback {
     fun onSuccess(latitude: Double, longitude: Double)
     fun onError(message: String?)
 }
-fun getLatLong(context: Context, callback: LocationCallback){
+fun getLatLong(context: Context, onSucess:(lat:Double,long:Double)->Unit,onFailure:(message:String)->Unit){
     val locationProvider = LocationServices.getFusedLocationProviderClient(context)
     var localization:LatandLong? = null 
 
@@ -30,12 +30,12 @@ fun getLatLong(context: Context, callback: LocationCallback){
                 location?.let {
                     val lat = location.latitude
                     val long = location.longitude
-                    callback.onSuccess(lat,long)
+                    onSucess(lat,long)
                 }
 
             }
             .addOnFailureListener {
-                callback.onError(it.message)
+                onFailure(it.message.toString())
             }
     }
 
