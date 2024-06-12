@@ -44,7 +44,8 @@ fun Carrinho(viewModel:Model){
                                     id = carrinho.produto?.id,
                                     quantidade = carrinho.quantidade,
                                     idEstabelecimento = carrinho.idEmpresa,
-                                    preco = carrinho.produto?.preco
+                                    preco = carrinho.produto?.preco,
+                                    origin = "Carrinho"
                                 )
                             }
                             items(items = carrinhos, itemContent = { carrinho ->

@@ -68,6 +68,7 @@ fun Buy() {
         navController.previousBackStackEntry?.savedStateHandle?.get<List<ProdutoPedido>>("PRODUTO")
     var total = 0.0
     var storeId = productsList?.get(0)?.idEstabelecimento
+    var origem = productsList?.get(0)?.origin
     val itens = productsList?.map { product ->
         total += product.quantidade!! * product.preco!!
         ItemVenda().apply {
@@ -142,7 +143,8 @@ fun Buy() {
                                             itens!!,
                                             paymentMethodId.value,
                                             isPaymentOnline,
-                                            viewModel
+                                            viewModel,
+                                            origem
                                         )
                                     }
                                 } else {
@@ -152,7 +154,8 @@ fun Buy() {
                                             itens!!,
                                             paymentMethodId.value,
                                             isPaymentOnline,
-                                            viewModel
+                                            viewModel,
+                                            origem
                                         )
                                         isFinalStep.value = true
                                     }
@@ -409,7 +412,8 @@ fun sendRequest(
     produtos : List<ItemVenda>,
     paymentMethodId: Long,
     isPaymentOnline: MutableState<Boolean>,
-    viewModel: Model
+    viewModel: Model,
+    origin: String?
 ) {
     val pedido = PedidoCadastro().apply {
         idConsumidor = 1
@@ -419,7 +423,7 @@ fun sendRequest(
             idMetodoPagamento = paymentMethodId
             isPagamentoOnline = isPaymentOnline.value
         }
-        origem = "Carrinho"
+        origem = origin
     }
     viewModel.postPedido(pedido)
 }
