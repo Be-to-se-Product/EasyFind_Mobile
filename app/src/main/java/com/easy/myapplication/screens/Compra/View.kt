@@ -64,12 +64,17 @@ fun Buy() {
     val selectedOption = remember { mutableStateOf<String?>(null) }
     val isFinalStep = remember { mutableStateOf(false) }
 
-    val products =
-        navController.previousBackStackEntry?.savedStateHandle?.get<ProdutoPedido>("PRODUTO")
-    val total = products?.quantidade!! * products.preco!!
-    val quantity = products.quantidade
-    val productId = products.id
-    val storeId = products.idEstabelecimento
+    val productsList =
+        navController.previousBackStackEntry?.savedStateHandle?.get<List<ProdutoPedido>>("PRODUTO")
+    var total = 0.0
+    var storeId = productsList?.get(0)?.idEstabelecimento
+    val itens = productsList?.map { product ->
+        total += product.quantidade!! * product.preco!!
+        ItemVenda().apply {
+            idProduto = product.id
+            quantidade = product.quantidade
+        }
+    }
     val isPaymentOnline = remember { mutableStateOf(false) }
     val paymentMethodId = remember { mutableLongStateOf(2L) }
 
@@ -134,8 +139,7 @@ fun Buy() {
                                     if (currentStep.value == totalSteps && selectedOption.value != "pix") {
                                         sendRequest(
                                             storeId!!,
-                                            productId!!,
-                                            quantity,
+                                            itens!!,
                                             paymentMethodId.value,
                                             isPaymentOnline,
                                             viewModel
@@ -145,8 +149,7 @@ fun Buy() {
                                     if (selectedOption.value == "pix") {
                                         sendRequest(
                                             storeId!!,
-                                            productId!!,
-                                            quantity,
+                                            itens!!,
                                             paymentMethodId.value,
                                             isPaymentOnline,
                                             viewModel
@@ -403,23 +406,20 @@ fun copyToClipboard(context: Context, text: String) {
 
 fun sendRequest(
     storeId: Long,
-    productId: Long,
-    quantity: Int,
+    produtos : List<ItemVenda>,
     paymentMethodId: Long,
     isPaymentOnline: MutableState<Boolean>,
     viewModel: Model
 ) {
     val pedido = PedidoCadastro().apply {
+        idConsumidor = 1
         idEstabelecimento = storeId
-        itens = listOf(ItemVenda().apply {
-            idProduto = productId
-            quantidade = quantity
-        })
+        itens = produtos
         metodo = MetodoPagamento().apply {
             idMetodoPagamento = paymentMethodId
             isPagamentoOnline = isPaymentOnline.value
         }
-        origem = "Tela compra"
+        origem = "Carrinho"
     }
     viewModel.postPedido(pedido)
 }
