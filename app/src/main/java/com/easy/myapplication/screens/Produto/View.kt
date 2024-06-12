@@ -47,6 +47,8 @@ import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
 import com.easy.myapplication.LocalNavController
 import com.easy.myapplication.dto.AvaliacaoCadastrar
+import com.easy.myapplication.dto.CarrinhoRequestDTO
+import com.easy.myapplication.screens.Carrinho.Model
 import com.easy.myapplication.shared.ButtonQuantidadeProduto.ProdutoQuantityButton
 import com.easy.myapplication.shared.StarRatingBar.StarRatingBar
 import com.easy.myapplication.shared.Subtitle.Subtitle
@@ -68,6 +70,8 @@ fun Produto(view: ProdutoViewModel, id: String?) {
     }
     val latLong = view.latLong.observeAsState().value!!;
     val produto = view.produto.observeAsState().value!!;
+    var listaProdutosVenda = mutableListOf<ProdutoPedido>()
+    val modelCarrinho = Model()
 
 
 
@@ -156,9 +160,10 @@ fun Produto(view: ProdutoViewModel, id: String?) {
                             .padding(0.dp),
                         colors = ButtonDefaults.buttonColors(Color(0xFFFCA622)),
                         onClick = {
+                            listaProdutosVenda.add(produtoVenda)
                             navController.currentBackStackEntry?.savedStateHandle?.set(
                                 "PRODUTO",
-                                produtoVenda
+                                listaProdutosVenda
                             )
                             navController.navigate("RealizarPedido")
                         }
@@ -178,7 +183,8 @@ fun Produto(view: ProdutoViewModel, id: String?) {
                             .padding(0.dp),
                         colors = ButtonDefaults.buttonColors(Color(0xFFFCA622)),
                         onClick = {
-
+                            val carrinho = CarrinhoRequestDTO(produtoVenda.quantidade, produtoVenda.id)
+                            modelCarrinho.postCarrinho(carrinho)
                         }) {
                         Text(text = "Adicionar no carrinho")
                     }

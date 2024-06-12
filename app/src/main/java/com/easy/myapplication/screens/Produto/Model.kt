@@ -18,7 +18,8 @@ data class ProdutoPedido(
     val id:Long?=null,
     val quantidade:Int?=null,
     val idEstabelecimento:Long?=null,
-    val preco: Double?=null
+    val preco: Double?=null,
+    val origin: String?=null,
 ):java.io.Serializable
 
 
