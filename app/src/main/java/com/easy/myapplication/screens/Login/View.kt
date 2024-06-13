@@ -40,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -170,7 +171,7 @@ ScreenLoading(isLoading = isLoading.show && isLoading.message=="Verificando aces
                                     shape = RoundedCornerShape(0)
                                 ) {
                                     Text(
-                                        text = "LOGIN",
+                                        text = stringResource(id = R.string.button_login),
                                         fontSize = 12.sp,
                                         color = if (!switch.value) Color.White else Color.Black,
                                         textAlign = TextAlign.Center
@@ -196,7 +197,7 @@ ScreenLoading(isLoading = isLoading.show && isLoading.message=="Verificando aces
                                     shape = RoundedCornerShape(0)
                                 ) {
                                     Text(
-                                        text = "CADASTRO",
+                                        text = stringResource(id = R.string.button_cadastro),
                                         fontSize = 12.sp,
                                         color = if (!switch.value) Color.Black else Color.White,
                                         modifier = Modifier.fillMaxWidth(1f),

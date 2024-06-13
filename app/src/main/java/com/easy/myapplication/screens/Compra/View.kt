@@ -42,10 +42,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.easy.myapplication.LocalNavController
+import com.easy.myapplication.R
 import com.easy.myapplication.screens.Compra.Integration.ItemVenda
 import com.easy.myapplication.screens.Compra.Integration.MetodoPagamento
 import com.easy.myapplication.screens.Compra.Integration.PedidoCadastro
@@ -122,7 +124,7 @@ fun Buy() {
                             onClick = { if (currentStep.value > 1) currentStep.value-- },
                             colors = ButtonDefaults.buttonColors(Primary)
                         ) {
-                            Text("Voltar")
+                            Text(stringResource(id = R.string.button_voltar))
                         }
                         Spacer(modifier = Modifier.width(8.dp))
                     }
@@ -158,7 +160,7 @@ fun Buy() {
                             },
                             colors = ButtonDefaults.buttonColors(Primary)
                         ) {
-                            Text(if (currentStep.value == totalSteps) "Finalizar" else "Continuar")
+                            Text(if (currentStep.value == totalSteps) stringResource(id = R.string.button_finalizar) else stringResource(id = R.string.button_continuar))
                         }
                     }
                 }
@@ -176,7 +178,7 @@ fun Buy() {
                         onClick = { navController.popBackStack()},
                         colors = ButtonDefaults.buttonColors(Primary)
                     ) {
-                        Text("Cancelar")
+                        Text(stringResource(id = R.string.button_cancelar))
                     }
                     val totalFormatado = String.format("%.2f", total)
                     Text(text = "Total : R$$totalFormatado")

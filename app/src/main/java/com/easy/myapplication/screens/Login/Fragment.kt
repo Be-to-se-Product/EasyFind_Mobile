@@ -18,8 +18,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.easy.myapplication.R
 import com.easy.myapplication.dto.ConsumidorCriacaoDTO
 import com.easy.myapplication.dto.UsuarioCriacaoDTO
 import com.easy.myapplication.shared.Button.Button
@@ -39,12 +41,12 @@ fun login(model: Model,navigation: ()->Unit ){
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxWidth(0.8f)
     ) {
-        Input(value = usuario.email?:"", onValueChange = {usuarioSetter(usuario.copy(email = it))},label="Email")
+        Input(value = usuario.email?:"", onValueChange = {usuarioSetter(usuario.copy(email = it))},label= stringResource(id = R.string.label_email))
         Spacer(modifier = Modifier.height(30.dp))
-        Input(value = usuario.senha?:"", onValueChange = {usuarioSetter(usuario.copy(senha = it))}, type = Type.PASSWORD, label = "Senha")
+        Input(value = usuario.senha?:"", onValueChange = {usuarioSetter(usuario.copy(senha = it))}, type = Type.PASSWORD, label = stringResource(id = R.string.label_senha))
         Spacer(modifier = Modifier.height(40.dp))
         Button(onClick = {model.loginUsuario(usuario,navigation) }, isLoading = loading.show, content = {
-            Text(text = "Entrar")
+            Text(text = stringResource(id = R.string.button_entrar))
         })
 Spacer(modifier = Modifier.height(10.dp))
 
@@ -79,29 +81,29 @@ fun cadastro(model: Model){
         Row(modifier = Modifier
             .fillMaxWidth(1f)) {
             Column(modifier = Modifier.weight(1f)) {
-                Input(value = consumidor.cpf?:"", onValueChange = {consumidorSetter(consumidor.copy(cpf = it))}, type = Type.CPF,label="CPF")
+                Input(value = consumidor.cpf?:"", onValueChange = {consumidorSetter(consumidor.copy(cpf = it))}, type = Type.CPF,label= stringResource(id = R.string.label_cpf))
             }
             Spacer(modifier = Modifier.width(20.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Input(value = consumidor.celular?:"", onValueChange = {consumidorSetter(consumidor.copy(celular = it))}, type = Type.PHONE,label="Telefone")
+                Input(value = consumidor.celular?:"", onValueChange = {consumidorSetter(consumidor.copy(celular = it))}, type = Type.PHONE,label= stringResource(id = R.string.label_telefone))
             }
         }
         Column {
-            Input(value = consumidor.nome?:"", onValueChange = {consumidorSetter(consumidor.copy(nome = it))},label="Nome Completo")
+            Input(value = consumidor.nome?:"", onValueChange = {consumidorSetter(consumidor.copy(nome = it))},label= stringResource(id = R.string.label_NomeCompleto))
         }
         Row(modifier = Modifier.fillMaxWidth(1f)) {
             Column(modifier = Modifier.weight(1f)) {
                 Input(value = consumidor.dataNascimento ?: "", onValueChange = { newValue ->
                     val formattedDate = formatarData(newValue)
                     consumidorSetter(consumidor.copy(dataNascimento = formattedDate))
-                }, type = Type.DATE,label="Data de Nascimento")
+                }, type = Type.DATE,label= stringResource(id = R.string.label_dataNascimento))
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 SelectBox(value = consumidor.genero?:"",
                     onValueChange = {consumidorSetter(consumidor.copy(genero = it))},
                     expandido = expandido,
-                    label = "Gênero",
+                    label = stringResource(id = R.string.label_genero),
                     generos = generos,
                     genero = generoState
                 )
@@ -111,17 +113,17 @@ fun cadastro(model: Model){
             Input(value = consumidor.usuario?.email?:"", onValueChange = { email ->
                 val usuarioAtualizado = consumidor.usuario?.copy(email = email) ?: UsuarioCriacaoDTO(email = email)
                 consumidorSetter(consumidor.copy(usuario = usuarioAtualizado))
-            },label="E-mail")
+            },label= stringResource(id = R.string.label_email))
         }
         Column {
             Input(value = consumidor.usuario?.senha?:"", onValueChange = { senha ->
                 val usuarioAtualizado = consumidor.usuario?.copy(senha = senha) ?: UsuarioCriacaoDTO(senha = senha)
                 consumidorSetter(consumidor.copy(usuario = usuarioAtualizado))
-            }, type = Type.PASSWORD, label="Senha")
+            }, type = Type.PASSWORD, label= stringResource(id = R.string.label_senha))
         }
         Spacer(modifier = Modifier.height(2.dp))
         Button(onClick = {model.cadastrarUsuario(consumidor)}, content = {
-            Title(content = "Cadastrar", fontSize = 14.sp, maxLines = 1)
+            Title(content = stringResource(id = R.string.button_cadastrar), fontSize = 14.sp, maxLines = 1)
         })
     }
 }
