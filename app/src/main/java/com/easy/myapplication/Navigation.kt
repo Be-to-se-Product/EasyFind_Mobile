@@ -9,6 +9,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.easy.myapplication.screens.Carrinho.Carrinho
 import com.easy.myapplication.screens.Compra.Buy
 import com.easy.myapplication.screens.Login.Login
 import com.easy.myapplication.screens.Login.Model
@@ -63,6 +64,11 @@ fun  AppNavHost(
             composable("Itens")
             {
                 ItensPedido()
+            }
+            composable("Carrinho")
+            {
+                val model = com.easy.myapplication.screens.Carrinho.Model()
+                Carrinho(model)
             }
         }
     }

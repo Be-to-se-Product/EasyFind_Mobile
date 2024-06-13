@@ -1,6 +1,5 @@
 package com.easy.myapplication.screens.Pedido
 
-import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,13 +20,11 @@ class Model : ViewModel()  {
                 val response = pedidoService.getPedidos(status = status);
                 if (response.isSuccessful) {
                     pedidos.value!!.clear()
-                    Log.e("Pedidos",response.body().toString())
                     pedidos.value!!.addAll(response.body() ?: listOf() )
                 } else {
                     erroApi.postValue(response.errorBody()?.string() ?: "")
                 }
             } catch (e: Exception) {
-                Log.e("Error",e.message.toString())
                 erroApi.postValue(e.message)
             }
 

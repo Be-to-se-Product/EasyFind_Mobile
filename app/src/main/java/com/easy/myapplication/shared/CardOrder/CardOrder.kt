@@ -26,6 +26,7 @@ import com.easy.myapplication.shared.Subtitle.Subtitle
 import java.io.Serializable
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 
 data class DataCardOrder(
     val id:Long=0L,
@@ -47,8 +48,9 @@ fun CardOrder(data : DataCardOrder){
 
     val formatoEntrada = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
     val formatoSaida = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm")
+    val dataSemMicrossegundos = data.data!!.replace(Regex("\\.\\d+"), "")
 
-    val dataHora = LocalDateTime.parse(data.data, formatoEntrada)
+    val dataHora = LocalDateTime.parse(dataSemMicrossegundos, formatoEntrada)
     val dataFormatada = dataHora.format(formatoSaida)
 
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp).background(Color.White, shape)) {
@@ -101,7 +103,7 @@ fun CardOrder(data : DataCardOrder){
             modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
         ) {
             Row {
-                Subtitle(content = "Preço total: " + data.preco, color = Color.Black)
+                Subtitle(content = "Preço total: R$ " + data.preco, color = Color.Black)
             }
             Button(
                 onClick = {

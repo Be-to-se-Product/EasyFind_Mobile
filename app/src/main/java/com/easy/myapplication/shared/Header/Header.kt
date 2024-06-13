@@ -23,6 +23,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.easy.myapplication.LocalNavController
 import com.easy.myapplication.R
 import com.easy.myapplication.repositories.StorageRepository
 import com.easy.myapplication.shared.Drawble.Drawble
@@ -43,6 +44,7 @@ fun Header(content:@Composable ()-> Unit) {
     val storage : StorageRepository by inject<StorageRepository>();
 
     val nome = remember { mutableStateOf("") }
+    val navController = LocalNavController.current;
 
     fun getUserName() {
         CoroutineScope(Dispatchers.IO).launch {
@@ -83,7 +85,12 @@ fun Header(content:@Composable ()-> Unit) {
                             Image(
                                 painter = painterResource(id = R.mipmap.cart),
                                 contentDescription = "Cart",
-                                modifier = Modifier.width(25.dp)
+                                modifier = Modifier.width(25.dp).clickable(
+                                    onClick = {
+                                        navController.navigate("Carrinho")
+                                    },
+                                    enabled = true
+                                )
                             )
                         }
                     }
