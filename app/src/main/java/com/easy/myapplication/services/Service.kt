@@ -5,8 +5,10 @@ import com.easy.myapplication.services.endpoints.ICompra
 import com.easy.myapplication.BuildConfig
 import com.easy.myapplication.repositories.StorageRepository
 import com.easy.myapplication.services.endpoints.IAvaliacao
+import com.easy.myapplication.services.endpoints.ICarrinho
 import com.easy.myapplication.services.endpoints.IConsumidor
 import com.easy.myapplication.services.endpoints.IMapBox
+import com.easy.myapplication.services.endpoints.IPedido
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import com.easy.myapplication.services.endpoints.IProduto
@@ -61,6 +63,16 @@ object Service: KoinComponent {
 
     fun AutheticationService(): IConsumidor {
         val cliente = Instance("usuarios").create(IConsumidor::class.java);
+        return cliente;
+    }
+
+    fun PedidosService(): IPedido {
+        val cliente = Instance("pedidos").create(IPedido::class.java);
+        return cliente;
+    }
+
+    fun CarrinhoService(): ICarrinho {
+        val cliente = Instance("").create(ICarrinho::class.java);
         return cliente;
     }
 

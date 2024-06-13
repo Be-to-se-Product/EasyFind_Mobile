@@ -44,9 +44,12 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import coil.compose.AsyncImage
 import com.easy.myapplication.LocalNavController
 import com.easy.myapplication.dto.AvaliacaoCadastrar
+import com.easy.myapplication.dto.CarrinhoRequestDTO
+import com.easy.myapplication.screens.Carrinho.Model
 import com.easy.myapplication.shared.ButtonQuantidadeProduto.ProdutoQuantityButton
 import com.easy.myapplication.shared.StarRatingBar.StarRatingBar
 import com.easy.myapplication.shared.Subtitle.Subtitle
@@ -68,6 +71,8 @@ fun Produto(view: ProdutoViewModel, id: String?) {
     }
     val latLong = view.latLong.observeAsState().value!!;
     val produto = view.produto.observeAsState().value!!;
+    var listaProdutosVenda = mutableListOf<ProdutoPedido>()
+    val modelCarrinho = Model()
 
 
 
@@ -156,14 +161,16 @@ fun Produto(view: ProdutoViewModel, id: String?) {
                             .padding(0.dp),
                         colors = ButtonDefaults.buttonColors(Color(0xFFFCA622)),
                         onClick = {
+                            listaProdutosVenda.add(produtoVenda)
                             navController.currentBackStackEntry?.savedStateHandle?.set(
                                 "PRODUTO",
-                                produtoVenda
+                                listaProdutosVenda
                             )
                             navController.navigate("RealizarPedido")
                         }
                     ) {
-                        Text(text = "Comprar")
+
+                        Text(text = stringResource(id = R.string.button_comprar))
                     }
                 }
 
@@ -177,9 +184,10 @@ fun Produto(view: ProdutoViewModel, id: String?) {
                             .padding(0.dp),
                         colors = ButtonDefaults.buttonColors(Color(0xFFFCA622)),
                         onClick = {
-
+                            val carrinho = CarrinhoRequestDTO(produtoVenda.quantidade, produtoVenda.id)
+                            modelCarrinho.postCarrinho(carrinho)
                         }) {
-                        Text(text = "Adicionar no carrinho")
+                        Text(text = stringResource(id = R.string.button_adicionarCarrinho))
                     }
                 }
 
@@ -192,7 +200,9 @@ fun Produto(view: ProdutoViewModel, id: String?) {
                         AsyncImage(
                             model = produto.estabelecimento?.imagem?:"",
                             contentDescription = "Mercado",
-                            modifier = Modifier.size(60.dp).clip(RoundedCornerShape(8.dp, 8.dp, 8.dp, 8.dp)),
+                            modifier = Modifier
+                                .size(60.dp)
+                                .clip(RoundedCornerShape(8.dp, 8.dp, 8.dp, 8.dp)),
                             contentScale = ContentScale.Crop,
 
                         )
@@ -300,7 +310,7 @@ fun ComentarioSection(view: ProdutoViewModel, id: Long) {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Title(content = "Comentário", maxLines = 1)
+            Title(content = stringResource(id = R.string.description_comentario), maxLines = 1)
         }
 
         Row(
@@ -346,7 +356,7 @@ fun ComentarioSection(view: ProdutoViewModel, id: Long) {
                     .padding(0.dp),
                 colors = ButtonDefaults.buttonColors(Color(0xFFFCA622)),
                 onClick = { view.cadastroAvalicao(avaliacaoCadastrar = avaliacao) }) {
-                Text(text = "Postar")
+                Text(text = stringResource(id = R.string.button_postarComentario))
             }
         }
     }
