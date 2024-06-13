@@ -203,13 +203,13 @@ fun StepOne(
     onOptionSelected: (String) -> Unit
 ) {
     Text(
-        text = "Como deseja realizar o pagamento?",
+        text = stringResource(id = R.string.description_compra_realizar),
         modifier = Modifier.fillMaxWidth(),
     )
     Spacer(modifier = Modifier.height(16.dp))
     SelectableOptionButton(
-        text = "Pague aqui e retire na loja",
-        isSelected = selectedOption.value == "Pague aqui e retire na loja"
+        text = stringResource(id = R.string.description_compra_retirarProduto),
+        isSelected = selectedOption.value == stringResource(id = R.string.description_compra_realizar)
     ) {
         onOptionSelected("Pague aqui e retire na loja")
         isPaymentOnline.value = true
@@ -217,8 +217,8 @@ fun StepOne(
 
     Spacer(modifier = Modifier.height(8.dp))
     SelectableOptionButton(
-        text = "Pagamento no estabelecimento",
-        isSelected = selectedOption.value == "Pagamento no estabelecimento"
+        text = stringResource(id = R.string.pay_estabelecimento),
+        isSelected = selectedOption.value == stringResource(id = R.string.pay_estabelecimento)
     ) {
         onOptionSelected("Pagamento no estabelecimento")
         isPaymentOnline.value = false
@@ -242,7 +242,7 @@ fun StepTwo(
 
 
     Text(
-        text = "Selecione o método de pagamento",
+        text = stringResource(id = R.string.method_pay),
         modifier = Modifier.fillMaxWidth(),
     )
     Spacer(modifier = Modifier.height(16.dp))
@@ -272,16 +272,16 @@ fun StepThree() {
                 .fillMaxSize()
                 .padding(vertical = 16.dp)
         ) {
-            Text("Escaneie este código para pagar", fontSize = 16.sp)
+            Text(stringResource(id = R.string.method_QRCode), fontSize = 16.sp)
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text("1. Acesse seu Internet Banking ou app de pagamentos.", fontSize = 13.sp)
+            Text(stringResource(id = R.string.method_QRCode_passo1), fontSize = 13.sp)
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text("2. Escolha pagar via Pix.", fontSize = 13.sp)
+            Text(stringResource(id = R.string.method_QRCode_passo2), fontSize = 13.sp)
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text("3. Escaneie o seguinte código QR.", fontSize = 13.sp)
+            Text(stringResource(id = R.string.method_QRCode_passo3), fontSize = 13.sp)
             Spacer(modifier = Modifier.height(8.dp))
         }
 
@@ -300,7 +300,7 @@ fun StepThree() {
         val context = LocalContext.current
         Column {
             Text(
-                "Ou copie e cole este código QR para fazer o pagamento via app de pagamentos ou Internet Banking:",
+                stringResource(id = R.string.method_QRCode_passo4),
                 fontSize = 14.sp
             )
 
@@ -332,7 +332,7 @@ fun StepThree() {
                         )
                 ) {
                     Text(
-                        text = "Copiar",
+                        text = stringResource(id = R.string.button_copiar_pix),
                     )
                 }
             }
@@ -360,14 +360,14 @@ fun FinalStep() {
                 modifier = Modifier.size(100.dp)
             )
             Text(
-                text = "Pedido feito com sucesso!",
+                text = stringResource(id = R.string.description_compraSucesso),
                 color = Color.White,
                 fontSize = 20.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 16.dp)
             )
             Text(
-                text = "Seu pedido será enviado para aprovação do comerciante. Clique no botão abaixo.",
+                text = stringResource(id = R.string.description_compraAprovacao),
                 color = Color.White,
                 fontSize = 16.sp,
                 textAlign = TextAlign.Center,
@@ -379,7 +379,7 @@ fun FinalStep() {
                 modifier = Modifier.padding(top = 16.dp)
             ) {
                 Text(
-                    text = "Acompanhar o pedido",
+                    text = stringResource(id = R.string.description_acompanharProduto),
                     color = Color.Black
                 )
             }
@@ -391,7 +391,7 @@ fun FinalStep() {
                 modifier = Modifier.padding(top = 8.dp)
             ) {
                 Text(
-                    text = "Voltar para a página inicial",
+                    text = stringResource(id = R.string.button_voltarTelaInicial),
                     color = Color.Black
                 )
             }

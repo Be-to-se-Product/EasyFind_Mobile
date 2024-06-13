@@ -9,6 +9,12 @@
     <string name="button_finalizar">Finalizar</string>
     <string name="button_continuar">Continuar</string>
     <string name="button_cancelar">Cancelar</string>
+    <string name="button_copiar_pix">Copiar</string>
+    <string name="button_voltarTelaInicial">Voltar para a página inicial</string>
+    <string name="button_comprar">Comprar</string>
+    <string name="button_adicionarCarrinho">Adicionar no carrinho</string>
+    <string name="button_postarComentario">Postar</string>
+    <string name="button_finalizarPedido">Finalizar pedido</string>
 
     <string name="label_email">E-mail</string>
     <string name="label_senha">Senha</string>
@@ -17,6 +23,28 @@
     <string name="label_NomeCompleto">Nome Completo</string>
     <string name="label_dataNascimento">Data de nasc.</string>
     <string name="label_genero">Gênero</string>
+
+    <string name="description_compra_realizar">Como deseja realizar o pagamento?</string>
+    <string name="description_comentario">Comentário</string>
+    <string name="description_caarrinho">Carrinho</string>
+    <string name="description_MeusPedidos">Meus Pedidos</string>
+    <string name="description_ModoPagamentoOnline">Pagamento online</string>
+    <string name="description_ModoPagamentoLoja">Pagamento loja</string>
+    <string name="description_SemPedidos">Sem pedidos</string>
+    <string name="description_ItensPedidos">Itens do pedido</string>
+    <string name="description_compra_retirarProduto">Pague aqui e retire na loja</string>
+    <string name="description_compraSucesso">Pedido feito com sucesso!</string>
+    <string name="description_acompanharProduto">Acompanhar o pedido</string>
+    <string name="description_compraAprovacao">Seu pedido será enviado para aprovação do comerciante. Clique no botão abaixo.</string>
+
+    <string name="pay_estabelecimento">Pagamento no estabelecimento"</string>
+    <string name="method_pay">Selecione o método de pagamento</string>
+    <string name="method_QRCode">Escaneie este código para pagar</string>
+    <string name="method_QRCode_passo1">1. Acesse seu Internet Banking ou app de pagamentos.</string>
+    <string name="method_QRCode_passo2">2. Escolha pagar via Pix.</string>
+    <string name="method_QRCode_passo3">3. Escaneie o seguinte código QR.</string>
+    <string name="method_QRCode_passo4">Ou copie e cole este código QR para fazer o pagamento via app de pagamentos ou Internet Banking:</string>
+
 
 
 </resources>
