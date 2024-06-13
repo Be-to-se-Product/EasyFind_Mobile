@@ -16,8 +16,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.easy.myapplication.LocalNavController
+import com.easy.myapplication.R
 import com.easy.myapplication.screens.Produto.ProdutoPedido
 import com.easy.myapplication.shared.BarTitle.BarTitle
 import com.easy.myapplication.shared.Button.Button
@@ -35,7 +37,7 @@ fun Carrinho(viewModel:Model){
     Header {
         Surface(color = Color(0xFF292929), modifier = Modifier.fillMaxSize()) {
             Column {
-                BarTitle(rota = "Mapa", title = "Carrinho")
+                BarTitle(rota = "Mapa", title = stringResource(id = R.string.description_caarrinho))
                 if(carrinhos.isNotEmpty()) {
                     LazyColumn {
                         groupedCarrinhos.forEach { (nomeEmpresa, carrinhos) ->
@@ -68,7 +70,7 @@ fun Carrinho(viewModel:Model){
                                                 produtoVenda
                                             )
                                             navController.navigate("RealizarPedido")
-                                        }, content = { Text(text = "Finalizar pedido") }
+                                        }, content = { Text(text = stringResource(id = R.string.button_finalizarPedido)) }
                                     )
                                 }
                             }
