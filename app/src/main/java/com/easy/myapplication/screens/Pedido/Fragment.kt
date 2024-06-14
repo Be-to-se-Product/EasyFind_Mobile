@@ -20,8 +20,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.easy.myapplication.LocalNavController
+import com.easy.myapplication.R
 import com.easy.myapplication.dto.ResponseItemVendaDTO
 import com.easy.myapplication.dto.ResponsePedido
 import com.easy.myapplication.shared.BarTitle.BarTitle
@@ -53,7 +55,7 @@ fun Pedidos(viewModel: Model){
 
     Surface(color = Color(0xFF292929), modifier = Modifier.fillMaxSize()) {
         Column {
-            BarTitle(rota = "Mapa", title = "Meus Pedidos")
+            BarTitle(rota = "Mapa", title = stringResource(id = R.string.description_MeusPedidos))
             Column(
                 modifier = Modifier
                     .width(220.dp)
@@ -73,7 +75,7 @@ fun Pedidos(viewModel: Model){
                 LazyColumn{
                     items(items = pedidos, itemContent = { pedido ->
                         var totalPreco = 0.0
-                        var modo = "Pagamento online"
+                        var modo = stringResource(id = R.string.description_ModoPagamentoOnline)
 
                         pedido.itens?.forEach { itens ->
                             var subTotal = itens.produto?.preco?.times(itens.quantidade!!)
@@ -83,7 +85,7 @@ fun Pedidos(viewModel: Model){
                         }
 
                         if(pedido.isPagamentoOnline == false){
-                            modo = "Pagamento na loja"
+                            modo = stringResource(id = R.string.description_ModoPagamentoLoja)
                         }
 
                         CardOrder(data = DataCardOrder(
@@ -102,9 +104,11 @@ fun Pedidos(viewModel: Model){
                 }
             }else{
                 Row(horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 16.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp, top = 16.dp)
                 ) {
-                    Subtitle(content = "Sem pedidos", color = Color.White)
+                    Subtitle(content = stringResource(id = R.string.description_SemPedidos), color = Color.White)
                 }
             }
         }
@@ -117,7 +121,7 @@ fun ItensPedido(){
     Header {
         Surface(color = Color(0xFF292929), modifier = Modifier.fillMaxSize()) {
             Column {
-                BarTitle(rota = "Pedidos", title = "Itens do pedido")
+                BarTitle(rota = "Pedidos", title = stringResource(id = R.string.description_ItensPedidos))
                 LazyColumn {
                     items(items = products, itemContent = { product ->
 

@@ -22,8 +22,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,23 +38,26 @@ import androidx.compose.ui.unit.sp
 import com.easy.myapplication.R
 import com.easy.myapplication.shared.Header.Header
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import coil.compose.AsyncImage
 import com.easy.myapplication.LocalNavController
 import com.easy.myapplication.dto.AvaliacaoCadastrar
 import com.easy.myapplication.dto.CarrinhoRequestDTO
 import com.easy.myapplication.screens.Carrinho.Model
+import com.easy.myapplication.shared.Button.Button
 import com.easy.myapplication.shared.ButtonQuantidadeProduto.ProdutoQuantityButton
 import com.easy.myapplication.shared.StarRatingBar.StarRatingBar
 import com.easy.myapplication.shared.Subtitle.Subtitle
 import com.easy.myapplication.shared.Title.Title
 import com.easy.myapplication.ui.theme.Primary
-import com.easy.myapplication.utils.LocationCallback
 import com.easy.myapplication.utils.conversorTime
 import com.easy.myapplication.utils.getLatLong
 
@@ -74,8 +76,6 @@ fun Produto(view: ProdutoViewModel, id: String?) {
     var listaProdutosVenda = mutableListOf<ProdutoPedido>()
     val modelCarrinho = Model()
 
-
-
     LaunchedEffect(key1 = Unit) {
         getLatLong(context, onSucess = { latitude, longitude ->
             setlatLong.postValue(latLong.copy(latitude, longitude))
@@ -90,10 +90,8 @@ fun Produto(view: ProdutoViewModel, id: String?) {
         }
     }
 
-
     Header {
         Surface(color = Color(0xFF292929), modifier = Modifier.fillMaxSize()) {
-
             Row {
                 Column(
                     modifier = Modifier
@@ -106,17 +104,13 @@ fun Produto(view: ProdutoViewModel, id: String?) {
                         horizontalAlignment = Alignment.Start
                     ) {
                         produto.estabelecimento?.nome?.let {
-                            Title(
-                                content = it,
-                                fontSize = 20.sp,
-                                color = Primary,
-                                maxLines = 1
-                            )
+                            Subtitle(content = it, fontSize = 13.sp, color = Primary)
                         }
-                        produto.nome?.let { Title(content = it, fontSize = 24.sp, maxLines = 1) }
+                        produto.nome?.let {Subtitle(content = it, fontSize = 20.sp) }
                         Subtitle(
                             content = produto.descricao,
-                            fontSize = 15.sp
+                            fontSize = 14.sp,
+                            color = Color(android.graphics.Color.parseColor("#D4D4D4"))
                         )
                     }
 
@@ -153,7 +147,7 @@ fun Produto(view: ProdutoViewModel, id: String?) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            com.easy.myapplication.shared.Button.Button(
+                            Button(
                                 onClick = {
                                     listaProdutosVenda.add(produtoVenda)
                                     navController.currentBackStackEntry?.savedStateHandle?.set(
@@ -161,19 +155,19 @@ fun Produto(view: ProdutoViewModel, id: String?) {
                                         listaProdutosVenda
                                     )
                                     navController.navigate("RealizarPedido")
-                                }, content = { Text(text = "Comprar") }
+                                }, content = { Text(text = stringResource(id = R.string.button_comprar)) }
                             )
                         }
 
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            com.easy.myapplication.shared.Button.Button(
+                            Button(
                                 onClick = {
                                     val carrinho =
                                         CarrinhoRequestDTO(produtoVenda.quantidade, produtoVenda.id)
                                     modelCarrinho.postCarrinho(carrinho)
-                                }, content = { Text(text = "Adicionar ao carrinho") }
+                                }, content = { Text(text = stringResource(id = R.string.button_adicionarCarrinho)) }
                             )
                         }
                     }
@@ -199,15 +193,11 @@ fun Produto(view: ProdutoViewModel, id: String?) {
                                 verticalArrangement = Arrangement.Center
                             ) {
                                 produto.estabelecimento?.nome?.let {
-                                    Title(
-                                        content = it,
-                                        maxLines = 1
-                                    )
+                                    Subtitle(content = it, fontSize = 14.sp)
                                 }
-                                Subtitle(content = produto.estabelecimento?.segmento)
+                                Subtitle(content = produto.estabelecimento?.segmento, fontSize = 13.sp)
                             }
                         }
-
                         produtoVenda.id?.let { ComentarioSection(view, it) }
                     }
 
@@ -218,11 +208,19 @@ fun Produto(view: ProdutoViewModel, id: String?) {
                                     modifier = Modifier.padding(16.dp),
                                     horizontalAlignment = Alignment.Start
                                 ) {
-                                    it.usuario?.let { it1 -> Title(content = it1, maxLines = 1) }
+                                    Column(modifier = Modifier.padding(bottom = 13.dp)) {
+                                        it.usuario?.let { it1 ->
+                                            Subtitle(
+                                                content = it1,
+                                                fontSize = 16.sp
+                                            )
+                                        }
+                                    }
                                     it.qtdEstrela?.toFloat()
-                                        ?.let { it1 -> StarRatingBar(rating = it1) }
-                                    Column {
-                                        Subtitle(content = it.descricao)
+                                        ?.let { it1 -> StarRatingBar(rating = it1, size = 8f) }
+
+                                    Column(modifier = Modifier.padding(top = 15.dp)) {
+                                        Subtitle(content = it.descricao, fontSize = 14.sp)
                                     }
                                 }
                             }
@@ -282,13 +280,14 @@ fun IconWithTime(icon: Int, time: String) {
         Image(
             painter = painterResource(id = icon),
             contentDescription = null,
-            modifier = Modifier.size(12.dp)
+            modifier = Modifier.size(13.dp)
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Subtitle(content = time, color = Color(0xFFFCA622), fontSize = 12.sp)
+        Subtitle(content = time, color = Color(0xFFFCA622), fontSize = 13.sp)
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ComentarioSection(view: ProdutoViewModel, id: Long) {
     val (avaliacao, setAvaliacao) = remember {
@@ -297,12 +296,12 @@ fun ComentarioSection(view: ProdutoViewModel, id: Long) {
 
     Column(
         modifier = Modifier.padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
         ) {
-            Title(content = "Comentário", maxLines = 1)
+            Subtitle(content = stringResource(id = R.string.description_comentario), color = Color.White, fontSize = 13.sp)
         }
 
         Row(
@@ -330,26 +329,33 @@ fun ComentarioSection(view: ProdutoViewModel, id: Long) {
                 onValueChange = { newValue -> setAvaliacao(avaliacao.copy(comentario = newValue)) },
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                 modifier = Modifier
-                    .border(1.dp, color = Color(0xFFFCA622), shape = RoundedCornerShape(5.dp))
+                    .border(
+                        1.dp,
+                        Color(android.graphics.Color.parseColor("#BABABA")),
+                        shape = RoundedCornerShape(5.dp)
+                    )
                     .fillMaxWidth()
                     .height(100.dp)
-                    .padding(4.dp)
-
+                    .padding(4.dp),
+                textStyle = TextStyle(color = Color.White),
+                colors = TextFieldDefaults .outlinedTextFieldColors(
+                    focusedBorderColor = Color.Transparent,
+                    unfocusedBorderColor = Color.Transparent,
+                    cursorColor = Color.White
+                ),
+                singleLine = false,
+                shape = RoundedCornerShape(5.dp)
             )
         }
 
         Column(
-            modifier = Modifier.padding(5.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(0.dp),
-                colors = ButtonDefaults.buttonColors(Color(0xFFFCA622)),
-                onClick = { view.cadastroAvalicao(avaliacaoCadastrar = avaliacao) }) {
-                Text(text = "Postar")
-            }
+                onClick = {
+                    view.cadastroAvalicao(avaliacaoCadastrar = avaliacao)
+                }, content = { Text(text = stringResource(id = R.string.button_postarComentario)) }
+            )
         }
     }
 }

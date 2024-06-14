@@ -54,7 +54,8 @@ fun ProdutoQuantityButton(
         Text(
             text = quantity.toString(),
             style = TextStyle(fontSize = 18.sp),
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = Color.White
         )
 
         IconButton(
