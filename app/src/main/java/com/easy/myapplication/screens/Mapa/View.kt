@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -36,6 +37,7 @@ import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -125,8 +127,7 @@ fun Mapa(viewModel: MapaViewModel) {
     ScreenLoading(isLoading = loading.value?.show?:false, text = loading.value?.message?:"")
 
     Header() {
-        Text(text = latLong.value?.latitude.toString()?:"")
-            BarButton(sheetContent = {
+        BarButton(sheetContent = {
             if (infoRoutes.routes.size <= 0) {
                 BarProducts(
                     produtos = produtos,
@@ -159,13 +160,10 @@ fun Mapa(viewModel: MapaViewModel) {
                 onPermissionsRevoked = {
                     Log.e("sdsd","sddsd")
                 }
-
-
-
             )
         }
     }
-    }
+}
 
 
 
@@ -551,39 +549,43 @@ fun BarProducts(
     getRouteCallback: GetRouteCallback,
     navigate: (Long) -> Unit
 ) {
+    Surface(color = Color(0xFF292929), modifier = Modifier.fillMaxSize()) {
 
-    Column {
-
-        if (produtos.isNotEmpty()) {
-            LazyColumn {
-                items(items = produtos, itemContent = {
-                    ProductItem(
-                        getRouteCallback = getRouteCallback,
-                        navigate = navigate,
-                        data = DataProductItem(
-                            id = it.id ?: 0L,
-                            name = it.nome.toString(),
-                            qtdStars = mediaAvaliacao(it.avaliacao),
-                            shop = it.estabelecimento?.nome ?: "",
-                            price = it.precoAtual ?: 0.0,
-                            time = Time(
-                                it.estabelecimento?.tempoCarro,
-                                it.estabelecimento?.tempoBike,
-                                it.estabelecimento?.tempoPessoa
-                            ),
-                            imagens = if(it.imagens?.size!! > 0)   it.imagens[0] else "",
-                            latitude = it.estabelecimento?.endereco?.latitude,
-                            longitude = it.estabelecimento?.endereco?.longitude,
-                            estabelecimento = it.estabelecimento
+        Column {
+            if (produtos.isNotEmpty()) {
+                LazyColumn {
+                    items(items = produtos, itemContent = {
+                        ProductItem(
+                            getRouteCallback = getRouteCallback,
+                            navigate = navigate,
+                            data = DataProductItem(
+                                id = it.id ?: 0L,
+                                name = it.nome.toString(),
+                                qtdStars = mediaAvaliacao(it.avaliacao),
+                                shop = it.estabelecimento?.nome ?: "",
+                                price = it.precoAtual ?: 0.0,
+                                time = Time(
+                                    it.estabelecimento?.tempoCarro,
+                                    it.estabelecimento?.tempoBike,
+                                    it.estabelecimento?.tempoPessoa
+                                ),
+                                imagens = if (it.imagens?.size!! > 0) it.imagens[0] else "",
+                                latitude = it.estabelecimento?.endereco?.latitude,
+                                longitude = it.estabelecimento?.endereco?.longitude,
+                                estabelecimento = it.estabelecimento
+                            )
                         )
-                    )
-                })
-            }
-        } else {
-            Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
-                Title(content = "Não há produtos nessa região")
-            }
+                    })
+                }
+            } else {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Title(content = "Não há produtos nessa região")
+                }
 
+            }
         }
     }
 }

@@ -208,7 +208,7 @@ fun Produto(view: ProdutoViewModel, id: String?) {
                                     modifier = Modifier.padding(16.dp),
                                     horizontalAlignment = Alignment.Start
                                 ) {
-                                    Column(modifier = Modifier.padding(bottom = 13.dp)) {
+                                    Column(modifier = Modifier.padding(bottom = 8.dp)) {
                                         it.usuario?.let { it1 ->
                                             Subtitle(
                                                 content = it1,
