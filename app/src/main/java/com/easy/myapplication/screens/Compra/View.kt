@@ -272,71 +272,7 @@ fun StepThree() {
                 .fillMaxSize()
                 .padding(vertical = 16.dp)
         ) {
-            Text(stringResource(id = R.string.method_QRCode), fontSize = 16.sp)
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(stringResource(id = R.string.method_QRCode_passo1), fontSize = 13.sp)
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(stringResource(id = R.string.method_QRCode_passo2), fontSize = 13.sp)
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(stringResource(id = R.string.method_QRCode_passo3), fontSize = 13.sp)
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-
-        Column(
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-
-        ) {
-            Image(bitmap = qrCodeBitmap.asImageBitmap(), contentDescription = "QR Code")
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // CAMPO CÓDIGO PIX
-        val context = LocalContext.current
-        Column {
-            Text(
-                stringResource(id = R.string.method_QRCode_passo4),
-                fontSize = 14.sp
-            )
-
-            // Campo cinza com o número gerado
-            Row {
-                Text(
-                    text = codigoPix,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .background(color = Color(0xFFC1C1C1), shape = RoundedCornerShape(4.dp))
-                )
-
-                Spacer(modifier = Modifier.height(15.dp))
-
-                Button(
-                    onClick = {
-                        copyToClipboard(context, codigoPix)
-                        Toast.makeText(
-                            context,
-                            "Código Pix copiado!",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }, modifier = Modifier
-                        .padding(8.dp)
-                        .height(40.dp)
-                        .background(
-                            color = Color(0xFFC1C1C1),
-                            shape = RoundedCornerShape(4.dp)
-                        )
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.button_copiar_pix),
-                    )
-                }
-            }
-
+            Text(text = "Pedido realizado com sucesso!")
             Column {
                 Text(
                     text = "Feito isso, basta acompanhar o status do seu pedido clicando no botão abaixo:",

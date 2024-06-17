@@ -89,7 +89,7 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
 data class MetodoPagamentoDefault(
     val nome: String,
-    val key: Metodo
+    val key: Long
 )
 
 
@@ -306,10 +306,10 @@ fun ModalFilter(
     }
 
     val metodos = listOf(
-        MetodoPagamentoDefault("Cartão de Crédito", Metodo.CARTAO_CREDITO),
-        MetodoPagamentoDefault("Cartão de Débito", Metodo.CARTAO_DEBITO),
-        MetodoPagamentoDefault("Dinheiro", Metodo.DINHEIRO),
-        MetodoPagamentoDefault("Pix", Metodo.PIX),
+        MetodoPagamentoDefault("Cartão de Crédito", 1),
+        MetodoPagamentoDefault("Cartão de Débito", 5),
+        MetodoPagamentoDefault("Dinheiro", 2),
+        MetodoPagamentoDefault("Pix", 3),
     )
 
     ModalBottomSheet(
@@ -358,7 +358,7 @@ fun ModalFilter(
                     ) {
                         Text(text = item.nome)
                         RadioButton(
-                            selected = filter.metodoPagamento == item.nome,
+                            selected = filter.metodoPagamento == item.key,
                             colors = RadioButtonColors(
                                 selectedColor = Primary,
                                 unselectedColor = Color.White,
@@ -366,7 +366,7 @@ fun ModalFilter(
                                 disabledUnselectedColor = Color.Gray
                             ),
                             onClick = {
-                                setFilter(filter.copy(metodoPagamento = item.nome))
+                                setFilter(filter.copy(metodoPagamento = item.key))
                             })
 
                     }

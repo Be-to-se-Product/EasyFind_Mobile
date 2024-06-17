@@ -7,5 +7,5 @@ enum class Metodo{
 data class FilterDTO(
     val nome:String?=null,
     var distancia:Float? = 50F,
-    val metodoPagamento:String? = null
+    val metodoPagamento:Long? = null
 )

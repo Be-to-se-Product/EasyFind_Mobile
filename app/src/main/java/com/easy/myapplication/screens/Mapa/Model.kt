@@ -127,7 +127,7 @@ class MapaViewModel : ViewModel() {
     }
 
     fun getProdutos(
-        metodoPagamento: String? = null,
+        metodoPagamento: Long? = null,
         distancia: Float? = null,
         nome: String? = null
     ) {
