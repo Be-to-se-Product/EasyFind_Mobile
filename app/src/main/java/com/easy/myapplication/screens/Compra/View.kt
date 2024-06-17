@@ -42,10 +42,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.easy.myapplication.LocalNavController
+import com.easy.myapplication.R
 import com.easy.myapplication.screens.Compra.Integration.ItemVenda
 import com.easy.myapplication.screens.Compra.Integration.MetodoPagamento
 import com.easy.myapplication.screens.Compra.Integration.PedidoCadastro
@@ -64,12 +66,18 @@ fun Buy() {
     val selectedOption = remember { mutableStateOf<String?>(null) }
     val isFinalStep = remember { mutableStateOf(false) }
 
-    val products =
-        navController.previousBackStackEntry?.savedStateHandle?.get<ProdutoPedido>("PRODUTO")
-    val total = products?.quantidade!! * products.preco!!
-    val quantity = products.quantidade
-    val productId = products.id
-    val storeId = products.idEstabelecimento
+    val productsList =
+        navController.previousBackStackEntry?.savedStateHandle?.get<List<ProdutoPedido>>("PRODUTO")
+    var total = 0.0
+    var storeId = productsList?.get(0)?.idEstabelecimento
+    var origem = productsList?.get(0)?.origin
+    val itens = productsList?.map { product ->
+        total += product.quantidade!! * product.preco!!
+        ItemVenda().apply {
+            idProduto = product.id
+            quantidade = product.quantidade
+        }
+    }
     val isPaymentOnline = remember { mutableStateOf(false) }
     val paymentMethodId = remember { mutableLongStateOf(2L) }
 
@@ -122,7 +130,7 @@ fun Buy() {
                             onClick = { if (currentStep.value > 1) currentStep.value-- },
                             colors = ButtonDefaults.buttonColors(Primary)
                         ) {
-                            Text("Voltar")
+                            Text(stringResource(id = R.string.button_voltar))
                         }
                         Spacer(modifier = Modifier.width(8.dp))
                     }
@@ -134,22 +142,22 @@ fun Buy() {
                                     if (currentStep.value == totalSteps && selectedOption.value != "pix") {
                                         sendRequest(
                                             storeId!!,
-                                            productId!!,
-                                            quantity,
+                                            itens!!,
                                             paymentMethodId.value,
                                             isPaymentOnline,
-                                            viewModel
+                                            viewModel,
+                                            origem
                                         )
                                     }
                                 } else {
                                     if (selectedOption.value == "pix") {
                                         sendRequest(
                                             storeId!!,
-                                            productId!!,
-                                            quantity,
+                                            itens!!,
                                             paymentMethodId.value,
                                             isPaymentOnline,
-                                            viewModel
+                                            viewModel,
+                                            origem
                                         )
                                         isFinalStep.value = true
                                     }
@@ -158,7 +166,7 @@ fun Buy() {
                             },
                             colors = ButtonDefaults.buttonColors(Primary)
                         ) {
-                            Text(if (currentStep.value == totalSteps) "Finalizar" else "Continuar")
+                            Text(if (currentStep.value == totalSteps) stringResource(id = R.string.button_finalizar) else stringResource(id = R.string.button_continuar))
                         }
                     }
                 }
@@ -176,7 +184,7 @@ fun Buy() {
                         onClick = { navController.popBackStack()},
                         colors = ButtonDefaults.buttonColors(Primary)
                     ) {
-                        Text("Cancelar")
+                        Text(stringResource(id = R.string.button_cancelar))
                     }
                     val totalFormatado = String.format("%.2f", total)
                     Text(text = "Total : R$$totalFormatado")
@@ -195,13 +203,13 @@ fun StepOne(
     onOptionSelected: (String) -> Unit
 ) {
     Text(
-        text = "Como deseja realizar o pagamento?",
+        text = stringResource(id = R.string.description_compra_realizar),
         modifier = Modifier.fillMaxWidth(),
     )
     Spacer(modifier = Modifier.height(16.dp))
     SelectableOptionButton(
-        text = "Pague aqui e retire na loja",
-        isSelected = selectedOption.value == "Pague aqui e retire na loja"
+        text = stringResource(id = R.string.description_compra_retirarProduto),
+        isSelected = selectedOption.value == stringResource(id = R.string.description_compra_realizar)
     ) {
         onOptionSelected("Pague aqui e retire na loja")
         isPaymentOnline.value = true
@@ -209,8 +217,8 @@ fun StepOne(
 
     Spacer(modifier = Modifier.height(8.dp))
     SelectableOptionButton(
-        text = "Pagamento no estabelecimento",
-        isSelected = selectedOption.value == "Pagamento no estabelecimento"
+        text = stringResource(id = R.string.pay_estabelecimento),
+        isSelected = selectedOption.value == stringResource(id = R.string.pay_estabelecimento)
     ) {
         onOptionSelected("Pagamento no estabelecimento")
         isPaymentOnline.value = false
@@ -234,7 +242,7 @@ fun StepTwo(
 
 
     Text(
-        text = "Selecione o método de pagamento",
+        text = stringResource(id = R.string.method_pay),
         modifier = Modifier.fillMaxWidth(),
     )
     Spacer(modifier = Modifier.height(16.dp))
@@ -264,16 +272,16 @@ fun StepThree() {
                 .fillMaxSize()
                 .padding(vertical = 16.dp)
         ) {
-            Text("Escaneie este código para pagar", fontSize = 16.sp)
+            Text(stringResource(id = R.string.method_QRCode), fontSize = 16.sp)
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text("1. Acesse seu Internet Banking ou app de pagamentos.", fontSize = 13.sp)
+            Text(stringResource(id = R.string.method_QRCode_passo1), fontSize = 13.sp)
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text("2. Escolha pagar via Pix.", fontSize = 13.sp)
+            Text(stringResource(id = R.string.method_QRCode_passo2), fontSize = 13.sp)
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text("3. Escaneie o seguinte código QR.", fontSize = 13.sp)
+            Text(stringResource(id = R.string.method_QRCode_passo3), fontSize = 13.sp)
             Spacer(modifier = Modifier.height(8.dp))
         }
 
@@ -292,7 +300,7 @@ fun StepThree() {
         val context = LocalContext.current
         Column {
             Text(
-                "Ou copie e cole este código QR para fazer o pagamento via app de pagamentos ou Internet Banking:",
+                stringResource(id = R.string.method_QRCode_passo4),
                 fontSize = 14.sp
             )
 
@@ -324,7 +332,7 @@ fun StepThree() {
                         )
                 ) {
                     Text(
-                        text = "Copiar",
+                        text = stringResource(id = R.string.button_copiar_pix),
                     )
                 }
             }
@@ -352,26 +360,26 @@ fun FinalStep() {
                 modifier = Modifier.size(100.dp)
             )
             Text(
-                text = "Pedido feito com sucesso!",
+                text = stringResource(id = R.string.description_compraSucesso),
                 color = Color.White,
                 fontSize = 20.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 16.dp)
             )
             Text(
-                text = "Seu pedido será enviado para aprovação do comerciante. Clique no botão abaixo.",
+                text = stringResource(id = R.string.description_compraAprovacao),
                 color = Color.White,
                 fontSize = 16.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 8.dp)
             )
             Button(
-                onClick = {},
+                onClick = { navigation.navigate("Pedidos")},
                 colors = ButtonDefaults.buttonColors(Primary),
                 modifier = Modifier.padding(top = 16.dp)
             ) {
                 Text(
-                    text = "Acompanhar o pedido",
+                    text = stringResource(id = R.string.description_acompanharProduto),
                     color = Color.Black
                 )
             }
@@ -383,7 +391,7 @@ fun FinalStep() {
                 modifier = Modifier.padding(top = 8.dp)
             ) {
                 Text(
-                    text = "Voltar para a página inicial",
+                    text = stringResource(id = R.string.button_voltarTelaInicial),
                     color = Color.Black
                 )
             }
@@ -403,23 +411,21 @@ fun copyToClipboard(context: Context, text: String) {
 
 fun sendRequest(
     storeId: Long,
-    productId: Long,
-    quantity: Int,
+    produtos : List<ItemVenda>,
     paymentMethodId: Long,
     isPaymentOnline: MutableState<Boolean>,
-    viewModel: Model
+    viewModel: Model,
+    origin: String?
 ) {
     val pedido = PedidoCadastro().apply {
+        idConsumidor = 1
         idEstabelecimento = storeId
-        itens = listOf(ItemVenda().apply {
-            idProduto = productId
-            quantidade = quantity
-        })
+        itens = produtos
         metodo = MetodoPagamento().apply {
             idMetodoPagamento = paymentMethodId
             isPagamentoOnline = isPaymentOnline.value
         }
-        origem = "Tela compra"
+        origem = origin
     }
     viewModel.postPedido(pedido)
 }

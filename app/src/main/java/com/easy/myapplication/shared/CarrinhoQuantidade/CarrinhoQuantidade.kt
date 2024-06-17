@@ -1,5 +1,6 @@
-package com.easy.myapplication.shared.ButtonQuantidadeProduto
+package com.easy.myapplication.shared.CarrinhoQuantidade
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -18,21 +19,20 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import com.easy.myapplication.R
+import com.easy.myapplication.screens.Carrinho.Model
 
 @Composable
-fun ProdutoQuantityButton(
-    quantity: Int,
-    onIncrement: () -> Unit,
-    onDecrement: () -> Unit
-){
+fun CarrinhoQuantidade(id: Long, quantidade: Int){
+    val model = Model();
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(18.dp)
+            .padding(end = 16.dp, start = 16.dp)
             .border(
-                width = 1.dp,
-                color = Color(0xFFFCA622),
+                width = 2.dp,
+                color = Color(0xFF3E3E3E),
                 shape = RoundedCornerShape(8.dp)
             ),
         verticalAlignment = Alignment.CenterVertically,
@@ -40,9 +40,7 @@ fun ProdutoQuantityButton(
     ){
         IconButton(
             onClick = {
-                if (quantity > 0){
-                    onDecrement()
-                }
+                model.editCarrinho(id, quantidade - 1)
             }
         ) {
             Icon(
@@ -52,7 +50,7 @@ fun ProdutoQuantityButton(
             )
         }
         Text(
-            text = quantity.toString(),
+            text = ""+quantidade,
             style = TextStyle(fontSize = 18.sp),
             fontWeight = FontWeight.Bold,
             color = Color.White
@@ -60,7 +58,7 @@ fun ProdutoQuantityButton(
 
         IconButton(
             onClick = {
-                onIncrement()
+                model.editCarrinho(id, quantidade + 1)
             }
         ) {
             Icon(

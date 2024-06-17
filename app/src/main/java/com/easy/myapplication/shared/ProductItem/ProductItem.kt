@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -92,7 +93,7 @@ data class DataProductItem(
             AsyncImage(
                 model =  data.imagens,
                 contentDescription = "Imagem do produto",
-                error = painterResource(R.mipmap.fone),
+                error = painterResource(R.mipmap.default_produto),
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(),
@@ -107,7 +108,7 @@ data class DataProductItem(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Surface(modifier = Modifier.fillMaxWidth(0.7f)) {
+                Surface(modifier = Modifier.fillMaxWidth(0.7f), color = Color(0xFF292929)) {
                     Title(content = data.name, overflow = TextOverflow.Ellipsis,maxLines=1)
                 }
 

@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DrawerState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -21,8 +23,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.easy.myapplication.LocalNavController
 import com.easy.myapplication.R
 import com.easy.myapplication.repositories.StorageRepository
 import com.easy.myapplication.shared.Drawble.Drawble
@@ -43,6 +49,7 @@ fun Header(content:@Composable ()-> Unit) {
     val storage : StorageRepository by inject<StorageRepository>();
 
     val nome = remember { mutableStateOf("") }
+    val navController = LocalNavController.current;
 
     fun getUserName() {
         CoroutineScope(Dispatchers.IO).launch {
@@ -83,11 +90,23 @@ fun Header(content:@Composable ()-> Unit) {
                             Image(
                                 painter = painterResource(id = R.mipmap.cart),
                                 contentDescription = "Cart",
-                                modifier = Modifier.width(25.dp)
+                                modifier = Modifier.width(25.dp).clickable(
+                                    onClick = {
+                                        navController.navigate("Carrinho")
+                                    },
+                                    enabled = true
+                                )
                             )
                         }
                     }
-                    Title(content = "EasyFind", color = Primary, maxLines = 1)
+                    Text(
+                        text = "EasyFind",
+                        fontWeight = FontWeight.SemiBold,
+                        color = Primary,
+                        maxLines = 1,
+                        modifier = Modifier.clickable { navController.navigate("Mapa") },
+                        fontSize =  20.sp
+                    )
                 }
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                     content()

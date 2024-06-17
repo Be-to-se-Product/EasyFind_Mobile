@@ -96,20 +96,8 @@ fun Drawble(content: @Composable (DrawerState, CoroutineScope) -> Unit) {
                                         )
                                     },
                                     selected = false,
-                                    onClick = {}
+                                    onClick = {navigation.navigate("Pedidos")}
                                 )
-                                NavigationDrawerItem(
-                                    label = {
-                                        Text(
-                                            text = "Buscar pedidos",
-                                            textAlign = TextAlign.Left,
-                                            modifier = Modifier.fillMaxWidth()
-                                        )
-                                    },
-                                    selected = false,
-                                    onClick = {}
-                                )
-
                             }
                             Column(modifier = Modifier.padding(20.dp, 10.dp)) {
                                 Button(onClick = {
