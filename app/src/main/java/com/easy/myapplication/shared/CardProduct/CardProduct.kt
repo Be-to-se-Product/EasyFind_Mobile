@@ -62,7 +62,7 @@ fun PhotoComponent(images:List<String>) {
     if (images.isEmpty()){
         return Column(modifier = Modifier.size(width = 86.dp, height = 86.dp).clip(RoundedCornerShape(10.dp))
         ) {
-            Image(painter = painterResource(id = R.mipmap.default_produto), contentDescription = "tela de morango")
+            Image(painter = painterResource(id = R.mipmap.default_produto), contentDescription = "")
         }
     }
     val selectedImageState = remember { mutableStateOf(images[0]) }

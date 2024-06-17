@@ -12,7 +12,7 @@
     <string name="button_copiar_pix">Copiar</string>
     <string name="button_voltarTelaInicial">Voltar para a página inicial</string>
     <string name="button_comprar">Comprar</string>
-    <string name="button_adicionarCarrinho">Adicionar no carrinho</string>
+    <string name="button_adicionarCarrinho">Adicionar ao carrinho</string>
     <string name="button_postarComentario">Postar</string>
     <string name="button_finalizarPedido">Finalizar pedido</string>
 
