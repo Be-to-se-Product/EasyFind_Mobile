@@ -93,7 +93,7 @@ data class DataProductItem(
             AsyncImage(
                 model =  data.imagens,
                 contentDescription = "Imagem do produto",
-                error = painterResource(R.mipmap.fone),
+                error = painterResource(R.mipmap.default_produto),
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(),
